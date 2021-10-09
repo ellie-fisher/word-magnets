@@ -32,16 +32,39 @@ window.onload = function ()
 		"CastVote",
 	];
 
-	const $socketMessages = document.getElementById ("socket-messages");
+	let ws = socketConnect ();
+
 	const $packetType = document.getElementById ("packet-type");
 	const $packetCommand = document.getElementById ("packet-command");
 	const $packetSequence = document.getElementById ("packet-sequence");
 	const $packetBody = document.getElementById ("packet-body");
 	const $packetSend = document.getElementById ("packet-send");
 
-	$packetBody.oninput = onChangeBody;
-	$packetBody.onchange = onChangeBody;
 	$packetSend.onclick = sendPacket;
+
+	let packetSequence = 0;
+
+	function sendPacket ()
+	{
+		let bodyStr = document.getElementById ("packet-body").value;
+
+		if ( bodyStr[bodyStr.length - 1] === "," )
+		{
+			bodyStr = bodyStr.substring (0, bodyStr.length - 1);
+		}
+
+		const packet =
+		{
+			type: $packetType.selectedIndex,
+			command: $packetCommand.selectedIndex,
+			sequence: packetSequence++,
+			body: JSON.parse ("{" + bodyStr + "}"),
+		};
+
+		document.getElementById ("packet-sequence").value = packetSequence;
+
+		ws.send (JSON.stringify (packet));
+	};
 
 	types.forEach (( type, index ) =>
 	{
@@ -62,13 +85,16 @@ window.onload = function ()
 
 		$packetCommand.appendChild ($option);
 	});
+};
 
+function addMessage ( message )
+{
+	document.getElementById ("socket-messages").prepend (`${message}\n`);
+};
+
+function socketConnect ()
+{
 	const ws = new WebSocket ("ws://localhost:8080");
-
-	function addMessage ( message )
-	{
-		$socketMessages.prepend (`${message}\n`);
-	};
 
 	ws.onopen = function ( ...args )
 	{
@@ -90,35 +116,5 @@ window.onload = function ()
 		addMessage (`[!] ERROR: ${error}`);
 	};
 
-	let packetType = 0;
-	let packetCommand = 0;
-	let packetSequence = 0;
-	let packetBody = "";
-
-	function onChangeBody ( event )
-	{
-		packetBody = event.target.value;
-	};
-
-	function sendPacket ()
-	{
-		let bodyStr = packetBody;
-
-		if ( bodyStr[bodyStr.length - 1] === "," )
-		{
-			bodyStr = bodyStr.substring (0, bodyStr.length - 1);
-		}
-
-		const packet =
-		{
-			type: packetType,
-			command: packetCommand,
-			sequence: packetSequence++,
-			body: JSON.parse ("{" + bodyStr + "}"),
-		};
-
-		$packetSequence.value = packetSequence;
-
-		ws.send (JSON.stringify (packet));
-	};
+	return ws;
 };
