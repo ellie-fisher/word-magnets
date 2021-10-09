@@ -15,6 +15,13 @@ app.listen (PORT, () =>
 	console.log (`Listening on port ${PORT}`);
 });
 
+app.use ("/", express.static (path.join (__dirname, "../../client/src")));
+
+app.get ("/*", ( req: any, res: any ) =>
+{
+	res.sendFile ("index.html", { root: path.join (__dirname, "../../client/src") });
+});
+
 const wss = new WebSocketServer ({ port: SOCKET_PORT }, () =>
 {
 	console.log (`Farragomate server started on port ${SOCKET_PORT}`);
