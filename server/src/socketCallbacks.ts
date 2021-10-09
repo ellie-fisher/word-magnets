@@ -33,11 +33,12 @@ const onNewConnection = function ( socket: any, request: any )
 
 const onSocketClose = function ( this: any )
 {
-	const { id } = this.fmClient;
+	const { fmClient } = this;
 
-	ClientManager.remove (id);
+	ClientManager.remove (fmClient.id);
+	ClientNames.removeClient (fmClient);
 
-	console.log (`${id} disconnected.`);
+	console.log (`${fmClient.id} disconnected.`);
 };
 
 const onSocketMessage = function ( this: any, message: any )
