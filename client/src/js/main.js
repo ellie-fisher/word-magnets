@@ -109,11 +109,13 @@ window.onload = function ()
 			bodyStr = bodyStr.substring (0, bodyStr.length - 1);
 		}
 
-		const packet = JSON.parse ("{" + bodyStr + "}");
-
-		packet.type = packetType;
-		packet.command = packetCommand;
-		packet.sequence = packetSequence++;
+		const packet =
+		{
+			type: packetType,
+			command: packetCommand,
+			sequence: packetSequence++,
+			body: JSON.parse ("{" + bodyStr + "}"),
+		};
 
 		$packetSequence.value = packetSequence;
 
