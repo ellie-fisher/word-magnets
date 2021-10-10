@@ -7,14 +7,14 @@ class Packet
 	public type: PacketType;
 	public sequence: number;
 	public command: PacketCommand;
-	public body: object;
+	public body: any;
 	public requestSeq: number;
 
 	constructor (
 		type: PacketType,
 		sequence: number,
 		command: PacketCommand,
-		body: object = {},
+		body: any = {},
 		requestSeq: number = -1,
 	)
 	{
