@@ -55,7 +55,8 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 					return [key, `Cannot be more than ${max}.`];
 				}
 
-				if ( (type === "integer" && !Number.isInteger (field)) || typeof field !== "number" )
+				if ( (type === "integer" && !Number.isInteger (field))
+				  || typeof field !== "number" || isNaN (field) )
 				{
 					return [key, `Expected type \`${type}\`, got \`${typeof field}\``];
 				}
