@@ -3,21 +3,22 @@ import has from "../../../common/src/util/has";
 
 const validateFields = ( fields: object, validation: object ): any[] =>
 {
-	const keys = Object.keys (fields);
+	const keys: string[] = Object.keys (validation);
 
 	const { length } = keys;
 
 	for ( let i = 0; i < length; i++ )
 	{
-		const key = fields[i];
-		const field = fields[key];
+		const key: string = keys[i];
 
-		if ( !has (validation, key) )
+		const { type, min, max, required = false } = validation[key];
+
+		if ( !has (fields, key) && required )
 		{
-			return [key, "Unknown field"];
+			return [key, "Missing required field"];
 		}
 
-		const { type, min, max } = validation[key];
+		const field: any = fields[key];
 
 		switch ( type )
 		{
