@@ -3,8 +3,10 @@ import ClientInfo from "./clients/ClientInfo";
 import ClientManager from "./clients/ClientManager";
 import ClientNames from "./clients/ClientNames";
 
+import Packet from "./packets/Packet";
 import PacketCommand from "./packets/PacketCommand";
 import isValidPacket from "./packets/isValidPacket";
+import handlePacket from "./packets/handlers/handlePacket";
 
 import validateFields from "./validation/validateFields";
 import clientInfoFields from "./validation/fields/clientInfo";
@@ -92,6 +94,8 @@ const onSocketMessage = function ( this: any, message: any )
 		client.packets.sendRejectPacket (this, packet, "Cannot change name in a room.");
 		return;
 	}
+
+	handlePacket (packet, client);
 };
 
 
