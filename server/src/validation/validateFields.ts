@@ -26,12 +26,12 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			{
 				if ( field.length < min )
 				{
-					return [key, `Must be at least ${min} character(s).`];
+					return [key, `Must be at least ${min} character(s)`];
 				}
 
 				if ( field.length > max )
 				{
-					return [key, `Cannot be more than ${max} character(s).`];
+					return [key, `Cannot be more than ${max} character(s)`];
 				}
 
 				if ( typeof field !== "string" )
@@ -47,16 +47,17 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			{
 				if ( field < min )
 				{
-					return [key, `Must be at least ${min}.`];
+					return [key, `Must be at least ${min}`];
 				}
 
 				if ( field > max )
 				{
-					return [key, `Cannot be more than ${max}.`];
+					return [key, `Cannot be more than ${max}`];
 				}
 
 				if ( (type === "integer" && !Number.isInteger (field))
-				  || typeof field !== "number" || isNaN (field) )
+					|| typeof field !== "number"
+					|| isNaN (field) )
 				{
 					return [key, `Expected type \`${type}\`, got \`${typeof field}\``];
 				}
