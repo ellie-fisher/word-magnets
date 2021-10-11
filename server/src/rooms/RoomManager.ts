@@ -60,6 +60,8 @@ class _RoomManager extends ObjectManager<Room>
 		if ( room.clients.addClient (client) )
 		{
 			room.sendDataPacket (PacketCommand.JoinRoom, client.id);
+			room.sendInfo (client);
+			room.sendClientList (client);
 		}
 
 		return RoomError.Ok;
