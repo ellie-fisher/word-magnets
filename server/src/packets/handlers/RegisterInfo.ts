@@ -10,7 +10,7 @@ const registerInfoHandler = ( packet: Packet, client: Client ) =>
 {
 	if ( client.roomID !== "" )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "Cannot change info while in a room.");
+		client.packets.sendRejectPacket (client.socket, packet, "You cannot change your info while in a room.");
 		return;
 	}
 
