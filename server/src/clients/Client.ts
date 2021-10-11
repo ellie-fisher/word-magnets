@@ -15,7 +15,7 @@ class Client
 	public roomID: string;
 	public score: number;
 	public sentence: Sentence;
-	public vote: string;
+	public vote: number;
 
 
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
@@ -30,7 +30,7 @@ class Client
 		this.roomID = "";
 		this.score = 0;
 		this.sentence = { words: [], votes: 0 };
-		this.vote = "";
+		this.vote = -1;
 	}
 
 	onLeaveRoom ()
@@ -38,7 +38,7 @@ class Client
 		this.roomID = "";
 		this.score = 0;
 		this.sentence = { words: [], votes: 0 };
-		this.vote = "";
+		this.vote = -1;
 	}
 
 	sendPacket ( packet: Packet )
