@@ -34,6 +34,8 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 
 	// TODO: Add chat capabilities and remove this.
 	info.enableChat = false;
+	// TODO: Add ability to not show on server list and to join directly from an ID.
+	info.showOnList = true;
 
 	const room = RoomManager.create (new RoomInfo (info), client);
 

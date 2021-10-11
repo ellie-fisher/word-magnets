@@ -24,7 +24,7 @@ const roomInfoFields =
 		min: 1,
 		max: 16,
 		defaultValue: 8,
-		displayName: "Player Limit",
+		displayName: "Player limit",
 	},
 
 	timeLimit:
@@ -33,7 +33,7 @@ const roomInfoFields =
 		min: 10,
 		max: 180,
 		defaultValue: 60,
-		displayName: "Time Limit",
+		displayName: "Time limit",
 	},
 
 	maxRounds:
@@ -50,7 +50,15 @@ const roomInfoFields =
 	// {
 	// 	type: "boolean",
 	// 	defaultValue: false,
-	// 	displayName: "Enable Chat",
+	// 	displayName: "Enable chat",
+	// }
+
+	// TODO: Add ability to not show on server list and to join directly from an ID.
+	// showOnList:
+	// {
+	// 	type: "boolean",
+	// 	defaultValue: true,
+	// 	displayName: "Show on server list",
 	// }
 };
 

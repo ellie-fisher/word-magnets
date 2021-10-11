@@ -6,6 +6,7 @@ class RoomInfo
 	public timeLimit: number;
 	public maxRounds: number;
 	public enableChat: boolean;
+	public showOnList: boolean;
 	public timeLeft: number;
 	public currentRound: number;
 
@@ -17,6 +18,7 @@ class RoomInfo
 		this.timeLimit = info.timeLimit;
 		this.maxRounds = info.maxRounds;
 		this.enableChat = info.enableChat;
+		this.showOnList = info.showOnList;
 		this.timeLeft = this.timeLimit;
 		this.currentRound = 0;
 	}
