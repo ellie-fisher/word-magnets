@@ -5,6 +5,8 @@ import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 
 import registerInfoHandler from "./handlers/RegisterInfo";
+import createRoomHandler from "./handlers/CreateRoom";
+import joinRoomHandler from "./handlers/JoinRoom";
 
 
 const handlePacket = ( packet: Packet, client: Client ) =>
@@ -20,6 +22,18 @@ const handlePacket = ( packet: Packet, client: Client ) =>
 		case PacketCommand.RegisterInfo:
 		{
 			registerInfoHandler (packet, client);
+			break;
+		}
+
+		case PacketCommand.CreateRoom:
+		{
+			createRoomHandler (packet, client);
+			break;
+		}
+
+		case PacketCommand.JoinRoom:
+		{
+			joinRoomHandler (packet, client);
 			break;
 		}
 
