@@ -11,7 +11,7 @@ const commands =
 	"CreateRoom",
 	"JoinRoom",
 	"LeaveRoom",
-	"DeleteRoom",
+	"DestroyRoom",
 
 	"StartPhase",
 	"EndPhase",
