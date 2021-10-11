@@ -61,6 +61,8 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 				{
 					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
 				}
+
+				break;
 			}
 
 			default:
