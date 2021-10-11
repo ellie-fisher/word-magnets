@@ -17,8 +17,10 @@ class RoomClients
 	{
 		this.roomID = roomID;
 		this.ownerID = owner.id;
-		this._clients = new Map ([[owner.id, owner]]);
-		this._nameCache = new Map ([[owner.id, owner.info.name]]);
+		this._clients = new Map ();
+		this._nameCache = new Map ();
+
+		this.addClient (owner);
 	}
 
 	refreshNameCache ()
