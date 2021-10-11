@@ -28,6 +28,30 @@ class Room
 		this.clients.sendDataPacket (command, body, except);
 	}
 
+	sendInfo ( client?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
+		}
+		else
+		{
+			client.packets.sendDataPacket (client.socket, PacketCommand.RoomInfo, this.toJSON ());
+		}
+	}
+
+	sendClientList ( client?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this.sendDataPacket (PacketCommand.ClientList, this.clients.toJSON ());
+		}
+		else
+		{
+			client.packets.sendDataPacket (client.socket, PacketCommand.ClientList, this.clients.toJSON ());
+		}
+	}
+
 	isFull (): boolean
 	{
 		return this.clients.size >= this.info.maxClients;
@@ -36,9 +60,11 @@ class Room
 	toJSON (): object
 	{
 		const data: any = this.info.toJSON ();
+		const owner = this.clients.getOwner ();
 
 		data.id = this.id;
-		data.ownerName = this.clients.getOwner ().info.name;
+		data.ownerID = owner.id;
+		data.ownerName = owner.info.name;
 		data.numClients = this.clients.size;
 
 		return data;
