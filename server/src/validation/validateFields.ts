@@ -10,10 +10,11 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 	for ( let i = 0; i < length; i++ )
 	{
 		const key: string = keys[i];
+		const data: any = validation[key];
 
-		const { type, min, max, required = false } = validation[key];
+		const { type, min, max } = data;
 
-		if ( !has (fields, key) && required )
+		if ( !has (fields, key) && !has (data, "defaultValue") )
 		{
 			return [key, "Missing required field"];
 		}
