@@ -19,6 +19,8 @@ const commands =
 	"KickClient",
 	"BanClient",
 
+	"ChatMessage",  // TODO: Add chat capabilities
+
 	"RoomInfo",
 
 	"ClientList",
