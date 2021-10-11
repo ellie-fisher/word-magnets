@@ -65,6 +65,16 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 				break;
 			}
 
+			case "boolean":
+			{
+				if ( typeof value !== "boolean" && value !== 0 && value !== 1 )
+				{
+					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+				}
+
+				break;
+			}
+
 			default:
 			{
 				throw new Error (`Unhandled/Unknown type \`${type}\``);
