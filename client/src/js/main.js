@@ -1,37 +1,39 @@
+const types = ["Data", "Request", "Response"];
+
+const commands =
+[
+	"Error",
+	"Warning",
+	"Message",
+
+	"RegisterInfo",
+
+	"CreateRoom",
+	"JoinRoom",
+	"LeaveRoom",
+	"DeleteRoom",
+
+	"StartPhase",
+	"EndPhase",
+
+	"KickClient",
+	"BanClient",
+
+	"RoomInfo",
+
+	"ClientList",
+	"RoomList",
+
+	"SendSentence",
+	"SentenceList",
+
+	"CastVote",
+];
+
+let packetSequence = 0;
+
 window.onload = function ()
 {
-	const types = ["Data", "Request", "Response"];
-
-	const commands =
-	[
-		"Error",
-		"Warning",
-		"Message",
-
-		"RegisterInfo",
-
-		"CreateRoom",
-		"JoinRoom",
-		"LeaveRoom",
-		"DeleteRoom",
-
-		"StartPhase",
-		"EndPhase",
-
-		"KickClient",
-		"BanClient",
-
-		"RoomInfo",
-
-		"ClientList",
-		"RoomList",
-
-		"SendSentence",
-		"SentenceList",
-
-		"CastVote",
-	];
-
 	let ws = socketConnect ();
 
 	const $packetType = document.getElementById ("packet-type");
@@ -42,7 +44,6 @@ window.onload = function ()
 
 	$packetSend.onclick = sendPacket;
 
-	let packetSequence = 0;
 
 	function sendPacket ()
 	{
@@ -99,6 +100,18 @@ function socketConnect ()
 	ws.onopen = function ( ...args )
 	{
 		addMessage ("(i) Connected.");
+
+		const packet =
+		{
+			type: types.indexOf ("Request"),
+			command: commands.indexOf ("RegisterInfo"),
+			sequence: packetSequence++,
+			body: { name: String (Math.random ()) },
+		};
+
+		document.getElementById ("packet-sequence").value = packetSequence;
+
+		ws.send (JSON.stringify (packet));
 	};
 
 	ws.onclose = function ( ...args )
