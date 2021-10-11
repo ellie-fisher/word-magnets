@@ -40,6 +40,21 @@ class Client
 		this.sentence = { words: [], votes: 0 };
 		this.vote = "";
 	}
+
+	sendPacket ( packet: Packet )
+	{
+		this.packets.sendPacket (this.socket, packet);
+	}
+
+	toJSON (): object
+	{
+		const object: any = this.info.toJSON ();
+
+		object.id = this.id;
+		object.score = this.score;
+
+		return object;
+	}
 }
 
 
