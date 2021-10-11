@@ -20,10 +20,10 @@ class Room
 
 	/**
 	 * @param {PacketCommand} command
-	 * @param {any} [body={}]
+	 * @param {any} [body=""]
 	 * @param {string[]|null} [except=null] - Client IDs to *NOT* send the packet to.
 	 */
-	sendDataPacket ( command: PacketCommand, body: any = {}, except: string[] = null )
+	sendDataPacket ( command: PacketCommand, body: any = "", except: string[] = null )
 	{
 		this.clients.sendDataPacket (command, body, except);
 	}

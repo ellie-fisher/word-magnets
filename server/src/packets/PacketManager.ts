@@ -19,17 +19,17 @@ class PacketManager
 		socket.send (JSON.stringify (packet.toJSON ()));
 	}
 
-	sendDataPacket ( socket: WebSocket, command: PacketCommand, body: object = {} )
+	sendDataPacket ( socket: WebSocket, command: PacketCommand, body: any = "" )
 	{
 		this.sendPacket (socket, new Packet (PacketType.Data, this._sequence++, command, body));
 	}
 
-	sendRequestPacket ( socket: WebSocket, command: PacketCommand, body: object = {} )
+	sendRequestPacket ( socket: WebSocket, command: PacketCommand, body: any = "" )
 	{
 		this.sendPacket (socket, new Packet (PacketType.Request, this._sequence++, command, body));
 	}
 
-	sendResponsePacket ( socket: WebSocket, request: Packet, body: object = {} )
+	sendResponsePacket ( socket: WebSocket, request: Packet, body: any = "" )
 	{
 		this.sendPacket (
 			socket,

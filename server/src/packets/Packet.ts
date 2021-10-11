@@ -14,7 +14,7 @@ class Packet
 		type: PacketType,
 		sequence: number,
 		command: PacketCommand,
-		body: any = {},
+		body: any = "",
 		requestSeq: number = -1,
 	)
 	{
