@@ -3,7 +3,7 @@ import { WebSocket } from "ws";
 import ClientInfo from "./ClientInfo";
 import Packet from "../packets/Packet";
 import PacketManager from "../packets/PacketManager";
-import SentenceWord from "../wordbank/SentenceWord";
+import Sentence from "../wordbank/Sentence";
 
 
 class Client
@@ -14,7 +14,7 @@ class Client
 	public packets: PacketManager;
 	public roomID: string;
 	public score: number;
-	public sentence: SentenceWord[];
+	public sentence: Sentence;
 	public vote: string;
 
 
@@ -29,7 +29,7 @@ class Client
 		this.packets = new PacketManager ();
 		this.roomID = "";
 		this.score = 0;
-		this.sentence = [];
+		this.sentence = { words: [], votes: 0 };
 		this.vote = "";
 	}
 
@@ -37,7 +37,7 @@ class Client
 	{
 		this.roomID = "";
 		this.score = 0;
-		this.sentence = [];
+		this.sentence = { words: [], votes: 0 };
 		this.vote = "";
 	}
 }
