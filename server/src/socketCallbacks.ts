@@ -14,7 +14,7 @@ import clientInfoFields from "./validation/fields/clientInfo";
 
 const onNewConnection = function ( socket: any, request: any )
 {
-	const client = ClientManager.create (socket, new ClientInfo (""));
+	const client = ClientManager.create (socket, new ClientInfo ({ name: "" }));
 
 	if ( client === null )
 	{

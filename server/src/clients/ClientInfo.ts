@@ -2,9 +2,9 @@ class ClientInfo
 {
 	public name: string;
 
-	constructor ( name: string = "" )
+	constructor ( info )
 	{
-		this.name = name;
+		this.name = info.name;
 	}
 
 	toJSON (): object
