@@ -11,10 +11,8 @@ import Client from "../clients/Client";
 import ClientManager from "../clients/ClientManager";
 import PacketCommand from "../packets/PacketCommand";
 
-import { DEFAULT_MAX_CLIENTS } from "../clients/ClientManager";
 
-
-const DEFAULT_MAX_ROOMS = DEFAULT_MAX_CLIENTS;
+const DEFAULT_MAX_ROOMS = 100;
 
 class _RoomManager extends ObjectManager<Room>
 {
