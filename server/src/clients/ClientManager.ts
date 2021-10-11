@@ -8,12 +8,16 @@ import ObjectManager from "../misc/ObjectManager";
 
 
 const DEFAULT_MAX_CLIENTS = 1000;
-const ClientManager = new ObjectManager<Client> (DEFAULT_MAX_CLIENTS);
 
-ClientManager._create = function ( id: string, socket: WebSocket, info: ClientInfo ): Client
+class _ClientManager extends ObjectManager<Client>
 {
-	return new Client (id, socket, info);
-};
+	_create ( id: string, socket: WebSocket, info: ClientInfo ): Client
+	{
+		return new Client (id, socket, info);
+	}
+}
+
+const ClientManager = new _ClientManager (DEFAULT_MAX_CLIENTS);
 
 
 export default ClientManager;
