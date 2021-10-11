@@ -2,7 +2,9 @@
   "name": "farragomate-server",
   "version": "0.1.0",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "start": "ts-node src/main.ts"
+  },
   "author": "Ellie Fisher",
   "license": "MIT",
   "devDependencies": {
