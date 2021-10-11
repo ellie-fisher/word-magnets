@@ -7,7 +7,7 @@ import ClientInfo from "./ClientInfo";
 import ObjectManager from "../misc/ObjectManager";
 
 
-const DEFAULT_MAX_CLIENTS = 1000;
+const DEFAULT_MAX_CLIENTS = 300;
 
 class _ClientManager extends ObjectManager<Client>
 {
