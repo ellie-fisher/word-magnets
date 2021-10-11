@@ -16,7 +16,7 @@ const DEFAULT_MAX_ROOMS = 100;
 
 class _RoomManager extends ObjectManager<Room>
 {
-	_create ( id: string, info: RoomInfo, owner: Client ): Room
+	protected _create ( id: string, info: RoomInfo, owner: Client ): Room
 	{
 		return new Room (id, info, owner);
 	}

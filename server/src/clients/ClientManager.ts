@@ -11,7 +11,7 @@ const DEFAULT_MAX_CLIENTS = 1000;
 
 class _ClientManager extends ObjectManager<Client>
 {
-	_create ( id: string, socket: WebSocket, info: ClientInfo ): Client
+	protected _create ( id: string, socket: WebSocket, info: ClientInfo ): Client
 	{
 		return new Client (id, socket, info);
 	}

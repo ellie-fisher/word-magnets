@@ -78,7 +78,7 @@ class ObjectManager<T extends ObjectWithID>
 		return this._objects.size;
 	}
 
-	_create ( id: string, ...args: any[] ): T
+	protected _create ( id: string, ...args: any[] ): T
 	{
 		throw new Error ("ObjectManager::_create() - Unimplemented!");
 	}
