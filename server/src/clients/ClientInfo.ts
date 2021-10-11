@@ -6,6 +6,11 @@ class ClientInfo
 	{
 		this.name = name;
 	}
+
+	toJSON (): object
+	{
+		return { name: this.name };
+	}
 }
 
 
