@@ -4,9 +4,8 @@ import ClientManager from "./clients/ClientManager";
 import ClientNames from "./clients/ClientNames";
 
 import Packet from "./packets/Packet";
-import PacketCommand from "./packets/PacketCommand";
 import isValidPacket from "./packets/isValidPacket";
-import handlePacket from "./packets/handlers/handlePacket";
+import handlePacket from "./packets/handlePacket";
 
 import validateFields from "./validation/validateFields";
 import clientInfoFields from "./validation/fields/clientInfo";
@@ -80,18 +79,6 @@ const onSocketMessage = function ( this: any, message: any )
 		}
 
 		client.packets.sendErrorPacket (this, errorMessage);
-		return;
-	}
-
-	if ( client.info.name === "" && packet.command !== PacketCommand.RegisterInfo )
-	{
-		client.packets.sendRejectPacket (this, packet, "Please set your name first.");
-		return;
-	}
-
-	if ( packet.command === PacketCommand.RegisterInfo && client.roomID !== "" )
-	{
-		client.packets.sendRejectPacket (this, packet, "Cannot change name in a room.");
 		return;
 	}
 

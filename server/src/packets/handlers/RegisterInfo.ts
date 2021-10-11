@@ -1,13 +1,19 @@
-import Client from "../../../clients/Client";
-import ClientNames from "../../../clients/ClientNames";
-import Packet from "../../../packets/Packet";
+import Client from "../../clients/Client";
+import ClientNames from "../../clients/ClientNames";
+import Packet from "../../packets/Packet";
 
-import validateFields from "../../../validation/validateFields";
-import clientInfoFields from "../../../validation/fields/clientInfo";
+import validateFields from "../../validation/validateFields";
+import clientInfoFields from "../../validation/fields/clientInfo";
 
 
 const registerInfoHandler = ( packet: Packet, client: Client ) =>
 {
+	if ( client.roomID !== "" )
+	{
+		client.packets.sendRejectPacket (client.socket, packet, "Cannot change info while in a room.");
+		return;
+	}
+
 	const validation = validateFields (packet.body, clientInfoFields);
 
 	if ( validation.length > 0 )

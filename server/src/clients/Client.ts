@@ -17,7 +17,6 @@ class Client
 	public sentence: Sentence;
 	public vote: number;
 
-
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
 		// @ts-ignore
