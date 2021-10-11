@@ -47,19 +47,14 @@ window.onload = function ()
 
 	function sendPacket ()
 	{
-		let bodyStr = document.getElementById ("packet-body").value;
-
-		if ( bodyStr[bodyStr.length - 1] === "," )
-		{
-			bodyStr = bodyStr.substring (0, bodyStr.length - 1);
-		}
+		const bodyStr = document.getElementById ("packet-body").value;
 
 		const packet =
 		{
 			type: $packetType.selectedIndex,
 			command: $packetCommand.selectedIndex,
 			sequence: packetSequence++,
-			body: JSON.parse ("{" + bodyStr + "}"),
+			body: bodyStr ? JSON.parse (bodyStr) : {},
 		};
 
 		document.getElementById ("packet-sequence").value = packetSequence;
