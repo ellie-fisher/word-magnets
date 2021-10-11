@@ -13,18 +13,29 @@ import validateFields from "./validation/validateFields";
 import clientInfoFields from "./validation/fields/clientInfo";
 
 
+const CLOSE_SERVER_ERR = 1011;
+const CLOSE_TRY_AGAIN = 1013;
+
 const onNewConnection = function ( socket: any, request: any )
 {
+	if ( ClientManager.hasReachedMax () )
+	{
+		const { maxObjects } = ClientManager;
+
+		socket.close (
+			CLOSE_TRY_AGAIN,
+			`The server can only support up to ${maxObjects} connection${maxObjects != 1 ? "s" : ""}.`
+				+ " Please try again later."
+		);
+
+		return;
+	}
+
 	const client = ClientManager.create (socket, new ClientInfo ({ name: "" }));
 
 	if ( client === null )
 	{
-		socket.close (
-			ClientManager.hasReachedMax ()
-				? "Maximum player limit reached. Please try again later."
-				: "A major error has occurred. Please try again later."
-		);
-
+		socket.close (CLOSE_SERVER_ERR, "A major error has occurred. Please try again later.");
 		return;
 	}
 
