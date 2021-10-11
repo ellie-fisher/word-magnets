@@ -64,6 +64,28 @@ class _RoomManager extends ObjectManager<Room>
 
 		return RoomError.Ok;
 	}
+
+	leaveRoom ( client: Client )
+	{
+		const { roomID } = client;
+
+		if ( !this.has (roomID) )
+		{
+			return;
+		}
+
+		const room = this.get (roomID);
+
+		if ( room.clients.isOwner (client) )
+		{
+			this.remove (roomID);
+		}
+		else
+		{
+			room.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
+			room.clients.removeClient (client.id);
+		}
+	}
 }
 
 const RoomManager = new _RoomManager (DEFAULT_MAX_ROOMS);
