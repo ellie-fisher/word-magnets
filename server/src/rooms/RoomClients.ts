@@ -19,8 +19,6 @@ class RoomClients
 		this.ownerID = owner.id;
 		this._clients = new Map ();
 		this._nameCache = new Map ();
-
-		this.addClient (owner);
 	}
 
 	refreshNameCache ()
