@@ -18,25 +18,25 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			return [key, "Missing required field"];
 		}
 
-		const field: any = fields[key];
+		const value: any = fields[key];
 
 		switch ( type )
 		{
 			case "string":
 			{
-				if ( field.length < min )
+				if ( value.length < min )
 				{
 					return [key, `Must be at least ${min} character(s)`];
 				}
 
-				if ( field.length > max )
+				if ( value.length > max )
 				{
 					return [key, `Cannot be more than ${max} character(s)`];
 				}
 
-				if ( typeof field !== "string" )
+				if ( typeof value !== "string" )
 				{
-					return [key, `Expected type \`${type}\`, got \`${typeof field}\``];
+					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
 				}
 
 				break;
@@ -45,21 +45,21 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			case "number":
 			case "integer":
 			{
-				if ( field < min )
+				if ( value < min )
 				{
 					return [key, `Must be at least ${min}`];
 				}
 
-				if ( field > max )
+				if ( value > max )
 				{
 					return [key, `Cannot be more than ${max}`];
 				}
 
-				if ( (type === "integer" && !Number.isInteger (field))
-					|| typeof field !== "number"
-					|| isNaN (field) )
+				if ( (type === "integer" && !Number.isInteger (value))
+					|| typeof value !== "number"
+					|| isNaN (value) )
 				{
-					return [key, `Expected type \`${type}\`, got \`${typeof field}\``];
+					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
 				}
 			}
 
