@@ -3,6 +3,8 @@ import ClientInfo from "./clients/ClientInfo";
 import ClientManager from "./clients/ClientManager";
 import ClientNames from "./clients/ClientNames";
 
+import RoomManager from "./rooms/RoomManager";
+
 import Packet from "./packets/Packet";
 import isValidPacket from "./packets/isValidPacket";
 import handlePacket from "./packets/handlePacket";
@@ -35,6 +37,11 @@ const onNewConnection = function ( socket: any, request: any )
 const onSocketClose = function ( this: any )
 {
 	const { fmClient } = this;
+
+	if ( fmClient.roomID !== "" )
+	{
+		RoomManager.leaveRoom (fmClient);
+	}
 
 	ClientManager.remove (fmClient.id);
 	ClientNames.removeClient (fmClient);
