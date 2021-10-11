@@ -1,6 +1,6 @@
+import Packet from "../../packets/Packet";
 import Client from "../../clients/Client";
 import ClientNames from "../../clients/ClientNames";
-import Packet from "../../packets/Packet";
 
 import validateFields from "../../validation/validateFields";
 import clientInfoFields from "../../validation/fields/clientInfo";

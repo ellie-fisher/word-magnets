@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 
-import Room from "../../rooms/Room";
+import Packet from "../../packets/Packet";
+import Client from "../../clients/Client";
+
 import RoomInfo from "../../rooms/RoomInfo";
 import RoomManager from "../../rooms/RoomManager";
-import Client from "../../clients/Client";
-import Packet from "../../packets/Packet";
 
 import validateFields from "../../validation/validateFields";
 import applyDefaults from "../../validation/applyDefaults";
