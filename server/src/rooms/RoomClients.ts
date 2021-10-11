@@ -118,6 +118,18 @@ class RoomClients
 		this._clients.forEach (callback);
 	}
 
+	toJSON ()
+	{
+		const clients = [];
+
+		this._clients.forEach (client =>
+		{
+			clients.push (client.id);
+		});
+
+		return clients;
+	}
+
 	get size (): number
 	{
 		return this._clients.size;
