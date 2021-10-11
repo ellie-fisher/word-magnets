@@ -111,9 +111,16 @@ function socketConnect ()
 		ws.send (JSON.stringify (packet));
 	};
 
-	ws.onclose = function ( ...args )
+	ws.onclose = function ( event )
 	{
-		addMessage ("(i) DISCONNECTED.");
+		if ( event.reason === "" )
+		{
+			addMessage ("(i) DISCONNECTED.");
+		}
+		else
+		{
+			addMessage ("(i) DISCONNECTED: \"" + event.reason + "\"");
+		}
 	};
 
 	ws.onmessage = function ( message )
@@ -121,9 +128,9 @@ function socketConnect ()
 		addMessage (message.data);
 	};
 
-	ws.onerror = function ( error )
+	ws.onerror = function ( event )
 	{
-		addMessage (`[!] ERROR: ${error}`);
+		addMessage (`[!] ERROR: ${event}`);
 	};
 
 	return ws;
