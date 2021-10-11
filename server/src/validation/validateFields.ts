@@ -14,8 +14,13 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 
 		const { type, min, max } = data;
 
-		if ( !has (fields, key) && !has (data, "defaultValue") )
+		if ( !has (fields, key) )
 		{
+			if ( has (data, "defaultValue") )
+			{
+				continue;
+			}
+
 			return [key, "Missing required field"];
 		}
 
@@ -25,6 +30,11 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 		{
 			case "string":
 			{
+				if ( typeof value !== "string" )
+				{
+					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+				}
+
 				if ( value.length < min )
 				{
 					return [key, `Must be at least ${min} character(s)`];
@@ -35,17 +45,19 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 					return [key, `Cannot be more than ${max} character(s)`];
 				}
 
-				if ( typeof value !== "string" )
-				{
-					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
-				}
-
 				break;
 			}
 
 			case "number":
 			case "integer":
 			{
+				if ( (type === "integer" && !Number.isInteger (value))
+					|| typeof value !== "number"
+					|| isNaN (value) )
+				{
+					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+				}
+
 				if ( value < min )
 				{
 					return [key, `Must be at least ${min}`];
@@ -54,13 +66,6 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 				if ( value > max )
 				{
 					return [key, `Cannot be more than ${max}`];
-				}
-
-				if ( (type === "integer" && !Number.isInteger (value))
-					|| typeof value !== "number"
-					|| isNaN (value) )
-				{
-					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
 				}
 
 				break;
