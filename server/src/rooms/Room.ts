@@ -1,5 +1,6 @@
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
+import RoomWordbanks from "../rooms/RoomWordbanks";
 
 import Client from "../clients/Client";
 import PacketCommand from "../packets/PacketCommand";
@@ -10,12 +11,14 @@ class Room
 	public id: string;
 	public info: RoomInfo;
 	public clients: RoomClients;
+	public wordbanks: RoomWordbanks;
 
 	constructor ( id: string, info: RoomInfo, owner: Client )
 	{
 		this.id = id;
 		this.info = info;
 		this.clients = new RoomClients (id, owner);
+		this.wordbanks = new RoomWordbanks ();
 	}
 
 	/**
