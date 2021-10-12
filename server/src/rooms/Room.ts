@@ -13,12 +13,22 @@ class Room
 	public clients: RoomClients;
 	public wordbanks: RoomWordbanks;
 
-	constructor ( id: string, info: RoomInfo, owner: Client )
+	protected _onDestroy: Function;
+
+	constructor ( id: string, info: RoomInfo, owner: Client, onDestroy: Function = () => {} )
 	{
 		this.id = id;
 		this.info = info;
 		this.clients = new RoomClients (id, owner);
+		this._onDestroy = onDestroy;
 		this.wordbanks = new RoomWordbanks ();
+	}
+
+	destroy ( reason: string = "The room was closed." )
+	{
+		this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		this.clients.clearClients ();
+		this._onDestroy (this, reason);
 	}
 
 	/**

@@ -18,22 +18,10 @@ class _RoomManager extends ObjectManager<Room>
 {
 	protected _create ( id: string, info: RoomInfo, owner: Client ): Room
 	{
-		return new Room (id, info, owner);
-	}
-
-	remove ( id: string )
-	{
-		if ( !this.has (id) )
+		return new Room (id, info, owner, room =>
 		{
-			return;
-		}
-
-		const room = this.get (id);
-
-		room.sendDataPacket (PacketCommand.DestroyRoom);
-		room.clients.clearClients ();
-
-		super.remove (id);
+			this.remove (id);
+		});
 	}
 
 	joinRoom ( id: string, client: Client ): RoomError
@@ -78,7 +66,7 @@ class _RoomManager extends ObjectManager<Room>
 
 		if ( room.clients.isOwner (client) )
 		{
-			this.remove (roomID);
+			room.destroy ("The room was closed.");
 		}
 		else
 		{
