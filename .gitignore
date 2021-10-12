@@ -46,3 +46,6 @@ yarn.lock
 
 # VSCode files
 .vs
+
+# Config files
+apiKey.ts
