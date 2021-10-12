@@ -31,26 +31,7 @@ class _RoomManager extends ObjectManager<Room>
 			return RoomError.NotFound;
 		}
 
-		if ( client.roomID !== "" )
-		{
-			return RoomError.InRoom;
-		}
-
-		const room = this.get (id);
-
-		if ( room.isFull () )
-		{
-			return RoomError.Full;
-		}
-
-		if ( room.clients.addClient (client) )
-		{
-			room.sendDataPacket (PacketCommand.JoinRoom, client.id);
-			room.sendInfo (client);
-			room.sendClientList (client);
-		}
-
-		return RoomError.Ok;
+		return this.get (id).join (client);
 	}
 
 	leaveRoom ( client: Client )
@@ -62,17 +43,7 @@ class _RoomManager extends ObjectManager<Room>
 			return;
 		}
 
-		const room = this.get (roomID);
-
-		if ( room.clients.isOwner (client) )
-		{
-			room.destroy ("The room was closed.");
-		}
-		else
-		{
-			room.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
-			room.clients.removeClient (client.id);
-		}
+		this.get (roomID).leave (client);
 	}
 }
 

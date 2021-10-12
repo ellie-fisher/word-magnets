@@ -1,6 +1,7 @@
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
-import RoomWordbanks from "../rooms/RoomWordbanks";
+import RoomWordbanks from "./RoomWordbanks";
+import RoomError from "./RoomError";
 
 import Client from "../clients/Client";
 import PacketCommand from "../packets/PacketCommand";
@@ -29,6 +30,41 @@ class Room
 		this.sendDataPacket (PacketCommand.DestroyRoom, reason);
 		this.clients.clearClients ();
 		this._onDestroy (this, reason);
+	}
+
+	join ( client: Client ): RoomError
+	{
+		if ( client.roomID !== "" )
+		{
+			return RoomError.InRoom;
+		}
+
+		if ( this.isFull () )
+		{
+			return RoomError.Full;
+		}
+
+		if ( this.clients.addClient (client) )
+		{
+			this.sendDataPacket (PacketCommand.JoinRoom, client.id);
+			this.sendInfo (client);
+			this.sendClientList (client);
+		}
+
+		return RoomError.Ok;
+	}
+
+	leave ( client: Client )
+	{
+		if ( this.clients.isOwner (client) )
+		{
+			this.destroy ("The room was closed.");
+		}
+		else
+		{
+			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
+			this.clients.removeClient (client.id);
+		}
 	}
 
 	/**
