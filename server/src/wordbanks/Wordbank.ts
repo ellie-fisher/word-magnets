@@ -1,3 +1,10 @@
+import got from "got";
+
+import objectToURL from "../../../common/src/util/objectToURL";
+import apiRequest from "../config/api/apiRequest";
+import apiKey from "../config/api/apiKey";
+
+
 class Wordbank
 {
 	public displayName: string;
@@ -24,6 +31,24 @@ class Wordbank
 	isValidWord ( index: number ): boolean
 	{
 		return Number.isInteger (index) && index >= 0 && index < this._words.length;
+	}
+
+	async fetchWords ( maxRetries: number = 2, timeout: number = 5000 )
+	{
+		if ( this.isFixed )
+		{
+			return;
+		}
+
+		const url = objectToURL (apiRequest,
+		{
+			includePartOfSpeech: this.partsOfSpeech,
+			api_key: apiKey,
+		});
+
+		const words: any[] = await got (url, { retry: maxRetries, timeout }).json ();
+
+		this._words = words.map (data => data.word);
 	}
 
 	/**
