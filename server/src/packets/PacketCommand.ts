@@ -24,6 +24,7 @@ enum PacketCommand
 	ClientList,
 	RoomList,
 
+	Wordbanks,
 	SendSentence,
 	SentenceList,
 

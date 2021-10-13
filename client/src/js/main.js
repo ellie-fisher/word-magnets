@@ -26,6 +26,7 @@ const commands =
 	"ClientList",
 	"RoomList",
 
+	"Wordbanks",
 	"SendSentence",
 	"SentenceList",
 
