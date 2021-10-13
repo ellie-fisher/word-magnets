@@ -16,7 +16,12 @@ class PacketManager
 
 	sendPacket ( socket: WebSocket, packet: Packet )
 	{
-		socket.send (JSON.stringify (packet.toJSON ()));
+		const json: any = packet.toJSON ();
+
+		// FIXME: Remove
+		json.command = PacketCommand[json.command];
+
+		socket.send (JSON.stringify (json));
 	}
 
 	sendDataPacket ( socket: WebSocket, command: PacketCommand, body: any = "" )
