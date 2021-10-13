@@ -60,6 +60,11 @@ class Wordbank
 		// TODO: Filter words with to-be-created rules.
 	}
 
+	toJSON ()
+	{
+		return { displayName: this.displayName, words: this._words.slice () };
+	}
+
 	get isFixed ()
 	{
 		return this.partsOfSpeech.length <= 0;

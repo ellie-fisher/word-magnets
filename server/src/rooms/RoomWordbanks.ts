@@ -35,6 +35,11 @@ class RoomWordbanks
 	{
 		return Number.isInteger (index) && index >= 0 && index < this._wordbanks.length;
 	}
+
+	toJSON ()
+	{
+		return this._wordbanks.map (wordbank => wordbank.toJSON ());
+	}
 }
 
 
