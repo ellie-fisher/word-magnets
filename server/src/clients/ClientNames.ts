@@ -13,6 +13,7 @@ ClientNames.removeClient = function ( client: Client )
 	this.delete (client.info.name);
 };
 
+// TODO: Add checks for similar-looking characters to prevent impersonation.
 ClientNames.isDuplicateName = function ( name: string, client: Client ): boolean
 {
 	return this.has (name) && this.get (name) !== client;
