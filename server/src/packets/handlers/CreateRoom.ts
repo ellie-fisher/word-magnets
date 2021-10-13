@@ -41,6 +41,8 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 
 	RoomManager.joinRoom (room.id, client);
 	client.packets.sendAcceptPacket (client.socket, packet, room.id);
+
+	room.startPhase ();
 };
 
 

@@ -1,3 +1,5 @@
+import { RequestError, TimeoutError } from "got";
+
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
 import RoomWordbanks from "./RoomWordbanks";
@@ -6,15 +8,21 @@ import RoomError from "./RoomError";
 import Client from "../clients/Client";
 import PacketCommand from "../packets/PacketCommand";
 
+import RoomPhase from "./phases/RoomPhase";
+import CreatePhase from "./phases/CreatePhase";
+import RoomPhaseType from "./phases/RoomPhaseType";
+
 
 class Room
 {
 	public id: string;
 	public info: RoomInfo;
 	public clients: RoomClients;
+	public phase: RoomPhase;
 	public wordbanks: RoomWordbanks;
 
 	protected _onDestroy: Function;
+	protected _phases: Map<RoomPhaseType, RoomPhase>;
 
 	constructor ( id: string, info: RoomInfo, owner: Client, onDestroy: Function = () => {} )
 	{
@@ -23,6 +31,13 @@ class Room
 		this.clients = new RoomClients (id, owner);
 		this._onDestroy = onDestroy;
 		this.wordbanks = new RoomWordbanks ();
+
+		this._phases = new Map (
+		[
+			[RoomPhaseType.Create, new CreatePhase (info.timeLimit)],
+		]);
+
+		this.phase = this._phases.get (RoomPhaseType.Create);
 	}
 
 	destroy ( reason: string = "The room was closed." )
@@ -64,6 +79,40 @@ class Room
 		{
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
+		}
+	}
+
+	nextPhase ()
+	{
+		switch ( this.phase.type )
+		{
+			case RoomPhaseType.Create:
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	async startPhase ()
+	{
+		try
+		{
+			await this.phase.start (this.info, this.clients, this.wordbanks, () =>
+			{
+				console.log ("TIMER DONE!");
+			});
+		}
+		catch ( error )
+		{
+			console.error ("onPreStart() -", error);
+
+			this.destroy (error instanceof RequestError || error instanceof TimeoutError
+				? "An API error occurred."
+				: "An internal server error occurred."
+			);
+
+			return;
 		}
 	}
 
