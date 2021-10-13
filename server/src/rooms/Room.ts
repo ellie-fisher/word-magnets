@@ -64,6 +64,11 @@ class Room
 			this.sendDataPacket (PacketCommand.JoinRoom, client.id);
 			this.sendInfo (client);
 			this.sendClientList (client);
+
+			if ( this.phase.type === RoomPhaseType.Create )
+			{
+				this.sendWordbanks (client);
+			}
 		}
 
 		return RoomError.Ok;
@@ -147,6 +152,18 @@ class Room
 		else
 		{
 			client.packets.sendDataPacket (client.socket, PacketCommand.ClientList, this.clients.toJSON ());
+		}
+	}
+
+	sendWordbanks ( client?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this.sendDataPacket (PacketCommand.Wordbanks, this.wordbanks.toJSON ());
+		}
+		else
+		{
+			client.packets.sendDataPacket (client.socket, PacketCommand.Wordbanks, this.wordbanks.toJSON ());
 		}
 	}
 
