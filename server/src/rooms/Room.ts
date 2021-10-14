@@ -46,7 +46,9 @@ class Room
 	destroy ( reason: string = "The room was closed." )
 	{
 		this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		this.clients.forEach (client => client.onLeaveRoom ());
 		this.clients.clearClients ();
+
 		this._onDestroy (this, reason);
 	}
 
@@ -87,9 +89,8 @@ class Room
 		{
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
+			client.onLeaveRoom ();
 		}
-
-		client.onLeaveRoom ();
 	}
 
 	nextPhase ()
