@@ -16,35 +16,53 @@
 		{
 			font-size: 1vw;
 		}
+
+		input[type=text]
+		{
+			font-family: Helvetica, Arial, sans-serif;
+			font-size: 1vw;
+		}
 	</style>
 
 	<title>Farragomate</title>
 </head>
 <body>
-	<p><h3>Packet Builder</h3></p>
+	<div id="sentence-creation" style="float:right;">
+		<div id="wordbanks">
+		</div>
 
-	<p>
-		<label>Type:</label>
-		<select id="packet-type" autocomplete="off"></select>
-	</p>
+		<p>
+			<label>Sentence:</label>
+			<input id="sentence" type="text" size="100" autocomplete="off">
+		</p>
+	</div>
 
-	<p>
-		<label>Command:</label>
-		<select id="packet-command" autocomplete="off"></select>
-	</p>
+	<div id="packet-builder">
+		<p><h3>Packet Builder</h3></p>
 
-	<p>
-		<label>Sequence:</label>
-		<input id="packet-sequence" type="number" autocomplete="off" value="0">
-	</p>
+		<p>
+			<label>Type:</label>
+			<select id="packet-type" autocomplete="off"></select>
+		</p>
 
-	<p>
-		<label>Body:</label>
-		<textarea id="packet-body" autocomplete="off" cols="100" rows="20"></textarea>
-	</p>
+		<p>
+			<label>Command:</label>
+			<select id="packet-command" autocomplete="off"></select>
+		</p>
 
-	<p><button id="packet-send">Send</button></p>
+		<p>
+			<label>Sequence:</label>
+			<input id="packet-sequence" type="number" autocomplete="off" value="0">
+		</p>
 
-	<pre id="socket-messages"></pre>
+		<p>
+			<label>Body:</label>
+			<textarea id="packet-body" autocomplete="off" cols="100" rows="20"></textarea>
+		</p>
+
+		<p><button id="packet-send">Send</button></p>
+
+		<pre id="socket-messages"></pre>
+	</div>
 </body>
 </html>

@@ -44,9 +44,10 @@ window.onload = function ()
 	const $packetSequence = document.getElementById ("packet-sequence");
 	const $packetBody = document.getElementById ("packet-body");
 	const $packetSend = document.getElementById ("packet-send");
+	const $wordbanks = document.getElementById ("wordbanks");
+	const $sentence = document.getElementById ("sentence");
 
 	$packetSend.onclick = sendPacket;
-
 
 	function sendPacket ()
 	{
@@ -93,6 +94,9 @@ function addMessage ( message )
 
 function socketConnect ()
 {
+	const $wordbanks = document.getElementById ("wordbanks");
+	const $sentence = document.getElementById ("sentence");
+
 	const ws = new WebSocket ("ws://localhost:8080");
 
 	ws.onopen = function ( ...args )
@@ -104,7 +108,7 @@ function socketConnect ()
 			type: types.indexOf ("Request"),
 			command: commands.indexOf ("RegisterInfo"),
 			sequence: packetSequence++,
-			body: { name: String (Math.random ()) },
+			body: { name: "-" },
 		};
 
 		document.getElementById ("packet-sequence").value = packetSequence;
@@ -127,6 +131,45 @@ function socketConnect ()
 	ws.onmessage = function ( message )
 	{
 		addMessage (message.data);
+
+		const packet = JSON.parse (message.data);
+
+		if ( packet.command === "Wordbanks" )
+		{
+			$wordbanks.innerHTML = "";
+			$sentence.value = "";
+
+			packet.body.forEach (( wordbank, bankIndex ) =>
+			{
+				const $wordbank = document.createElement ("span");
+				const $title = document.createElement ("h3");
+				const $words = document.createElement ("span");
+
+				$title.innerText = wordbank.displayName;
+				$wordbank.appendChild ($title);
+
+				wordbank.words.forEach (( word, wordIndex ) =>
+				{
+					$button = document.createElement ("button");
+					$button.innerText = word;
+
+					$button.onclick = () =>
+					{
+						if ( $sentence.value.length > 0 )
+						{
+							$sentence.value += ",";
+						}
+
+						$sentence.value += JSON.stringify ({ wordbank: bankIndex, word: wordIndex });
+					};
+
+					$words.appendChild ($button);
+				});
+
+				$wordbank.appendChild ($words);
+				$wordbanks.appendChild ($wordbank);
+			});
+		}
 	};
 
 	ws.onerror = function ( event )
