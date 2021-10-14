@@ -5,8 +5,9 @@ import RoomClients from "./RoomClients";
 import RoomWordbanks from "./RoomWordbanks";
 import RoomError from "./RoomError";
 
-import Client from "../clients/Client";
+import Packet from "../packets/Packet";
 import PacketCommand from "../packets/PacketCommand";
+import Client from "../clients/Client";
 
 import RoomPhase from "./phases/RoomPhase";
 import CreatePhase from "./phases/CreatePhase";
@@ -34,7 +35,7 @@ class Room
 
 		this._phases = new Map (
 		[
-			[RoomPhaseType.Create, new CreatePhase (info.timeLimit)],
+			[RoomPhaseType.Create, new CreatePhase (this.info, this.clients, this.wordbanks)],
 		]);
 
 		this.phase = this._phases.get (RoomPhaseType.Create);
@@ -103,7 +104,7 @@ class Room
 	{
 		try
 		{
-			await this.phase.start (this.info, this.clients, this.wordbanks, () =>
+			await this.phase.start (() =>
 			{
 				console.log ("TIMER DONE!");
 			});

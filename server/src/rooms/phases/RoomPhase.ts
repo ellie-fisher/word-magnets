@@ -16,41 +16,49 @@ class RoomPhase
 	protected _timeLeft: number;
 	protected _timeout;
 
-	constructor ()
+	protected _info: RoomInfo;
+	protected _clients: RoomClients;
+	protected _wordbanks: RoomWordbanks;
+
+	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
 	{
+		this._info = info;
+		this._clients = clients;
+		this._wordbanks = wordbanks;
+
 		this.startTime = 0;
 		this._timeLeft = 0;
 		this._timeout = -1;
 	}
 
-	async start ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks, onEnd: Function )
+	async start ( onEnd: Function )
 	{
-		await this._onPreStart (info, clients, wordbanks);
+		await this._onPreStart ();
 
-		clients.sendDataPacket (PacketCommand.StartPhase, this._type);
+		this._clients.sendDataPacket (PacketCommand.StartPhase, this._type);
 
 		this._timeLeft = this.startTime;
-		this._tick (info, clients, wordbanks, onEnd);
+		this._tick (onEnd);
 	}
 
-	protected _tick ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks, onEnd: Function )
+	protected _tick ( onEnd: Function )
 	{
-		clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._timeLeft });
+		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._timeLeft });
 
 		if ( this._timeLeft <= 0 )
 		{
-			this._onEnd (info, clients, wordbanks, onEnd);
+			this._onEnd (onEnd);
 		}
 		else
 		{
 			this._timeLeft--;
-			this._timeout = setTimeout (() => this._tick (info, clients, wordbanks, onEnd), 1000);
+			this._timeout = setTimeout (() => this._tick (onEnd), 1000);
 		}
 	}
 
-	protected async _onEnd ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks, onEnd: Function )
+	protected async _onEnd ( onEnd: Function )
 	{
-		clients.sendDataPacket (PacketCommand.EndPhase, this._type);
+		this._clients.sendDataPacket (PacketCommand.EndPhase, this._type);
 	}
 
 	get type (): RoomPhaseType
@@ -60,7 +68,7 @@ class RoomPhase
 
 	receivePacket ( packet: Packet, client: Client ) {}
 
-	protected async _onPreStart ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks ) {}
+	protected async _onPreStart () {}
 }
 
 

@@ -13,19 +13,19 @@ const ON_END_WAIT_TIME = 5000;
 
 class CreatePhase extends RoomPhase
 {
-	constructor ( startTime: number )
+	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
 	{
-		super ();
-		this.startTime = startTime;
+		super (info, clients, wordbanks);
+		this.startTime = info.timeLimit;
 		this._type = RoomPhaseType.Create;
 	}
 
-	async _onPreStart ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
+	async _onPreStart ()
 	{
-		await wordbanks.fetchWords ();
+		await this._wordbanks.fetchWords ();
 
 		// TODO: Filter words
-		clients.sendDataPacket (PacketCommand.Wordbanks, wordbanks.toJSON ());
+		this._clients.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -45,12 +45,14 @@ class CreatePhase extends RoomPhase
 		//     Send reject packet
 	}
 
-	async _onEnd ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks, onEnd: Function )
+	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (info, clients, wordbanks, onEnd);
+		super._onEnd (onEnd);
 		setTimeout (onEnd, ON_END_WAIT_TIME);
 	}
 }
 
 
 export default CreatePhase;
+
+export { ON_END_WAIT_TIME };
