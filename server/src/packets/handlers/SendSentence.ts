@@ -1,0 +1,26 @@
+import Packet from "../../packets/Packet";
+import Client from "../../clients/Client";
+
+import RoomManager from "../../rooms/RoomManager";
+
+
+const sendSentenceHandler = ( packet: Packet, client: Client ) =>
+{
+	if ( client.roomID === "" )
+	{
+		client.packets.sendRejectPacket (client.socket, packet, "You are not in a room.");
+		return;
+	}
+
+	const room = RoomManager.get (client.roomID);
+
+	if ( room === null )
+	{
+		throw new Error (`Client's room \`${client.roomID}\` does not exist!`);
+	}
+
+	room.receivePacket (packet, client);
+};
+
+
+export default sendSentenceHandler;
