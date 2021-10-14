@@ -86,6 +86,8 @@ class Room
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
 		}
+
+		client.onLeaveRoom ();
 	}
 
 	nextPhase ()
