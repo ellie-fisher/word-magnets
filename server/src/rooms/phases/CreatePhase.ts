@@ -22,6 +22,11 @@ class CreatePhase extends RoomPhase
 
 	async _onPreStart ()
 	{
+		this._clients.forEach (client =>
+		{
+			client.clearSentence ();
+		});
+
 		await this._wordbanks.fetchWords ();
 
 		// TODO: Filter words
@@ -30,19 +35,28 @@ class CreatePhase extends RoomPhase
 
 	receivePacket ( packet: Packet, client: Client )
 	{
-		// TODO:
-		// If packet.command is `SendSentence`:
-		//     If player has already sent a sentence:
-		//         Send reject packet
-		//     Else:
-		//         Validate sentence
-		//         If valid sentence:
-		//             Set client's sentence
-		//             Send accept packet
-		//         Else:
-		//             Send reject packet
-		// Else:
-		//     Send reject packet
+		if ( packet.command !== PacketCommand.SendSentence )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+			return;
+		}
+
+		if ( client.sentence.value.length > 0 )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "You already sent a sentence.");
+			return;
+		}
+
+		const validation = this._wordbanks.validateSentence (packet.body, this._clients);
+
+		if ( !validation[0] )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, validation[1]);
+			return;
+		}
+
+		client.sentence = { value: validation[1], votes: 0 };
+		client.packets.sendAcceptPacket (client.socket, packet, validation[1]);
 	}
 
 	async _onEnd ( onEnd: Function )

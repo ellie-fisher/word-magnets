@@ -124,6 +124,11 @@ class Room
 		}
 	}
 
+	receivePacket ( packet: Packet, client: Client )
+	{
+		this.phase.receivePacket (packet, client);
+	}
+
 	/**
 	 * @param {PacketCommand} command
 	 * @param {any} [body=""]
