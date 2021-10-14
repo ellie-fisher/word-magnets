@@ -1,7 +1,16 @@
 import Wordbank from "../wordbanks/Wordbank";
+import RoomClients from "./RoomClients";
+
+import has from "../../../common/src/util/has";
+import wordsToString from "../../../common/src/util/wordsToString";
 
 import fixedWords from "../config/fixedWords";
 
+import { SentenceWord } from "../wordbanks/Sentence";
+
+
+const MIN_SENTENCE_LEN = 1
+const MAX_SENTENCE_LEN = 10;
 
 class RoomWordbanks
 {
@@ -26,6 +35,63 @@ class RoomWordbanks
 		await Promise.all (this._wordbanks.map (wordbank => wordbank.fetchWords (maxRetries, timeout)));
 	}
 
+	validateSentence ( sentence: SentenceWord[], clients: RoomClients ): any[]
+	{
+		const { length } = sentence;
+
+		if ( length > MAX_SENTENCE_LEN )
+		{
+			return [false, `Sentence cannot be longer than ${MAX_SENTENCE_LEN} character(s).`];
+		}
+
+		const words = [];
+
+		for ( let i = 0; i < length; i++ )
+		{
+			const sentenceWord = sentence[i];
+
+			if ( sentenceWord.isName )
+			{
+				if ( !clients.hasName (sentenceWord.word as string) )
+				{
+					return [false, ["Client does not exist or was never in the room.", i]];
+				}
+
+				words.push (clients.getClient (sentenceWord.word as string).info.name);
+			}
+			else
+			{
+				if ( !this.isValidWordbank (sentenceWord.wordbank) )
+				{
+					return [false, ["Invalid wordbank.", i]];
+				}
+
+				const wordbank = this.getWordbank (sentenceWord.wordbank);
+
+				if ( !wordbank.isValidWord (sentenceWord.word as number) )
+				{
+					return [false, ["Invalid word.", i]];
+				}
+
+				words.push (wordbank.getWord (sentenceWord.word as number));
+			}
+		}
+
+		const sentenceString = wordsToString (words);
+
+		if ( sentenceString.length < MIN_SENTENCE_LEN )
+		{
+			return [false, `Sentence must be at least ${MIN_SENTENCE_LEN} character(s).`];
+		}
+
+		if ( sentenceString.length > MAX_SENTENCE_LEN )
+		{
+			return [false, `Sentence cannot be longer than ${MAX_SENTENCE_LEN} character(s).`];
+		}
+
+		return [true, sentenceString];
+	}
+
 	getWordbank ( index: number ): Wordbank | null
 	{
 		return this.isValidWordbank (index) ? this._wordbanks[index] : null;
@@ -44,3 +110,5 @@ class RoomWordbanks
 
 
 export default RoomWordbanks;
+
+export { MIN_SENTENCE_LEN, MAX_SENTENCE_LEN };
