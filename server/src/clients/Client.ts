@@ -28,15 +28,21 @@ class Client
 		this.packets = new PacketManager ();
 		this.roomID = "";
 		this.score = 0;
-		this.sentence = { words: [], votes: 0 };
+		this.sentence = { value: "", votes: 0 };
 		this.vote = -1;
+	}
+
+	clearSentence ()
+	{
+		this.sentence.value = "";
+		this.sentence.votes = 0;
 	}
 
 	onLeaveRoom ()
 	{
+		this.clearSentence ();
 		this.roomID = "";
 		this.score = 0;
-		this.sentence = { words: [], votes: 0 };
 		this.vote = -1;
 	}
 

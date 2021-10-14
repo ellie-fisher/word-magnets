@@ -1,16 +1,15 @@
 interface SentenceWord
 {
 	wordbank?: number,
-	word: number,
+	word: number | string,
 	isName: boolean,
 }
 
 interface Sentence
 {
-	words: SentenceWord[],
+	value: string,
 	votes: number,
 }
-
 
 export default Sentence;
 
