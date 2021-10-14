@@ -31,6 +31,11 @@ class RoomClients
 		});
 	}
 
+	hasName ( id: string ): boolean
+	{
+		return this._nameCache.has (id);
+	}
+
 	addClient ( client: Client ): boolean
 	{
 		const notInRoom = client.roomID === "";
@@ -111,7 +116,7 @@ class RoomClients
 		});
 	}
 
-	forEach ( callback )
+	forEach ( callback: (client: Client) => any )
 	{
 		this._clients.forEach (callback);
 	}
