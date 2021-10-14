@@ -10,8 +10,9 @@ import PacketCommand from "../packets/PacketCommand";
 import Client from "../clients/Client";
 
 import RoomPhase from "./phases/RoomPhase";
-import CreatePhase from "./phases/CreatePhase";
 import RoomPhaseType from "./phases/RoomPhaseType";
+import CreatePhase from "./phases/CreatePhase";
+import VotePhase from "./phases/VotePhase";
 
 
 class Room
@@ -36,6 +37,7 @@ class Room
 		this._phases = new Map (
 		[
 			[RoomPhaseType.Create, new CreatePhase (this.info, this.clients, this.wordbanks)],
+			[RoomPhaseType.Vote, new VotePhase (this.info, this.clients, this.wordbanks)],
 		]);
 
 		this.phase = this._phases.get (RoomPhaseType.Create);
@@ -95,6 +97,7 @@ class Room
 		switch ( this.phase.type )
 		{
 			case RoomPhaseType.Create:
+				this.phase = this._phases.get (RoomPhaseType.Vote);
 				break;
 
 			default:
@@ -108,7 +111,8 @@ class Room
 		{
 			await this.phase.start (() =>
 			{
-				console.log ("TIMER DONE!");
+				this.nextPhase ();
+				this.startPhase ();
 			});
 		}
 		catch ( error )
