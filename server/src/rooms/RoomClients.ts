@@ -4,6 +4,8 @@ import Packet from "../packets/Packet";
 import PacketType from "../packets/PacketType";
 import PacketCommand from "../packets/PacketCommand";
 
+import shuffle from "../../../common/src/util/shuffle";
+
 
 class RoomClients
 {
@@ -34,6 +36,22 @@ class RoomClients
 	hasName ( id: string ): boolean
 	{
 		return this._nameCache.has (id);
+	}
+
+	/**
+	 * Assign a randomized, anonymous vote ID to each client so other players can't figure out
+	 * which sentence is whose.
+	 */
+	assignVoteIDs (): Client[]
+	{
+		const clients = [];
+		this.forEach (client => clients.push (client));
+
+		shuffle (clients);
+
+		clients.forEach (( client, index ) => client.voteID = index);
+
+		return clients;
 	}
 
 	addClient ( client: Client ): boolean
@@ -116,7 +134,7 @@ class RoomClients
 		});
 	}
 
-	forEach ( callback: (client: Client) => any )
+	forEach ( callback )
 	{
 		this._clients.forEach (callback);
 	}

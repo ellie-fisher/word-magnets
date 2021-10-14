@@ -16,6 +16,7 @@ class Client
 	public score: number;
 	public sentence: Sentence;
 	public vote: number;
+	public voteID: number;
 
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
@@ -30,6 +31,7 @@ class Client
 		this.score = 0;
 		this.sentence = { value: "", votes: 0 };
 		this.vote = -1;
+		this.voteID = -1;  // A random, anonymous ID generated for voting.
 	}
 
 	clearSentence ()
