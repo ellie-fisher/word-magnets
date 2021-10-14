@@ -108,7 +108,7 @@ function socketConnect ()
 			type: types.indexOf ("Request"),
 			command: commands.indexOf ("RegisterInfo"),
 			sequence: packetSequence++,
-			body: { name: "-" },
+			body: { name: Math.random () + "-" },
 		};
 
 		document.getElementById ("packet-sequence").value = packetSequence;
