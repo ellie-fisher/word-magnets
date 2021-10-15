@@ -4,7 +4,8 @@ import Client from "../../clients/Client";
 import RoomManager from "../../rooms/RoomManager";
 
 
-const sendSentenceHandler = ( packet: Packet, client: Client ) =>
+// For phase-specific commands like `SendSentence`, `CastVote`, etc.
+const phaseSpecificHandler = ( packet: Packet, client: Client ) =>
 {
 	if ( client.roomID === "" )
 	{
@@ -23,4 +24,4 @@ const sendSentenceHandler = ( packet: Packet, client: Client ) =>
 };
 
 
-export default sendSentenceHandler;
+export default phaseSpecificHandler;
