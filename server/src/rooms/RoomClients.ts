@@ -48,7 +48,7 @@ class RoomClients
 	{
 		this._voteClients = [];
 
-		this.forEach (client =>
+		this.forEach (( client: Client ) =>
 		{
 			if ( client.sentence.value !== "" )
 			{
@@ -74,6 +74,22 @@ class RoomClients
 	isValidVoteID ( voteID: number ): boolean
 	{
 		return Number.isInteger (voteID) && voteID >= 0 && voteID < this._voteClients.length;
+	}
+
+	tallyVotes ()
+	{
+		this.forEach (( client: Client ) =>
+		{
+			const voteID = client.vote;
+
+			if ( this.isValidVoteID (voteID) && this._voteClients[voteID] !== client )
+			{
+				const voteClient = this._voteClients[voteID];
+
+				voteClient.sentence.votes++;
+				voteClient.score++;
+			}
+		});
 	}
 
 	addClient ( client: Client ): boolean
