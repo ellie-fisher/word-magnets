@@ -29,6 +29,7 @@ enum PacketCommand
 	SentenceList,
 
 	CastVote,
+	SentenceScores,
 }
 
 
