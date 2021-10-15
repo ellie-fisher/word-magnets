@@ -10,7 +10,7 @@ import { SentenceWord } from "../wordbanks/Sentence";
 
 
 const MIN_SENTENCE_LEN = 1
-const MAX_SENTENCE_LEN = 10;
+const MAX_SENTENCE_LEN = 120;
 
 class RoomWordbanks
 {
