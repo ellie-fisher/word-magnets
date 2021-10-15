@@ -9,7 +9,7 @@ import Packet from "../../packets/Packet";
 import PacketCommand from "../../packets/PacketCommand";
 
 
-const ON_END_WAIT_TIME = 5000;
+const CREATE_ON_END_WAIT = 5000;
 
 class CreatePhase extends RoomPhase
 {
@@ -27,9 +27,11 @@ class CreatePhase extends RoomPhase
 			client.clearSentence ();
 		});
 
+		// TODO: Filter words
 		await this._wordbanks.fetchWords ();
 
-		// TODO: Filter words
+		this._clients.onNewRound ();
+		this._clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
 		this._clients.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
 	}
 
@@ -56,17 +58,18 @@ class CreatePhase extends RoomPhase
 		}
 
 		client.sentence = { value: validation[1], votes: 0 };
+		// FIXME: Remove `validation[1]` since it's just for debug purposes.
 		client.packets.sendAcceptPacket (client.socket, packet, validation[1]);
 	}
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);
-		setTimeout (onEnd, ON_END_WAIT_TIME);
+		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		setTimeout (onEnd, CREATE_ON_END_WAIT);
 	}
 }
 
 
 export default CreatePhase;
 
-export { ON_END_WAIT_TIME };
+export { CREATE_ON_END_WAIT };
