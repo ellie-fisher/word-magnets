@@ -13,6 +13,8 @@ import RoomPhase from "./phases/RoomPhase";
 import RoomPhaseType from "./phases/RoomPhaseType";
 import CreatePhase from "./phases/CreatePhase";
 import VotePhase from "./phases/VotePhase";
+import ResultsPhase from "./phases/ResultsPhase";
+import GameEndPhase from "./phases/GameEndPhase";
 
 
 class Room
@@ -38,6 +40,8 @@ class Room
 		[
 			[RoomPhaseType.Create, new CreatePhase (this.info, this.clients, this.wordbanks)],
 			[RoomPhaseType.Vote, new VotePhase (this.info, this.clients, this.wordbanks)],
+			[RoomPhaseType.Results, new ResultsPhase (this.info, this.clients, this.wordbanks)],
+			[RoomPhaseType.GameEnd, new GameEndPhase (this.info, this.clients, this.wordbanks)],
 		]);
 
 		this.phase = this._phases.get (RoomPhaseType.Create);
@@ -98,11 +102,41 @@ class Room
 		switch ( this.phase.type )
 		{
 			case RoomPhaseType.Create:
+			{
 				this.phase = this._phases.get (RoomPhaseType.Vote);
 				break;
+			}
+
+			case RoomPhaseType.Vote:
+			{
+				this.phase = this._phases.get (RoomPhaseType.Results);
+				break;
+			}
+
+			case RoomPhaseType.Results:
+			{
+				if ( this.info.currentRound < this.info.maxRounds )
+				{
+					this.phase = this._phases.get (RoomPhaseType.Create);
+				}
+				else
+				{
+					this.phase = this._phases.get (RoomPhaseType.GameEnd);
+				}
+
+				break;
+			}
+
+			case RoomPhaseType.GameEnd:
+			{
+				this._phases.get (RoomPhaseType.GameEnd);
+				break;
+			}
 
 			default:
+			{
 				break;
+			}
 		}
 	}
 
