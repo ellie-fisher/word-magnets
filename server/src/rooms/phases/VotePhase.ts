@@ -22,46 +22,54 @@ class VotePhase extends RoomPhase
 	async _onPreStart ()
 	{
 		const clients = this._clients.assignVoteIDs ();
-		const sentences = [];
 
-		const { length } = clients;
-
-		for ( let i = 0; i < length; i++ )
+		// Send all sentences but the player's own.
+		this._clients.forEach (recipient =>
 		{
-			const sentence = clients[i].sentence.value;
+			const sentences = [];
 
-			if ( sentence !== "" )
+			clients.forEach (( sentenceClient, voteID ) =>
 			{
-				sentences.push ([i, sentence]);
-			}
-		}
+				if ( recipient !== sentenceClient && sentenceClient.sentence.value !== "" )
+				{
+					sentences.push ([sentenceClient.sentence.value, voteID]);
+				}
+			});
 
-		this._clients.forEach (client =>
-		{
-			// Send all sentences but the player's own.
-			client.packets.sendDataPacket (
-				client.socket,
-				PacketCommand.SentenceList,
-				sentences.filter (sentence => sentence[0] !== client.voteID),
-			);
+			recipient.packets.sendDataPacket (recipient.socket, PacketCommand.SentenceList, sentences);
 		});
 	}
 
 	receivePacket ( packet: Packet, client: Client )
 	{
-		// TODO:
-		// If packet.command is `CastVote`:
-		//     If player has already cast a vote:
-		//         Send reject packet
-		//     Else:
-		//         Validate vote
-		//         If valid vote:
-		//             Set client's vote
-		//             Send accept packet
-		//         Else:
-		//             Send reject packet
-		// Else:
-		//     Send reject packet
+		if ( packet.command !== PacketCommand.CastVote )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+			return;
+		}
+
+		if ( client.vote >= 0 )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "You already cast a vote.");
+			return;
+		}
+
+		const voteID = packet.body;
+
+		if ( !this._clients.isValidVoteID (voteID) )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "Invalid vote ID.");
+			return;
+		}
+
+		if ( this._clients.getVoteClient (voteID) === client )
+		{
+			client.packets.sendRejectPacket (client.socket, packet, "You cannot vote for your own sentence.");
+			return;
+		}
+
+		client.vote = voteID;
+		client.packets.sendAcceptPacket (client.socket, packet);
 	}
 
 	async _onEnd ()

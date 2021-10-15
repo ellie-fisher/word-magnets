@@ -14,6 +14,7 @@ class RoomClients
 
 	protected _clients: Map<string, Client>;
 	protected _nameCache: Map<string, string>;  // For using player names in sentences.
+	protected _voteClients: Client[];
 
 	constructor ( roomID: string, owner: Client )
 	{
@@ -21,6 +22,7 @@ class RoomClients
 		this.ownerID = owner.id;
 		this._clients = new Map ();
 		this._nameCache = new Map ();
+		this._voteClients = [];
 	}
 
 	refreshNameCache ()
@@ -44,14 +46,34 @@ class RoomClients
 	 */
 	assignVoteIDs (): Client[]
 	{
-		const clients = [];
-		this.forEach (client => clients.push (client));
+		this._voteClients = [];
 
-		shuffle (clients);
+		this.forEach (client =>
+		{
+			if ( client.sentence.value !== "" )
+			{
+				this._voteClients.push (client);
+			}
+		});
 
-		clients.forEach (( client, index ) => client.voteID = index);
+		shuffle (this._voteClients);
 
-		return clients;
+		return this._voteClients;
+	}
+
+	clearVoteClients ()
+	{
+		this._voteClients = [];
+	}
+
+	getVoteClient ( voteID: number ): Client | null
+	{
+		return this.isValidVoteID (voteID) ? this._voteClients[voteID] : null;
+	}
+
+	isValidVoteID ( voteID: number ): boolean
+	{
+		return Number.isInteger (voteID) && voteID >= 0 && voteID < this._voteClients.length;
 	}
 
 	addClient ( client: Client ): boolean

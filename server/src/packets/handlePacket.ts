@@ -46,6 +46,7 @@ const handlePacket = ( packet: Packet, client: Client ) =>
 		}
 
 		case PacketCommand.SendSentence:
+		case PacketCommand.CastVote:
 		{
 			phaseSpecificHandler (packet, client);
 			break;
