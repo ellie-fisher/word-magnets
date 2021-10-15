@@ -14,7 +14,7 @@ class RoomClients
 
 	protected _clients: Map<string, Client>;
 	protected _nameCache: Map<string, string>;  // For using player names in sentences.
-	protected _voteClients: Client[];
+	protected _voteClients: Map<number, Client>;
 
 	constructor ( roomID: string, owner: Client )
 	{
@@ -22,7 +22,7 @@ class RoomClients
 		this.ownerID = owner.id;
 		this._clients = new Map ();
 		this._nameCache = new Map ();
-		this._voteClients = [];
+		this._voteClients = new Map ();
 	}
 
 	refreshNameCache ()
@@ -44,51 +44,58 @@ class RoomClients
 	 * Assign a randomized, anonymous vote ID to each client so other players can't figure out
 	 * which sentence is whose.
 	 */
-	assignVoteIDs (): Client[]
+	assignVoteIDs ()
 	{
-		this._voteClients = [];
+		const voteClients: Client[] = [];
 
 		this.forEach (( client: Client ) =>
 		{
 			if ( client.sentence.value !== "" )
 			{
-				this._voteClients.push (client);
+				voteClients.push (client);
 			}
 		});
 
-		shuffle (this._voteClients);
+		shuffle (voteClients);
 
-		return this._voteClients;
+		voteClients.forEach (( client: Client, index: number ) =>
+		{
+			client.voteID = index;
+			this._voteClients.set (index, client);
+		});
 	}
 
 	clearVoteClients ()
 	{
-		this._voteClients = [];
+		this._voteClients.clear ();
 	}
 
 	getVoteClient ( voteID: number ): Client | null
 	{
-		return this.isValidVoteID (voteID) ? this._voteClients[voteID] : null;
+		return this.hasVoteID (voteID) ? this._voteClients.get (voteID) : null;
 	}
 
-	isValidVoteID ( voteID: number ): boolean
+	hasVoteID ( voteID: number ): boolean
 	{
-		return Number.isInteger (voteID) && voteID >= 0 && voteID < this._voteClients.length;
+		return this._voteClients.has (voteID);
 	}
 
-	tallyVotes ()
+	onNewRound ()
+	{
+		this.refreshNameCache ();
+		this.clearVoteClients ();
+
+		this.forEach (( client: Client ) =>
+		{
+			client.onNewRound ();
+		});
+	}
+
+	onNewGame ()
 	{
 		this.forEach (( client: Client ) =>
 		{
-			const voteID = client.vote;
-
-			if ( this.isValidVoteID (voteID) && this._voteClients[voteID] !== client )
-			{
-				const voteClient = this._voteClients[voteID];
-
-				voteClient.sentence.votes++;
-				voteClient.score++;
-			}
+			client.onNewGame ();
 		});
 	}
 

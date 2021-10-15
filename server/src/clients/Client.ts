@@ -16,6 +16,7 @@ class Client
 	public score: number;
 	public sentence: Sentence;
 	public vote: number;
+	public voteID: number;
 
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
@@ -30,6 +31,7 @@ class Client
 		this.score = 0;
 		this.sentence = { value: "", votes: 0 };
 		this.vote = -1;
+		this.voteID = -1;
 	}
 
 	clearSentence ()
@@ -38,12 +40,26 @@ class Client
 		this.sentence.votes = 0;
 	}
 
+	onNewRound ()
+	{
+		this.clearSentence ();
+		this.vote = -1;
+		this.voteID = -1;
+	}
+
+	onNewGame ()
+	{
+		this.onNewRound ();
+		this.score = 0;
+	}
+
 	onLeaveRoom ()
 	{
 		this.clearSentence ();
 		this.roomID = "";
 		this.score = 0;
 		this.vote = -1;
+		this.voteID = -1;
 	}
 
 	sendPacket ( packet: Packet )

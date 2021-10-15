@@ -8,31 +8,34 @@ import Client from "../../clients/Client";
 import Packet from "../../packets/Packet";
 import PacketCommand from "../../packets/PacketCommand";
 
-import shuffle from "../../../../common/src/util/shuffle";
 
+const VOTE_START_SEC = 20;
+const VOTE_ON_END_WAIT = 5000;
 
 class VotePhase extends RoomPhase
 {
 	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
 	{
 		super (info, clients, wordbanks);
+
 		this._type = RoomPhaseType.Vote;
+		this.startTime = VOTE_START_SEC;
 	}
 
 	async _onPreStart ()
 	{
-		const clients = this._clients.assignVoteIDs ();
+		this._clients.assignVoteIDs ();
 
 		// Send all sentences but the player's own.
-		this._clients.forEach (recipient =>
+		this._clients.forEach (( recipient: Client ) =>
 		{
 			const sentences = [];
 
-			clients.forEach (( sentenceClient, voteID ) =>
+			this._clients.forEach (( sentenceClient: Client ) =>
 			{
-				if ( recipient !== sentenceClient && sentenceClient.sentence.value !== "" )
+				if ( recipient !== sentenceClient && sentenceClient.voteID >= 0 )
 				{
-					sentences.push ([sentenceClient.sentence.value, voteID]);
+					sentences.push ([sentenceClient.sentence.value, sentenceClient.voteID]);
 				}
 			});
 
@@ -54,41 +57,46 @@ class VotePhase extends RoomPhase
 			return;
 		}
 
-		const voteID = packet.body;
+		const vote = packet.body;
 
-		if ( !this._clients.isValidVoteID (voteID) )
+		if ( !this._clients.hasVoteID (vote) )
 		{
 			client.packets.sendRejectPacket (client.socket, packet, "Invalid vote ID.");
 			return;
 		}
 
-		if ( this._clients.getVoteClient (voteID) === client )
+		if ( this._clients.getVoteClient (vote) === client )
 		{
 			client.packets.sendRejectPacket (client.socket, packet, "You cannot vote for your own sentence.");
 			return;
 		}
 
-		client.vote = voteID;
+		client.vote = vote;
 		client.packets.sendAcceptPacket (client.socket, packet);
 	}
 
-	async _onEnd ()
+	async _onEnd ( onEnd: Function )
 	{
-		// Wait 5 seconds
-		// Tally up votes
-		// Send new player scores to all players in the room
-		// Let room know somehow that we're done
-	}
+		super._onEnd (onEnd);  // Send `EndPhase` packet.
 
-	_tick ()
-	{
-		// If timer is 0:
-		//     Stop timer
-		//     Let room know somehow
-		// Else:
-		//     Decrement timer by 1
-		//     Let room know somehow
-		//     Call this function again in 1 second
+		setTimeout (() =>
+		{
+			// Tally up the votes.
+			this._clients.forEach (( client: Client ) =>
+			{
+				const { vote } = client;
+
+				if ( this._clients.hasVoteID (vote) && this._clients.getVoteClient (vote) !== client )
+				{
+					const voteClient = this._clients.getVoteClient (vote);
+
+					voteClient.sentence.votes++;
+					voteClient.score++;
+				}
+			});
+
+			onEnd ();
+		}, VOTE_ON_END_WAIT);
 	}
 }
 
