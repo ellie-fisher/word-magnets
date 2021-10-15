@@ -4,7 +4,7 @@ import Packet from "../packets/Packet";
 import PacketType from "../packets/PacketType";
 import PacketCommand from "../packets/PacketCommand";
 
-import shuffle from "../../../common/src/util/shuffle";
+import shuffle from "../../common/util/shuffle";
 
 
 class RoomClients

@@ -1,4 +1,4 @@
-import has from "../../../common/src/util/has";
+import has from "../../common/util/has";
 
 
 /**

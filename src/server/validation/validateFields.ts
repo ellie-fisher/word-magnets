@@ -1,4 +1,4 @@
-import has from "../../../common/src/util/has";
+import has from "../../common/util/has";
 
 
 // TODO: Test for invalid characters (https://github.com/textlint-rule/textlint-rule-no-invalid-control-character/blob/master/src/CONTROL_CHARACTERS.js)

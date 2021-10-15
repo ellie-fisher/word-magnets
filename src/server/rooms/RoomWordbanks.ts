@@ -1,8 +1,8 @@
 import Wordbank from "../wordbanks/Wordbank";
 import RoomClients from "./RoomClients";
 
-import has from "../../../common/src/util/has";
-import wordsToString from "../../../common/src/util/wordsToString";
+import has from "../../common/util/has";
+import wordsToString from "../../common/util/wordsToString";
 
 import fixedWords from "../config/fixedWords";
 

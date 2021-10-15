@@ -1,4 +1,4 @@
-import deepFreeze from "../../../common/src/util/deepFreeze";
+import deepFreeze from "../../common/util/deepFreeze";
 
 
 const fixedWords = deepFreeze (

@@ -1,6 +1,6 @@
 import got from "got";
 
-import objectToURL from "../../../common/src/util/objectToURL";
+import objectToURL from "../../common/util/objectToURL";
 import apiRequest from "../config/api/apiRequest";
 import apiKey from "../config/api/apiKey";
 
