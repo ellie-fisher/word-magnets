@@ -46,12 +46,13 @@ window.onload = function ()
 	const $packetSend = document.getElementById ("packet-send");
 	const $wordbanks = document.getElementById ("wordbanks");
 	const $sentence = document.getElementById ("sentence");
+	const $addSentence = document.getElementById ("add-sentence");
 
 	$packetSend.onclick = sendPacket;
 
 	function sendPacket ()
 	{
-		const bodyStr = document.getElementById ("packet-body").value;
+		const bodyStr = $packetBody.value;
 
 		const packet =
 		{
@@ -61,9 +62,16 @@ window.onload = function ()
 			body: bodyStr ? JSON.parse (bodyStr) : {},
 		};
 
-		document.getElementById ("packet-sequence").value = packetSequence;
+		$packetSequence.value = packetSequence;
 
 		ws.send (JSON.stringify (packet));
+	};
+
+	$addSentence.onclick = function ()
+	{
+		$packetBody.value = `[${$sentence.value}]`;
+		$sentence.value = "";
+		$packetCommand.selectedIndex = commands.indexOf ("SendSentence");
 	};
 
 	types.forEach (( type, index ) =>
