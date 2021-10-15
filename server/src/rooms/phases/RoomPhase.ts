@@ -8,6 +8,8 @@ import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
 
+const DEFAULT_START_SEC = 10;
+
 class RoomPhase
 {
 	public startTime: number;
@@ -26,7 +28,7 @@ class RoomPhase
 		this._clients = clients;
 		this._wordbanks = wordbanks;
 
-		this.startTime = 0;
+		this.startTime = DEFAULT_START_SEC;
 		this._timeLeft = 0;
 		this._timeout = -1;
 	}
