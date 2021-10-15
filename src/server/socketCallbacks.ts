@@ -10,7 +10,7 @@ import isValidPacket from "../common/packets/isValidPacket";
 import handlePacket from "./packets/handlePacket";
 
 import validateFields from "./validation/validateFields";
-import clientInfoFields from "./validation/fields/clientInfo";
+import clientInfoFields from "../common/validation/fields/clientInfo";
 
 
 const CLOSE_SERVER_ERR = 1011;

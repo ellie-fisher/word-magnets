@@ -3,7 +3,7 @@ import Client from "../../clients/Client";
 import ClientNames from "../../clients/ClientNames";
 
 import validateFields from "../../validation/validateFields";
-import clientInfoFields from "../../validation/fields/clientInfo";
+import clientInfoFields from "../../../common/validation/fields/clientInfo";
 
 
 const registerInfoHandler = ( packet: Packet, client: Client ) =>

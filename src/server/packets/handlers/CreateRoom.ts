@@ -7,8 +7,8 @@ import RoomInfo from "../../rooms/RoomInfo";
 import RoomManager from "../../rooms/RoomManager";
 
 import validateFields from "../../validation/validateFields";
-import applyDefaults from "../../validation/applyDefaults";
-import roomInfoFields from "../../validation/fields/roomInfo";
+import applyDefaults from "../../../common/validation/applyDefaults";
+import roomInfoFields from "../../../common/validation/fields/roomInfo";
 
 import RoomError, { getRoomErrorMessage } from "../../rooms/RoomError";
 
