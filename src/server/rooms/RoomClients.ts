@@ -1,8 +1,8 @@
 import Client from "../clients/Client";
 
-import Packet from "../packets/Packet";
-import PacketType from "../packets/PacketType";
-import PacketCommand from "../packets/PacketCommand";
+import Packet from "../../common/packets/Packet";
+import PacketType from "../../common/packets/PacketType";
+import PacketCommand from "../../common/packets/PacketCommand";
 
 import shuffle from "../../common/util/shuffle";
 

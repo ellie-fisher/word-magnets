@@ -1,8 +1,8 @@
 import Client from "../clients/Client";
 
-import Packet from "./Packet";
-import PacketType from "./PacketType";
-import PacketCommand from "./PacketCommand";
+import Packet from "../../common/packets/Packet";
+import PacketType from "../../common/packets/PacketType";
+import PacketCommand from "../../common/packets/PacketCommand";
 
 import registerInfoHandler from "./handlers/RegisterInfo";
 import createRoomHandler from "./handlers/CreateRoom";

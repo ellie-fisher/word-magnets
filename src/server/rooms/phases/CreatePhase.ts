@@ -5,8 +5,8 @@ import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
 import Client from "../../clients/Client";
-import Packet from "../../packets/Packet";
-import PacketCommand from "../../packets/PacketCommand";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
 
 
 const CREATE_ON_END_WAIT = 5000;

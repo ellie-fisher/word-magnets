@@ -1,7 +1,7 @@
 import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 
-import has from "../../common/util/has";
+import has from "../util/has";
 
 
 const requiredFields = Object.freeze (["type", "sequence", "command", "body"]);

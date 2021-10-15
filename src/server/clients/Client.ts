@@ -1,8 +1,8 @@
 import { WebSocket } from "ws";
 
 import ClientInfo from "./ClientInfo";
-import Packet from "../packets/Packet";
-import PacketManager from "../packets/PacketManager";
+import Packet from "../../common/packets/Packet";
+import PacketManager from "../../common/packets/PacketManager";
 import Sentence from "../wordbanks/Sentence";
 
 

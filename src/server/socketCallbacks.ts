@@ -5,8 +5,8 @@ import ClientNames from "./clients/ClientNames";
 
 import RoomManager from "./rooms/RoomManager";
 
-import Packet from "./packets/Packet";
-import isValidPacket from "./packets/isValidPacket";
+import Packet from "../common/packets/Packet";
+import isValidPacket from "../common/packets/isValidPacket";
 import handlePacket from "./packets/handlePacket";
 
 import validateFields from "./validation/validateFields";

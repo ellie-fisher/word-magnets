@@ -1,4 +1,4 @@
-import Packet from "../../packets/Packet";
+import Packet from "../../../common/packets/Packet";
 import Client from "../../clients/Client";
 
 import RoomManager from "../../rooms/RoomManager";

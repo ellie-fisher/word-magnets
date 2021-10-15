@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import Packet from "../../packets/Packet";
+import Packet from "../../../common/packets/Packet";
 import Client from "../../clients/Client";
 
 import RoomInfo from "../../rooms/RoomInfo";

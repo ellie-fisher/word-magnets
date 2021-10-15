@@ -1,6 +1,6 @@
 import Client from "../../clients/Client";
-import Packet from "../../packets/Packet";
-import PacketCommand from "../../packets/PacketCommand";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
 
 import RoomPhaseType from "./RoomPhaseType";
 import RoomInfo from "../RoomInfo";

@@ -9,7 +9,7 @@ import ObjectManager from "../misc/ObjectManager";
 
 import Client from "../clients/Client";
 import ClientManager from "../clients/ClientManager";
-import PacketCommand from "../packets/PacketCommand";
+import PacketCommand from "../../common/packets/PacketCommand";
 
 
 const DEFAULT_MAX_ROOMS = 20;
