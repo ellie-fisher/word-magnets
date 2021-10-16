@@ -1,7 +1,10 @@
 {
 	"compilerOptions":
 	{
+		"outDir": "./dist/client/js/",
+		"sourceMap": true,
 		"noImplicitAny": false,
-		"target": "es6"
+		"esModuleInterop": true,
+		"target": "es5"
 	}
 }

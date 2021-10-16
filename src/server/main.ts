@@ -15,11 +15,11 @@ app.listen (PORT, () =>
 	console.log (`Listening on port ${PORT}`);
 });
 
-app.use ("/", express.static (path.join (__dirname, "../client")));
+app.use ("/", express.static (path.join (__dirname, "../../dist/client")));
 
 app.get ("/*", ( req: any, res: any ) =>
 {
-	res.sendFile ("index.html", { root: path.join (__dirname, "../client") });
+	res.sendFile ("index.html", { root: path.join (__dirname, "../../dist/client") });
 });
 
 const wss = new WebSocketServer ({ port: SOCKET_PORT }, () =>
