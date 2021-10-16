@@ -8,9 +8,13 @@ const COMMON_DIR = path.resolve (__dirname, "src/common");
 
 module.exports = ( env, argv ) =>
 {
+	const mode = argv.mode || "development";
+	const isDev = mode === "development";
+
 	return {
+		mode,
+
 		entry: `${CLIENT_DIR}/main.ts`,
-		mode: argv.mode || "development",
 		devtool: "inline-source-map",
 
 		module:
