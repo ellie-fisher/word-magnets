@@ -1,6 +1,6 @@
 import m, { Component } from "mithril";
 
-import appState from "./appState";
+import appState from "./state";
 import AppView from "./AppView";
 
 import socket from "../sockets/socket"; /* Invoke side effects: */ socket;

@@ -1,7 +1,7 @@
 import m from "mithril";
 
 
-import appState from "../app/appState";
+import appState from "../app/state";
 import AppView from "../app/AppView";
 
 import socketConfig from "../../common/config/socketConfig";
