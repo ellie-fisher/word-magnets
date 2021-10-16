@@ -6,6 +6,10 @@ import validateFields from "../../validation/validateFields";
 import clientInfoFields from "../../../common/validation/fields/clientInfo";
 
 
+// TODO: Filter names.
+// TODO: Remove repeat and trailing spaces from names.
+// TODO: Add checks for invalid characters.
+// TODO: Add checks for similar-looking characters to prevent impersonation.
 const registerInfoHandler = ( packet: Packet, client: Client ) =>
 {
 	if ( client.roomID !== "" )
