@@ -174,7 +174,7 @@ class RoomClients
 		{
 			if ( except === null || !_except.has (client.id) )
 			{
-				client.packets.sendDataPacket (client.socket, command, body);
+				client.packets.sendDataPacket (command, body);
 			}
 		});
 	}

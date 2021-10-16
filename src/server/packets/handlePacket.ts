@@ -15,7 +15,7 @@ const handlePacket = ( packet: Packet, client: Client ) =>
 {
 	if ( client.info.name === "" && packet.command !== PacketCommand.RegisterInfo )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "Please set your name first.");
+		client.packets.sendRejectPacket (packet, "Please set your name first.");
 		return;
 	}
 
@@ -54,7 +54,7 @@ const handlePacket = ( packet: Packet, client: Client ) =>
 
 		default:
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "Unknown packet command");
+			client.packets.sendRejectPacket (packet, "Unknown packet command");
 			break;
 		}
 	}

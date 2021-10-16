@@ -39,7 +39,7 @@ class VotePhase extends RoomPhase
 				}
 			});
 
-			recipient.packets.sendDataPacket (recipient.socket, PacketCommand.SentenceList, sentences);
+			recipient.packets.sendDataPacket (PacketCommand.SentenceList, sentences);
 		});
 	}
 
@@ -47,13 +47,13 @@ class VotePhase extends RoomPhase
 	{
 		if ( packet.command !== PacketCommand.CastVote )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+			client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 			return;
 		}
 
 		if ( client.vote >= 0 )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "You already cast a vote.");
+			client.packets.sendRejectPacket (packet, "You already cast a vote.");
 			return;
 		}
 
@@ -61,18 +61,18 @@ class VotePhase extends RoomPhase
 
 		if ( !this._clients.hasVoteID (vote) )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "Invalid vote ID.");
+			client.packets.sendRejectPacket (packet, "Invalid vote ID.");
 			return;
 		}
 
 		if ( this._clients.getVoteClient (vote) === client )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "You cannot vote for your own sentence.");
+			client.packets.sendRejectPacket (packet, "You cannot vote for your own sentence.");
 			return;
 		}
 
 		client.vote = vote;
-		client.packets.sendAcceptPacket (client.socket, packet);
+		client.packets.sendAcceptPacket (packet);
 	}
 
 	async _onEnd ( onEnd: Function )

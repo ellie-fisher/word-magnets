@@ -23,7 +23,7 @@ class GameEndPhase extends RoomPhase
 
 	receivePacket ( packet: Packet, client: Client )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 	}
 
 	async _onEnd ( onEnd: Function )

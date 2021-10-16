@@ -9,7 +9,7 @@ const phaseSpecificHandler = ( packet: Packet, client: Client ) =>
 {
 	if ( client.roomID === "" )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "You are not in a room.");
+		client.packets.sendRejectPacket (packet, "You are not in a room.");
 		return;
 	}
 

@@ -186,7 +186,7 @@ class Room
 		}
 		else
 		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.RoomInfo, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
 		}
 	}
 
@@ -198,7 +198,7 @@ class Room
 		}
 		else
 		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.ClientList, this.clients.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.ClientList, this.clients.toJSON ());
 		}
 	}
 
@@ -210,7 +210,7 @@ class Room
 		}
 		else
 		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.Wordbanks, this.wordbanks.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.Wordbanks, this.wordbanks.toJSON ());
 		}
 	}
 

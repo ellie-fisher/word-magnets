@@ -96,7 +96,7 @@ const onSocketMessage = function ( this: any, message: any )
 			console.error ("Packet JSON parsing error:", error.message);
 		}
 
-		client.packets.sendErrorPacket (this, errorMessage);
+		client.packets.sendErrorPacket (errorMessage);
 		return;
 	}
 

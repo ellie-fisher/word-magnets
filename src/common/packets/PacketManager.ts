@@ -7,42 +7,43 @@ import PacketCommand from "./PacketCommand";
 
 class PacketManager
 {
+	protected _socket: WebSocket;
 	protected _sequence: number;
 
-	constructor ()
+	constructor ( socket: WebSocket )
 	{
+		this._socket = socket;
 		this._sequence = 0;
 	}
 
-	sendPacket ( socket: WebSocket, packet: Packet )
+	sendPacket ( packet: Packet )
 	{
 		const json: any = packet.toJSON ();
 
 		// FIXME: Remove
 		json.command = PacketCommand[json.command];
 
-		socket.send (JSON.stringify (json));
+		this._socket.send (JSON.stringify (json));
 	}
 
-	sendDataPacket ( socket: WebSocket, command: PacketCommand, body: any = "" )
+	sendDataPacket ( command: PacketCommand, body: any = "" )
 	{
-		this.sendPacket (socket, new Packet (PacketType.Data, this._sequence++, command, body));
+		this.sendPacket (new Packet (PacketType.Data, this._sequence++, command, body));
 	}
 
-	sendRequestPacket ( socket: WebSocket, command: PacketCommand, body: any = "" )
+	sendRequestPacket ( command: PacketCommand, body: any = "" )
 	{
-		this.sendPacket (socket, new Packet (PacketType.Request, this._sequence++, command, body));
+		this.sendPacket (new Packet (PacketType.Request, this._sequence++, command, body));
 	}
 
-	sendResponsePacket ( socket: WebSocket, request: Packet, body: any = "" )
+	sendResponsePacket ( request: Packet, body: any = "" )
 	{
 		this.sendPacket (
-			socket,
 			new Packet (PacketType.Response, this._sequence++, request.command, body, request.sequence),
 		);
 	}
 
-	sendAcceptPacket ( socket: WebSocket, request: Packet, data: any = null )
+	sendAcceptPacket ( request: Packet, data: any = null )
 	{
 		const body: any = { ok: true };
 
@@ -51,10 +52,10 @@ class PacketManager
 			body.data = data;
 		}
 
-		this.sendResponsePacket (socket, request, body);
+		this.sendResponsePacket (request, body);
 	}
 
-	sendRejectPacket ( socket: WebSocket, request: Packet, data: any = null )
+	sendRejectPacket ( request: Packet, data: any = null )
 	{
 		const body: any = { ok: false };
 
@@ -63,12 +64,12 @@ class PacketManager
 			body.data = data;
 		}
 
-		this.sendResponsePacket (socket, request, body);
+		this.sendResponsePacket (request, body);
 	}
 
-	sendErrorPacket ( socket: WebSocket, message: string )
+	sendErrorPacket ( message: string )
 	{
-		this.sendDataPacket (socket, PacketCommand.Error, { message });
+		this.sendDataPacket (PacketCommand.Error, { message });
 	}
 }
 

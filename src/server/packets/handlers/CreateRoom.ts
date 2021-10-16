@@ -20,13 +20,13 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 
 	if ( validation.length > 0 )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, validation);
+		client.packets.sendRejectPacket (packet, validation);
 		return;
 	}
 
 	if ( client.roomID !== "" )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, getRoomErrorMessage (RoomError.InRoom));
+		client.packets.sendRejectPacket (packet, getRoomErrorMessage (RoomError.InRoom));
 		return;
 	}
 
@@ -40,7 +40,7 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 	const room = RoomManager.create (new RoomInfo (info), client);
 
 	RoomManager.joinRoom (room.id, client);
-	client.packets.sendAcceptPacket (client.socket, packet, room.id);
+	client.packets.sendAcceptPacket (packet, room.id);
 
 	room.startPhase ();
 };

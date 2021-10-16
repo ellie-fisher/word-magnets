@@ -26,7 +26,7 @@ class Client
 		this.id = id;
 		this.socket = socket;
 		this.info = info;
-		this.packets = new PacketManager ();
+		this.packets = new PacketManager (socket);
 		this.roomID = "";
 		this.score = 0;
 		this.sentence = { value: "", votes: 0 };
@@ -64,7 +64,7 @@ class Client
 
 	sendPacket ( packet: Packet )
 	{
-		this.packets.sendPacket (this.socket, packet);
+		this.packets.sendPacket (packet);
 	}
 
 	toJSON (): object
