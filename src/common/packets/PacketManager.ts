@@ -7,10 +7,11 @@ import PacketCommand from "./PacketCommand";
 
 class PacketManager
 {
-	protected _socket: WebSocket;
+	protected _socket: any;  // Sigh... We need this to be `any` to make it compatible with both
+	                         // the `ws` WebSocket and the native WebSocket.
 	protected _sequence: number;
 
-	constructor ( socket: WebSocket )
+	constructor ( socket: any )
 	{
 		this._socket = socket;
 		this._sequence = 0;
