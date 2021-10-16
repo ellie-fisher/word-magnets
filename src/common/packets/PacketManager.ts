@@ -5,6 +5,8 @@ import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 
 
+// TODO: Ability to add listeners for specific packet commands.
+// TODO: Ability to reject packets before their listeners are called.
 class PacketManager
 {
 	protected _socket: any;  // Sigh... We need this to be `any` to make it compatible with both
