@@ -34,6 +34,11 @@ module.exports = ( env, argv ) =>
 			extensions: [".ts", ".js"],
 		},
 
+		watchOptions:
+		{
+			ignored: ["**/src/server"],
+		},
+
 		output:
 		{
 			filename: "bundle.js",
