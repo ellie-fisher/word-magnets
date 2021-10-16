@@ -1,13 +1,6 @@
 import m from "mithril";
 
+import App from "./app/App";
 
-m.route (document.getElementById ("app-root"), "/",
-{
-	"/":
-	{
-		render ()
-		{
-			return m ("div", "Hi!");
-		}
-	}
-});
+
+m.mount (document.getElementById ("app-root"), App);
