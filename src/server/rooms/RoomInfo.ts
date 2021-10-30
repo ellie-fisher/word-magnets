@@ -1,4 +1,7 @@
-class RoomInfo
+import IRoomInfo from "../../common/rooms/IRoomInfo";
+
+
+class RoomInfo implements IRoomInfo
 {
 	public name: string;
 	public password: string;
