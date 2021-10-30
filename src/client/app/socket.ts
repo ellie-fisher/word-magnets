@@ -1,9 +1,11 @@
 import m from "mithril";
 
-
-import appState from "../app/state";
 import AppView from "../app/AppView";
+import appState from "../app/state";
 
+import packetManager from "../packets/packetManager";
+
+import isValidPacket from "../../common/packets/isValidPacket";
 import socketConfig from "../../common/config/socketConfig";
 
 
@@ -11,7 +13,7 @@ const socket = new WebSocket (`${socketConfig.client.url}:${socketConfig.port}`)
 
 socket.onopen = function ()
 {
-	console.info ("Open");
+	appState.view = AppView.Registration;
 	m.redraw ();
 };
 
@@ -35,7 +37,25 @@ socket.onerror = function ( event )
 
 socket.onmessage = function ( event )
 {
-	console.log (JSON.parse (event.data));
+	let packet;
+
+	try
+	{
+		packet = JSON.parse (event.data);
+
+		if ( !isValidPacket (packet) )
+		{
+			throw new Error ("Invalid packet");
+		}
+	}
+	catch ( error )
+	{
+		console.error ("Error parsing packet:", error);
+		return;
+	}
+
+	packetManager.handlePacket (packet);
+
 	m.redraw ();
 };
 

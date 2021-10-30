@@ -2,8 +2,10 @@ import m, { Component } from "mithril";
 
 import appState from "./state";
 import AppView from "./AppView";
+import Registration from "../registration/Registration";
 
-import socket from "../sockets/socket"; /* Invoke side effects: */ socket;
+import socket from "./socket"; /* Invoke side effects: */ socket;
+import packetManager from "../packets/packetManager";
 
 
 const App: Component =
@@ -24,6 +26,11 @@ const App: Component =
 					m ("h3", "Socket Error"),
 					m ("span", appState.socketErrorMsg),
 				]);
+			}
+
+			case AppView.Registration:
+			{
+				return m (Registration);
 			}
 
 			default:
