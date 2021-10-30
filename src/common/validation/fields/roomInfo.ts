@@ -23,8 +23,9 @@ const roomInfoFields =
 		type: "integer",
 		min: 1,
 		max: 16,
+		increments: 1,
 		defaultValue: 8,
-		displayName: "Player limit",
+		displayName: "Player Limit",
 	},
 
 	timeLimit:
@@ -32,8 +33,9 @@ const roomInfoFields =
 		type: "integer",
 		min: 10,
 		max: 180,
+		increments: 10,
 		defaultValue: 60,
-		displayName: "Time limit",
+		displayName: "Time Limit",
 	},
 
 	maxRounds:
@@ -41,6 +43,7 @@ const roomInfoFields =
 		type: "integer",
 		min: 1,
 		max: 16,
+		increments: 1,
 		defaultValue: 10,
 		displayName: "Rounds",
 	},
