@@ -19,10 +19,13 @@ const RegistrationView: Component =
 				m ("input",
 				{
 					type: "text",
+					value: RegistrationModel.info.name,
+
 					oninput ( event )
 					{
 						RegistrationModel.info.name = event.target.value;
 					},
+
 					onchange ( event )
 					{
 						RegistrationModel.info.name = event.target.value;

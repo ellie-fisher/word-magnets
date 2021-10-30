@@ -16,12 +16,24 @@ packetManager.on (PacketCommand.RegisterInfo, ( packet: Packet ) =>
 		RegistrationModel.error = "";
 		AppModel.view = ViewEnum.MainMenu;
 	}
-	else if ( body.data.length === 1 )
+	else
 	{
-		RegistrationModel.error = body.data[0];
-	}
-	else if ( body.data.length > 1 )
-	{
-		RegistrationModel.error = `Field \`${body.data[0]}\` - ${body.data[1]}`;
+		const { data } = body;
+
+		if ( Array.isArray (data) )
+		{
+			if ( body.data.length === 1 )
+			{
+				RegistrationModel.error = body.data[0];
+			}
+			else if ( body.data.length > 1 )
+			{
+				RegistrationModel.error = `Field \`${body.data[0]}\` - ${body.data[1]}`;
+			}
+		}
+		else
+		{
+			RegistrationModel.error = data;
+		}
 	}
 });
