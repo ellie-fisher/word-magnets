@@ -1,32 +1,64 @@
 import { WebSocket } from "ws";
 
+import Multimap from "../util/Multimap";
+
 import Packet from "./Packet";
 import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 
 
-// TODO: Ability to add listeners for specific packet commands.
-// TODO: Ability to reject packets before their listeners are called.
 class PacketManager
 {
 	protected _socket: any;  // Sigh... We need this to be `any` to make it compatible with both
 	                         // the `ws` WebSocket and the native WebSocket.
 	protected _sequence: number;
+	protected _listeners: Multimap;
+	protected _fallback: Function;
 
 	constructor ( socket: any )
 	{
 		this._socket = socket;
 		this._sequence = 0;
+		this._listeners = new Multimap ();
+		this._fallback = () => {};
+	}
+
+	on ( command: PacketCommand, listener: Function ): Function
+	{
+		this._listeners.add (command, listener);
+		return listener;
+	}
+
+	off ( command: PacketCommand, listener: Function ): Function
+	{
+		this._listeners.delete (command, listener);
+		return listener;
+	}
+
+	setFallbackHandler ( fallback: Function ): Function
+	{
+		this._fallback = fallback;
+		return fallback;
+	}
+
+	handlePacket ( packet: Packet, ...args: any[] )
+	{
+		if ( !this._listeners.has (packet.command) )
+		{
+			this._fallback (packet, ...args);
+		}
+		else
+		{
+			this._listeners.forEach (packet.command, listener =>
+			{
+				listener (packet, ...args);
+			});
+		}
 	}
 
 	sendPacket ( packet: Packet )
 	{
-		const json: any = packet.toJSON ();
-
-		// FIXME: Remove
-		json.command = PacketCommand[json.command];
-
-		this._socket.send (JSON.stringify (json));
+		this._socket.send (JSON.stringify (packet.toJSON ()));
 	}
 
 	sendDataPacket ( command: PacketCommand, body: any = "" )

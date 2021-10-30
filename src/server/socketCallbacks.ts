@@ -6,8 +6,9 @@ import ClientNames from "./clients/ClientNames";
 import RoomManager from "./rooms/RoomManager";
 
 import Packet from "../common/packets/Packet";
+import PacketCommand from "../common/packets/PacketCommand";
 import isValidPacket from "../common/packets/isValidPacket";
-import handlePacket from "./packets/handlePacket";
+import registerHandlers from "./packets/registerHandlers";
 
 import validateFields from "./validation/validateFields";
 import clientInfoFields from "../common/validation/fields/clientInfo";
@@ -40,6 +41,8 @@ const onNewConnection = function ( socket: any, request: any )
 	}
 
 	console.log (`New connection: ${client.id}`);
+
+	registerHandlers (client);
 
 	socket.on ("message", onSocketMessage);
 	socket.on ("close", onSocketClose);
@@ -100,7 +103,13 @@ const onSocketMessage = function ( this: any, message: any )
 		return;
 	}
 
-	handlePacket (packet, client);
+	if ( client.info.name === "" && packet.command !== PacketCommand.RegisterInfo )
+	{
+		client.packets.sendRejectPacket (packet, "Please set your name first.");
+		return;
+	}
+
+	client.packets.handlePacket (packet, client);
 };
 
 
