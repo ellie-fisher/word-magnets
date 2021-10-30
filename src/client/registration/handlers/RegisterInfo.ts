@@ -1,7 +1,7 @@
 import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
-import AppView from "../../app/AppView";
+import ViewEnum from "../../app/ViewEnum";
 import appState from "../../app/state";
 import packetManager from "../../packets/packetManager";
 import registrationState from "../../registration/state";
@@ -14,7 +14,7 @@ packetManager.on (PacketCommand.RegisterInfo, ( packet: Packet ) =>
 	if ( body.ok )
 	{
 		registrationState.error = "";
-		appState.view = AppView.MainMenu;
+		appState.view = ViewEnum.MainMenu;
 	}
 	else if ( body.data.length === 1 )
 	{

@@ -1,10 +1,10 @@
-import AppView from "./AppView";
+import ViewEnum from "./ViewEnum";
 
 
 const appState =
 {
 	socketErrorMsg: "",
-	view: AppView.Connecting,
+	view: ViewEnum.Connecting,
 };
 
 

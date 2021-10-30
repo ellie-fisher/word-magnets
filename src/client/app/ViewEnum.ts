@@ -1,4 +1,4 @@
-enum AppView
+enum ViewEnum
 {
 	Connecting,
 	SocketError,
@@ -7,4 +7,4 @@ enum AppView
 };
 
 
-export default AppView;
+export default ViewEnum;

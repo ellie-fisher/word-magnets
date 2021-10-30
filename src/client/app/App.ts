@@ -1,7 +1,7 @@
 import m, { Component } from "mithril";
 
 import appState from "./state";
-import AppView from "./AppView";
+import ViewEnum from "./ViewEnum";
 import Registration from "../registration/Registration";
 
 import socket from "./socket"; /* Invoke side effects: */ socket;
@@ -14,12 +14,12 @@ const App: Component =
 	{
 		switch ( appState.view )
 		{
-			case AppView.Connecting:
+			case ViewEnum.Connecting:
 			{
 				return m ("div", "Connecting...");
 			}
 
-			case AppView.SocketError:
+			case ViewEnum.SocketError:
 			{
 				return m ("div",
 				[
@@ -28,14 +28,14 @@ const App: Component =
 				]);
 			}
 
-			case AppView.Registration:
+			case ViewEnum.Registration:
 			{
 				return m (Registration);
 			}
 
 			default:
 			{
-				return m ("div", `Unhandled view: \`${AppView[appState.view]}\``);
+				return m ("div", `Unhandled view: \`${ViewEnum[appState.view]}\``);
 			}
 		}
 	},

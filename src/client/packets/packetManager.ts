@@ -10,7 +10,7 @@ const packetManager = new PacketManager (socket);
 
 packetManager.setFallbackHandler (packet =>
 {
-	console.log ("Unhandled packet:", packet);
+	console.error ("Unhandled packet:", packet);
 });
 
 
