@@ -3,7 +3,7 @@ import m, { Component } from "mithril";
 import PacketCommand from "../../common/packets/PacketCommand";
 import packetManager from "../packets/packetManager";
 
-import registrationState from "./state";
+import RegistrationModel from "./RegistrationModel";
 import "./handlers/RegisterInfo";
 
 
@@ -22,22 +22,22 @@ const RegistrationView: Component =
 					type: "text",
 					oninput ( event )
 					{
-						registrationState.info.name = event.target.value;
+						RegistrationModel.info.name = event.target.value;
 					},
 					onchange ( event )
 					{
-						registrationState.info.name = event.target.value;
+						RegistrationModel.info.name = event.target.value;
 					},
 				}),
 				m ("button",
 				{
 					onclick ( event )
 					{
-						packetManager.sendRequestPacket (PacketCommand.RegisterInfo, registrationState.info);
+						packetManager.sendRequestPacket (PacketCommand.RegisterInfo, RegistrationModel.info);
 					},
 				}, "Register"),
 			]),
-			m ("p", m("strong", registrationState.error)),
+			m ("p", m("strong", RegistrationModel.error)),
 		]);
 	},
 };

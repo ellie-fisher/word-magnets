@@ -1,6 +1,6 @@
 import m, { Component } from "mithril";
 
-import appState from "./state";
+import AppModel from "./AppModel";
 import ViewEnum from "./ViewEnum";
 import RegistrationView from "../registration/RegistrationView";
 import MainMenu from "../mainMenu/MainMenu";
@@ -13,7 +13,7 @@ const AppView: Component =
 {
 	view ()
 	{
-		switch ( appState.view )
+		switch ( AppModel.view )
 		{
 			case ViewEnum.Connecting:
 			{
@@ -25,7 +25,7 @@ const AppView: Component =
 				return m ("div",
 				[
 					m ("h3", "Socket Error"),
-					m ("span", appState.socketErrorMsg),
+					m ("span", AppModel.socketErrorMsg),
 				]);
 			}
 
@@ -41,7 +41,7 @@ const AppView: Component =
 
 			default:
 			{
-				return m ("div", `Unhandled view: \`${ViewEnum[appState.view]}\``);
+				return m ("div", `Unhandled view: \`${ViewEnum[AppModel.view]}\``);
 			}
 		}
 	},

@@ -1,7 +1,7 @@
 import m from "mithril";
 
 import ViewEnum from "../app/ViewEnum";
-import appState from "../app/state";
+import AppModel from "../app/AppModel";
 
 import packetManager from "../packets/packetManager";
 
@@ -13,22 +13,22 @@ const socket = new WebSocket (`${socketConfig.client.url}:${socketConfig.port}`)
 
 socket.onopen = function ()
 {
-	appState.view = ViewEnum.Registration;
+	AppModel.view = ViewEnum.Registration;
 	m.redraw ();
 };
 
 socket.onclose = function ( event )
 {
-	appState.view = ViewEnum.SocketError;
-	appState.socketErrorMsg = event.reason;
+	AppModel.view = ViewEnum.SocketError;
+	AppModel.socketErrorMsg = event.reason;
 
 	m.redraw ();
 };
 
 socket.onerror = function ( event )
 {
-	appState.view = ViewEnum.SocketError;
-	appState.socketErrorMsg = "Unexpected socket error.";
+	AppModel.view = ViewEnum.SocketError;
+	AppModel.socketErrorMsg = "Unexpected socket error.";
 
 	console.log ("Socket Error:", event);
 

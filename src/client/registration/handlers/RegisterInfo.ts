@@ -2,9 +2,9 @@ import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
 import ViewEnum from "../../app/ViewEnum";
-import appState from "../../app/state";
+import AppModel from "../../app/AppModel";
 import packetManager from "../../packets/packetManager";
-import registrationState from "../../registration/state";
+import RegistrationModel from "../../registration/RegistrationModel";
 
 
 packetManager.on (PacketCommand.RegisterInfo, ( packet: Packet ) =>
@@ -13,15 +13,15 @@ packetManager.on (PacketCommand.RegisterInfo, ( packet: Packet ) =>
 
 	if ( body.ok )
 	{
-		registrationState.error = "";
-		appState.view = ViewEnum.MainMenu;
+		RegistrationModel.error = "";
+		AppModel.view = ViewEnum.MainMenu;
 	}
 	else if ( body.data.length === 1 )
 	{
-		registrationState.error = body.data[0];
+		RegistrationModel.error = body.data[0];
 	}
 	else if ( body.data.length > 1 )
 	{
-		registrationState.error = `Field \`${body.data[0]}\` - ${body.data[1]}`;
+		RegistrationModel.error = `Field \`${body.data[0]}\` - ${body.data[1]}`;
 	}
 });

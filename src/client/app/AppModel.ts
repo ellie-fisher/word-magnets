@@ -1,11 +1,11 @@
 import ViewEnum from "./ViewEnum";
 
 
-const appState =
+const AppModel =
 {
 	socketErrorMsg: "",
 	view: ViewEnum.Connecting,
 };
 
 
-export default appState;
+export default AppModel;
