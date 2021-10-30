@@ -9,14 +9,15 @@ const roomInfoFields =
 		displayName: "Name",
 	},
 
-	password:
-	{
-		type: "password",
-		min: 1,
-		max: 12,
-		defaultValue: "",
-		displayName: "Password",
-	},
+	// TODO: Replace password feature with `showOnList`.
+	// password:
+	// {
+	// 	type: "password",
+	// 	min: 1,
+	// 	max: 12,
+	// 	defaultValue: "",
+	// 	displayName: "Password",
+	// },
 
 	maxClients:
 	{
@@ -57,6 +58,9 @@ const roomInfoFields =
 	// }
 
 	// TODO: Add ability to not show on server list and to join directly from an ID.
+	//       This should replace passwords because it serves the same purpose as passwords without
+	//       clogging up the server list.
+	//
 	// showOnList:
 	// {
 	// 	type: "boolean",
