@@ -7,7 +7,7 @@ import registrationState from "./state";
 import "./handlers/RegisterInfo";
 
 
-const Registration: Component =
+const RegistrationView: Component =
 {
 	view ()
 	{
@@ -43,4 +43,4 @@ const Registration: Component =
 };
 
 
-export default Registration;
+export default RegistrationView;
