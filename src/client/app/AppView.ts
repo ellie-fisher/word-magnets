@@ -3,7 +3,7 @@ import m, { Component } from "mithril";
 import AppModel from "./AppModel";
 import ViewEnum from "./ViewEnum";
 import RegistrationView from "../registration/RegistrationView";
-import MainMenu from "../mainMenu/MainMenu";
+import MainMenuView from "../mainMenu/MainMenuView";
 
 import socket from "./socket"; /* Invoke side effects: */ socket;
 import packetManager from "../packets/packetManager";
@@ -36,7 +36,7 @@ const AppView: Component =
 
 			case ViewEnum.MainMenu:
 			{
-				return m (MainMenu);
+				return m (MainMenuView);
 			}
 
 			default:

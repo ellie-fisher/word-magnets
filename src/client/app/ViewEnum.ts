@@ -4,6 +4,8 @@ enum ViewEnum
 	SocketError,
 	Registration,
 	MainMenu,
+	CreateRoom,
+	JoinRoom,
 };
 
 
