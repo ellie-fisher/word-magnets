@@ -1,9 +1,8 @@
 import m, { Component } from "mithril";
 
-import PacketCommand from "../../common/packets/PacketCommand";
-import packetManager from "../packets/packetManager";
-
 import RegistrationModel from "./RegistrationModel";
+import RegistrationController from "./RegistrationController";
+
 import "./handlers/RegisterInfo";
 
 
@@ -29,13 +28,7 @@ const RegistrationView: Component =
 						RegistrationModel.info.name = event.target.value;
 					},
 				}),
-				m ("button",
-				{
-					onclick ( event )
-					{
-						packetManager.sendRequestPacket (PacketCommand.RegisterInfo, RegistrationModel.info);
-					},
-				}, "Register"),
+				m ("button", { onclick: RegistrationController.register, }, "Register"),
 			]),
 			m ("p", m("strong", RegistrationModel.error)),
 		]);
