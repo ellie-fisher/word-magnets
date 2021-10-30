@@ -24,14 +24,14 @@ const handlers = new Map<PacketCommand, Function> (
 /**
  * @private
  */
-const fallbackHandler = ( packet: Packet, client: Client ) =>
+const _fallbackHandler = ( packet: Packet, client: Client ) =>
 {
 	client.packets.sendRejectPacket (packet, "Unknown packet command");
 };
 
 const registerHandlers = ( client: Client ) =>
 {
-	client.packets.setFallbackHandler (fallbackHandler);
+	client.packets.setFallbackHandler (_fallbackHandler);
 	handlers.forEach (( handler, command ) => client.packets.on (command, handler));
 };
 
