@@ -8,7 +8,7 @@ import socket from "./socket"; /* Invoke side effects: */ socket;
 import packetManager from "../packets/packetManager";
 
 
-const App: Component =
+const AppView: Component =
 {
 	view ()
 	{
@@ -42,4 +42,4 @@ const App: Component =
 };
 
 
-export default App;
+export default AppView;

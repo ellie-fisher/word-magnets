@@ -1,6 +1,6 @@
 import m from "mithril";
 
-import App from "./app/App";
+import AppView from "./app/AppView";
 
 
-m.mount (document.getElementById ("app-root"), App);
+m.mount (document.getElementById ("app-root"), AppView);
