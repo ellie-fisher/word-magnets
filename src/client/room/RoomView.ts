@@ -7,22 +7,44 @@ import AppModel from "../app/AppModel";
 import RoomController from "./RoomController";
 import RoomModel from "./RoomModel";
 import ViewEnum from "../app/ViewEnum";
+import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
+
+import CreatePhaseView from "./CreatePhase/CreatePhaseView";
 
 import "./handlers/RoomInfo";
+import "./handlers/StartPhase";
+import "./handlers/EndPhase";
 
 
 const RoomView: Component =
 {
 	view ()
 	{
-		const { info } = RoomModel;
+		const { info, phase } = RoomModel;
 
 		const headingStyle = { padding: "1vw" };
+
+		let view: any;
+
+		switch ( phase )
+		{
+			case RoomPhaseType.Create:
+				view = m (CreatePhaseView);
+				break;
+
+			default:
+				view = m ("div", [m ("strong", "ERROR:"), " Unknown/Unhandled room phase"]);
+				break;
+		}
 
 		return m ("div",
 		[
 			m ("span", { style: headingStyle }, [m ("strong", "Time Left: "), info.timeLeft]),
 			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound} of ${info.maxRounds}`]),
+
+			m ("hr"),
+
+			view,
 		]);
 	},
 };
