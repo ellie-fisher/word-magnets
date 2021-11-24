@@ -1,5 +1,5 @@
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "./RoomPhaseType";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";

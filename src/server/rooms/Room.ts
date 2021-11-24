@@ -10,7 +10,7 @@ import PacketCommand from "../../common/packets/PacketCommand";
 import Client from "../clients/Client";
 
 import RoomPhase from "./phases/RoomPhase";
-import RoomPhaseType from "./phases/RoomPhaseType";
+import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 import CreatePhase from "./phases/CreatePhase";
 import VotePhase from "./phases/VotePhase";
 import ResultsPhase from "./phases/ResultsPhase";

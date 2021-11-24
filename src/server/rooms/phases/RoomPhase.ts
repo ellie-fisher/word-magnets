@@ -2,7 +2,7 @@ import Client from "../../clients/Client";
 import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
-import RoomPhaseType from "./RoomPhaseType";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
