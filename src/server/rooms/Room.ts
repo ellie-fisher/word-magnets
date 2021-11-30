@@ -70,7 +70,7 @@ class Room
 
 		if ( this.clients.addClient (client) )
 		{
-			this.sendDataPacket (PacketCommand.JoinRoom, client.id);
+			this.sendDataPacket (PacketCommand.JoinRoom, client.toJSON ());
 			this.sendInfo (client);
 			this.sendClientList (client);
 

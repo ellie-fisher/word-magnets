@@ -190,7 +190,7 @@ class RoomClients
 
 		this._clients.forEach (client =>
 		{
-			clients.push (client.id);
+			clients.push (client.toJSON ());
 		});
 
 		return clients;
