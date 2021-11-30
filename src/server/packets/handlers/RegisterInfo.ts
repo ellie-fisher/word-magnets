@@ -42,7 +42,7 @@ const registerInfoHandler = ( packet: Packet, client: Client ) =>
 		ClientNames.delete (prevName);
 	}
 
-	client.packets.sendAcceptPacket (packet);
+	client.packets.sendAcceptPacket (packet, client.id);
 };
 
 

@@ -15,6 +15,7 @@ packetManager.on (PacketCommand.RegisterInfo, ( packet: Packet ) =>
 	{
 		RegistrationModel.error = "";
 		AppModel.view = ViewEnum.MainMenu;
+		AppModel.clientID = body.data;
 	}
 	else
 	{
