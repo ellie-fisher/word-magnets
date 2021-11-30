@@ -8,9 +8,8 @@ import fixedWords from "../config/fixedWords";
 
 import { SentenceWord } from "../wordbanks/Sentence";
 
+import { MIN_SENTENCE_LEN, MAX_SENTENCE_LEN } from "../../common/rooms/constants";
 
-const MIN_SENTENCE_LEN = 1
-const MAX_SENTENCE_LEN = 120;
 
 class RoomWordbanks
 {
