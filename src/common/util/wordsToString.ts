@@ -22,13 +22,16 @@ const wordsToString = ( words: string[] ): string =>
 
 		string += word;
 
+		// Add a space if the current word is not the last, if it does not end with a hyphen, and
+		// if the next word does not start with a hyphen.
 		if ( i < length - 1 && !endHyphen && words[i + 1][0] !== "-" )
 		{
 			string += " ";
 		}
 	}
 
-	return string;
+	// TODO: Add a censor/sanitizer function
+	return string.replace (/[\x00-\x1F\x7F]/g, "");
 };
 
 
