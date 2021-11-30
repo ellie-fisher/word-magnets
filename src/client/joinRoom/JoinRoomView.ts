@@ -4,6 +4,7 @@ import PacketCommand from "../../common/packets/PacketCommand";
 import packetManager from "../packets/packetManager";
 
 import AppModel from "../app/AppModel";
+import JoinRoomModel from "./JoinRoomModel";
 import JoinRoomController from "./JoinRoomController";
 import ViewEnum from "../app/ViewEnum";
 
@@ -18,7 +19,28 @@ const JoinRoomView: Component =
 		[
 			m ("h3", "Join a Room"),
 
-			m ("div", "TBD"),  // TODO:
+			m ("input",
+			{
+				type: "text",
+
+				oninput ( event )
+				{
+					JoinRoomModel.roomID = event.target.value;
+				},
+
+				value: JoinRoomModel.roomID,
+			}),
+
+			m ("button",
+			{
+				onclick ()
+				{
+					JoinRoomController.joinRoom ();
+				}
+			},
+			"Join Room"),
+
+			m ("div", "TBD"),  // TODO: Replace temp components with room list
 		]);
 	},
 };
