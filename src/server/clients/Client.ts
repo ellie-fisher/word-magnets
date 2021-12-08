@@ -3,7 +3,7 @@ import { WebSocket } from "ws";
 import ClientInfo from "./ClientInfo";
 import Packet from "../../common/packets/Packet";
 import PacketManager from "../../common/packets/PacketManager";
-import Sentence from "../wordbanks/Sentence";
+import Sentence from "../../common/wordbanks/Sentence";
 
 
 class Client

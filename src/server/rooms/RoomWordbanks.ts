@@ -6,7 +6,7 @@ import wordsToString from "../../common/util/wordsToString";
 
 import fixedWords from "../config/fixedWords";
 
-import { SentenceWord } from "../wordbanks/Sentence";
+import { SentenceWord } from "../../common/wordbanks/Sentence";
 
 import { MIN_SENTENCE_LEN, MAX_SENTENCE_LEN } from "../../common/rooms/constants";
 
