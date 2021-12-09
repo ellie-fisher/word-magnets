@@ -12,26 +12,38 @@ class PacketManager
 	protected _socket: any;  // Sigh... We need this to be `any` to make it compatible with both
 	                         // the `ws` WebSocket and the native WebSocket.
 	protected _sequence: number;
-	protected _listeners: Multimap;
+	protected _listeners: Map<PacketType, Multimap>;
 	protected _fallback: Function;
 
 	constructor ( socket: any )
 	{
 		this._socket = socket;
 		this._sequence = 0;
-		this._listeners = new Multimap ();
+		this._listeners = new Map ();
 		this._fallback = () => {};
 	}
 
-	on ( command: PacketCommand, listener: Function ): Function
+	on ( type: PacketType, command: PacketCommand, listener: Function ): Function
 	{
-		this._listeners.add (command, listener);
+		if ( !this._listeners.has (type) )
+		{
+			this._listeners.set (type, new Multimap ());
+		}
+
+		this._listeners.get (type).add (command, listener);
+
 		return listener;
 	}
 
-	off ( command: PacketCommand, listener: Function ): Function
+	off ( type: PacketType, command: PacketCommand, listener: Function ): Function
 	{
-		this._listeners.delete (command, listener);
+		if ( !this._listeners.has (type) )
+		{
+			return null;
+		}
+
+		this._listeners.get (type).delete (command, listener);
+
 		return listener;
 	}
 
@@ -43,13 +55,15 @@ class PacketManager
 
 	handlePacket ( packet: Packet, ...args: any[] )
 	{
-		if ( !this._listeners.has (packet.command) )
+		const multimap = this._listeners.get (packet.type);
+
+		if ( !this._listeners.has (packet.type) || !multimap.has (packet.command) )
 		{
 			this._fallback (packet, ...args);
 		}
 		else
 		{
-			this._listeners.forEach (packet.command, listener =>
+			multimap.forEach (packet.command, listener =>
 			{
 				listener (packet, ...args);
 			});

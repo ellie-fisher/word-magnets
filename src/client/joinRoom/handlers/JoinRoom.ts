@@ -9,11 +9,19 @@ import packetManager from "../../packets/packetManager";
 import has from "../../../common/util/has";
 
 
-packetManager.on (PacketCommand.JoinRoom, ( packet: Packet ) =>
+packetManager.on (PacketType.Data, PacketCommand.JoinRoom, ( packet: Packet ) =>
+{
+	if ( packet.body.id === AppModel.clientID )
+	{
+		AppModel.view = ViewEnum.Room;
+	}
+});
+
+packetManager.on (PacketType.Response, PacketCommand.JoinRoom, ( packet: Packet ) =>
 {
 	const { body } = packet;
 
-	if ( packet.type === PacketType.Data || body.ok )
+	if ( body.ok )
 	{
 		AppModel.view = ViewEnum.Room;
 	}

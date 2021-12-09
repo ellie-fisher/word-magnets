@@ -1,4 +1,5 @@
 import Packet from "../../../common/packets/Packet";
+import PacketType from "../../../common/packets/PacketType";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
 import ViewEnum from "../../app/ViewEnum";
@@ -7,7 +8,7 @@ import packetManager from "../../packets/packetManager";
 import CreateRoomModel from "../../createRoom/CreateRoomModel";
 
 
-packetManager.on (PacketCommand.CreateRoom, ( packet: Packet ) =>
+packetManager.on (PacketType.Response, PacketCommand.CreateRoom, ( packet: Packet ) =>
 {
 	const { body } = packet;
 
