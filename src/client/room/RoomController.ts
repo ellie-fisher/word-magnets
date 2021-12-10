@@ -6,7 +6,18 @@ import packetManager from "../packets/packetManager";
 
 const RoomController =
 {
-	// TODO:
+	addClient ( clientData )
+	{
+		RoomModel.clients[clientData.id] = { ...clientData };
+	},
+
+	setClients ( clients: any[] )
+	{
+		clients.forEach (clientData =>
+		{
+			RoomModel.clients[clientData.id] = { ...clientData };
+		});
+	},
 };
 
 

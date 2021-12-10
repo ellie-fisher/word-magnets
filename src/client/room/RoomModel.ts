@@ -7,6 +7,7 @@ const RoomModel =
 	info: {} as IRoomInfo,
 	phase: RoomPhaseType.Create,
 	isPhaseEnd: false,
+	clients: {},
 };
 
 
