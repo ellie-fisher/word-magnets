@@ -6,6 +6,7 @@
 
 interface IRoomInfo
 {
+	id?: string;
 	name: string;
 	password: string;
 	maxClients: number;
