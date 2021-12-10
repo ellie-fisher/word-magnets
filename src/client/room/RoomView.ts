@@ -14,6 +14,8 @@ import CreatePhaseView from "./CreatePhase/CreatePhaseView";
 import "./handlers/RoomInfo";
 import "./handlers/StartPhase";
 import "./handlers/EndPhase";
+import "./handlers/ClientList";
+import "./handlers/JoinRoom";
 
 
 const RoomView: Component =

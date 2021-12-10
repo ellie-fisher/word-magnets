@@ -6,13 +6,15 @@ import ViewEnum from "../../app/ViewEnum";
 import AppModel from "../../app/AppModel";
 import packetManager from "../../packets/packetManager";
 
+import RoomController from "../RoomController";
 
-packetManager.on (PacketType.Response, PacketCommand.JoinRoom, ( packet: Packet ) =>
+
+packetManager.on (PacketType.Data, PacketCommand.JoinRoom, ( packet: Packet ) =>
 {
-	const { body } = packet;
-
-	if ( body.ok )
+	if ( packet.body.id === AppModel.clientID )
 	{
 		AppModel.view = ViewEnum.Room;
 	}
+
+	RoomController.addClient ({ ...packet.body });
 });
