@@ -14,6 +14,7 @@ import WordbankView from "./WordbankView";
 import wordsToString from "../../../common/util/wordsToString";
 
 import "./handlers/Wordbanks";
+import "./handlers/EndPhase";
 
 
 const CreatePhaseView: Component =
