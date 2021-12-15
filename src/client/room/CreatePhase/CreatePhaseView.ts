@@ -1,8 +1,5 @@
 import m, { Component } from "mithril";
 
-import PacketCommand from "../../../common/packets/PacketCommand";
-import packetManager from "../../packets/packetManager";
-
 import AppModel from "../../app/AppModel";
 import RoomModel from "../RoomModel";
 
@@ -11,10 +8,15 @@ import CreatePhaseModel from "./CreatePhaseModel";
 
 import WordbankView from "./WordbankView";
 
+import PacketCommand from "../../../common/packets/PacketCommand";
+import packetManager from "../../packets/packetManager";
+
+import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
+
 import wordsToString from "../../../common/util/wordsToString";
 
 import "./handlers/Wordbanks";
-import "./handlers/EndPhase";
+import "./handlers/PhaseData";
 
 
 const CreatePhaseView: Component =
@@ -27,12 +29,12 @@ const CreatePhaseView: Component =
 			{
 				wordbank:
 				{
-					displayName: "Player Names",
+					displayName: "Players",
 					words: Object.keys (RoomModel.clients).map (id => RoomModel.clients[id]),
 				},
 
 				isName: true,
-				disableButtons: RoomModel.isPhaseEnd,
+				disableButtons: RoomModel.phaseState === RoomPhaseState.End,
 			} as any),
 
 			...CreatePhaseModel.wordbanks.map (( wordbank, wordbankIndex ) =>
@@ -42,7 +44,7 @@ const CreatePhaseView: Component =
 					wordbank,
 					wordbankIndex,
 					isName: false,
-					disableButtons: RoomModel.isPhaseEnd,
+					disableButtons: RoomModel.phaseState === RoomPhaseState.End,
 				} as any);
 			}),
 

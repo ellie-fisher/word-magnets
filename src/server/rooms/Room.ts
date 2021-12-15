@@ -11,6 +11,7 @@ import Client from "../clients/Client";
 
 import RoomPhase from "./phases/RoomPhase";
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
 import CreatePhase from "./phases/CreatePhase";
 import VotePhase from "./phases/VotePhase";
 import ResultsPhase from "./phases/ResultsPhase";
@@ -72,6 +73,7 @@ class Room
 		{
 			this.sendDataPacket (PacketCommand.JoinRoom, client.toJSON ());
 			this.sendInfo (client);
+			this.sendPhaseData (client);
 			this.sendClientList (client);
 
 			if ( this.phase.type === RoomPhaseType.Create )
@@ -190,6 +192,16 @@ class Room
 		}
 	}
 
+	sendPhaseData ( client: Client )
+	{
+		const { state } = this.phase;
+
+		if ( state === RoomPhaseState.Start || state === RoomPhaseState.Running )
+		{
+			this.phase.sendData (client);
+		}
+	}
+
 	sendClientList ( client?: Client )
 	{
 		if ( arguments.length <= 0 )
@@ -228,6 +240,7 @@ class Room
 		data.ownerID = owner.id;
 		data.ownerName = owner.info.name;
 		data.numClients = this.clients.size;
+		data.phase = this.phase.type;
 
 		return data;
 	}

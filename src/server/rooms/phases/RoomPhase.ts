@@ -3,18 +3,20 @@ import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
 import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
 
-const DEFAULT_START_SEC = 10;
+const DEFAULT_START_TIME = 10;
 
 class RoomPhase
 {
 	public startTime: number;
 
 	protected _type: RoomPhaseType;
+	protected _state: RoomPhaseState;
 	protected _timeLeft: number;
 	protected _timeout;
 
@@ -28,7 +30,10 @@ class RoomPhase
 		this._clients = clients;
 		this._wordbanks = wordbanks;
 
-		this.startTime = DEFAULT_START_SEC;
+		this._type = RoomPhaseType.Unknown;
+		this._state = RoomPhaseState.Ready;
+
+		this.startTime = DEFAULT_START_TIME;
 		this._timeLeft = 0;
 		this._timeout = -1;
 	}
@@ -37,7 +42,9 @@ class RoomPhase
 	{
 		await this._onPreStart ();
 
-		this._clients.sendDataPacket (PacketCommand.StartPhase, this._type);
+		this._state = RoomPhaseState.Start;
+
+		this.sendPhaseDataToAll ();
 
 		this._timeLeft = this.startTime;
 		this._tick (onEnd);
@@ -45,6 +52,7 @@ class RoomPhase
 
 	protected _tick ( onEnd: Function )
 	{
+		this._state = RoomPhaseState.Running;
 		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._timeLeft });
 
 		if ( this._timeLeft <= 0 )
@@ -60,7 +68,8 @@ class RoomPhase
 
 	protected async _onEnd ( onEnd: Function )
 	{
-		this._clients.sendDataPacket (PacketCommand.EndPhase, this._type);
+		this._state = RoomPhaseState.End;
+		this.sendPhaseDataToAll ();
 	}
 
 	get type (): RoomPhaseType
@@ -68,9 +77,32 @@ class RoomPhase
 		return this._type;
 	}
 
+	get state (): RoomPhaseState
+	{
+		return this._state;
+	}
+
 	receivePacket ( packet: Packet, client: Client ) {}
 
-	protected async _onPreStart () {}
+	sendData ( recipient: Client )
+	{
+		this.sendPhaseData (recipient);
+	}
+
+	sendPhaseData ( recipient: Client )
+	{
+		recipient.packets.sendDataPacket (PacketCommand.PhaseData, { type: this._type, state: this._state });
+	}
+
+	sendPhaseDataToAll ()
+	{
+		this._clients.forEach (this.sendPhaseData.bind (this));
+	}
+
+	protected async _onPreStart ()
+	{
+		this._state = RoomPhaseState.PreStart;
+	}
 }
 
 

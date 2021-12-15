@@ -22,6 +22,8 @@ class CreatePhase extends RoomPhase
 
 	async _onPreStart ()
 	{
+		super._onPreStart ();
+
 		this._clients.forEach (client =>
 		{
 			client.clearSentence ();
@@ -31,8 +33,16 @@ class CreatePhase extends RoomPhase
 		await this._wordbanks.fetchWords ();
 
 		this._clients.onNewRound ();
-		this._clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
-		this._clients.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
+
+		this._clients.forEach (this.sendData.bind (this));
+	}
+
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
+
+		recipient.packets.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
+		recipient.packets.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -64,7 +74,7 @@ class CreatePhase extends RoomPhase
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		super._onEnd (onEnd);
 		setTimeout (onEnd, CREATE_ON_END_WAIT);
 	}
 }

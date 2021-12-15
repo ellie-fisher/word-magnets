@@ -8,8 +8,10 @@ import Client from "../../clients/Client";
 import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
+import Sentence from "../../../common/wordbanks/Sentence";
 
-const VOTE_START_SEC = 20;
+
+const VOTE_START_TIME = 20;
 const VOTE_ON_END_WAIT = 5000;
 
 class VotePhase extends RoomPhase
@@ -19,28 +21,36 @@ class VotePhase extends RoomPhase
 		super (info, clients, wordbanks);
 
 		this._type = RoomPhaseType.Vote;
-		this.startTime = VOTE_START_SEC;
+		this.startTime = VOTE_START_TIME;
 	}
 
 	async _onPreStart ()
 	{
+		super._onPreStart ();
+
 		this._clients.assignVoteIDs ();
 
 		// Send all sentences but the player's own.
-		this._clients.forEach (( recipient: Client ) =>
+		this._clients.forEach (this.sendData.bind (this));
+	}
+
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
+
+		const sentences: Sentence[] = [];
+
+		this._clients.forEach (( sentenceClient: Client ) =>
 		{
-			const sentences = [];
-
-			this._clients.forEach (( sentenceClient: Client ) =>
+			if ( recipient !== sentenceClient && sentenceClient.hasVoteID () )
 			{
-				if ( recipient !== sentenceClient && sentenceClient.voteID >= 0 )
-				{
-					sentences.push ([sentenceClient.sentence.value, sentenceClient.voteID]);
-				}
-			});
+				const { sentence } = sentenceClient;
 
-			recipient.packets.sendDataPacket (PacketCommand.SentenceList, sentences);
+				sentences.push ({ value: sentence.value, voteID: sentence.voteID });
+			}
 		});
+
+		recipient.packets.sendDataPacket (PacketCommand.SentenceList, sentences);
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -77,7 +87,7 @@ class VotePhase extends RoomPhase
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		super._onEnd (onEnd);
 
 		setTimeout (() =>
 		{

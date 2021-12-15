@@ -9,7 +9,7 @@ import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
 
-const GAME_END_START_SEC = 20;
+const GAME_END_START_TIME = 20;
 
 class GameEndPhase extends RoomPhase
 {
@@ -18,7 +18,7 @@ class GameEndPhase extends RoomPhase
 		super (info, clients, wordbanks);
 
 		this._type = RoomPhaseType.GameEnd;
-		this.startTime = GAME_END_START_SEC;
+		this.startTime = GAME_END_START_TIME;
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -28,7 +28,7 @@ class GameEndPhase extends RoomPhase
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		super._onEnd (onEnd);
 		this._info.currentRound = 1;
 		onEnd ();
 	}

@@ -16,12 +16,11 @@ class Client
 	public score: number;
 	public sentence: Sentence;
 	public vote: number;
-	public voteID: number;
 
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
 		// @ts-ignore
-		socket.fmClient = this;  // Monkey-patch custom property.
+		socket.fmClient = this;  // Monkey-patch custom property. TODO: Rename to something else
 
 		this.id = id;
 		this.socket = socket;
@@ -29,22 +28,31 @@ class Client
 		this.packets = new PacketManager (socket);
 		this.roomID = "";
 		this.score = 0;
-		this.sentence = { value: "", votes: 0 };
+		this.sentence = { value: "", votes: 0, voteID: -1 };
 		this.vote = -1;
-		this.voteID = -1;
 	}
 
 	clearSentence ()
 	{
 		this.sentence.value = "";
 		this.sentence.votes = 0;
+		this.sentence.voteID = -1;
+	}
+
+	hasSentence (): boolean
+	{
+		return this.sentence.value !== "";
+	}
+
+	hasVoteID (): boolean
+	{
+		return this.sentence.voteID >= 0;
 	}
 
 	onNewRound ()
 	{
 		this.clearSentence ();
 		this.vote = -1;
-		this.voteID = -1;
 	}
 
 	onNewGame ()
@@ -59,7 +67,6 @@ class Client
 		this.roomID = "";
 		this.score = 0;
 		this.vote = -1;
-		this.voteID = -1;
 	}
 
 	sendPacket ( packet: Packet )

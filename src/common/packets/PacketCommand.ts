@@ -11,8 +11,7 @@ enum PacketCommand
 	LeaveRoom,
 	DestroyRoom,
 
-	StartPhase,
-	EndPhase,
+	PhaseData,
 
 	KickClient,
 	BanClient,  // Unused until actual accounts are supported.

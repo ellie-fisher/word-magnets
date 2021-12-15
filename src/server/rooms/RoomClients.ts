@@ -60,7 +60,7 @@ class RoomClients
 
 		voteClients.forEach (( client: Client, index: number ) =>
 		{
-			client.voteID = index;
+			client.sentence.voteID = index;
 			this._voteClients.set (index, client);
 		});
 	}

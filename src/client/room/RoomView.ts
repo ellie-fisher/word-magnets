@@ -10,10 +10,10 @@ import ViewEnum from "../app/ViewEnum";
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 
 import CreatePhaseView from "./CreatePhase/CreatePhaseView";
+import VotePhaseView from "./VotePhase/VotePhaseView";
 
 import "./handlers/RoomInfo";
-import "./handlers/StartPhase";
-import "./handlers/EndPhase";
+import "./handlers/PhaseData";
 import "./handlers/ClientList";
 import "./handlers/JoinRoom";
 
@@ -22,16 +22,20 @@ const RoomView: Component =
 {
 	view ()
 	{
-		const { info, phase } = RoomModel;
+		const { info, phaseType } = RoomModel;
 
 		const headingStyle = { padding: "1vw" };
 
 		let view: any;
 
-		switch ( phase )
+		switch ( phaseType )
 		{
 			case RoomPhaseType.Create:
 				view = m (CreatePhaseView);
+				break;
+
+			case RoomPhaseType.Vote:
+				view = m (VotePhaseView);
 				break;
 
 			default:

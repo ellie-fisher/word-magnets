@@ -8,8 +8,10 @@ interface SentenceWord
 interface Sentence
 {
 	value: string,
-	votes: number,
+	votes?: number,
+	voteID?: number,
 }
+
 
 export default Sentence;
 

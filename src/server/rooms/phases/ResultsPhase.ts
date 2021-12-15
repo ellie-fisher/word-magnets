@@ -8,6 +8,8 @@ import Client from "../../clients/Client";
 import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
+import Sentence from "../../../common/wordbanks/Sentence";
+
 
 class ResultsPhase extends RoomPhase
 {
@@ -19,22 +21,24 @@ class ResultsPhase extends RoomPhase
 
 	async _onPreStart ()
 	{
+		super._onPreStart ();
+
 		const scores = {};
 
 		this._clients.forEach (( client: Client ) =>
 		{
-			if ( client.voteID >= 0 )
+			if ( client.hasVoteID () )
 			{
-				scores[client.id] =
-				{
-					voteID: client.voteID,
-					votes: client.sentence.votes,
-					score: client.score,
-				};
+				scores[client.id] = client.sentence;
 			}
 		});
 
 		this._clients.sendDataPacket (PacketCommand.SentenceScores, scores);
+	}
+
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -44,7 +48,7 @@ class ResultsPhase extends RoomPhase
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		super._onEnd (onEnd);
 
 		if ( this._info.currentRound < this._info.maxRounds )
 		{
