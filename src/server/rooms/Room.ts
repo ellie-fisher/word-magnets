@@ -240,7 +240,6 @@ class Room
 		data.ownerID = owner.id;
 		data.ownerName = owner.info.name;
 		data.numClients = this.clients.size;
-		data.phase = this.phase.type;
 
 		return data;
 	}
