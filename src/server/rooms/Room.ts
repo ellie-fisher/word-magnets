@@ -194,12 +194,7 @@ class Room
 
 	sendPhaseData ( client: Client )
 	{
-		const { state } = this.phase;
-
-		if ( state === RoomPhaseState.Start || state === RoomPhaseState.Running )
-		{
-			this.phase.sendData (client);
-		}
+		this.phase.sendData (client);
 	}
 
 	sendClientList ( client?: Client )
