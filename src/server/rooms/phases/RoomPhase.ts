@@ -17,7 +17,6 @@ class RoomPhase
 
 	protected _type: RoomPhaseType;
 	protected _state: RoomPhaseState;
-	protected _timeLeft: number;
 	protected _timeout;
 
 	protected _info: RoomInfo;
@@ -34,7 +33,6 @@ class RoomPhase
 		this._state = RoomPhaseState.Ready;
 
 		this.startTime = DEFAULT_START_TIME;
-		this._timeLeft = 0;
 		this._timeout = -1;
 	}
 
@@ -46,22 +44,22 @@ class RoomPhase
 
 		this.sendPhaseData ();
 
-		this._timeLeft = this.startTime;
+		this._info.timeLeft = this.startTime;
 		this._tick (onEnd);
 	}
 
 	protected _tick ( onEnd: Function )
 	{
 		this._state = RoomPhaseState.Running;
-		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._timeLeft });
+		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._info.timeLeft });
 
-		if ( this._timeLeft <= 0 )
+		if ( this._info.timeLeft <= 0 )
 		{
 			this._onEnd (onEnd);
 		}
 		else
 		{
-			this._timeLeft--;
+			this._info.timeLeft--;
 			this._timeout = setTimeout (() => this._tick (onEnd), 1000);
 		}
 	}
