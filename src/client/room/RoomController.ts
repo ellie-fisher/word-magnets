@@ -13,6 +13,11 @@ const RoomController =
 		RoomModel.clients[clientData.id] = { ...clientData };
 	},
 
+	removeClient ( clientID: string )
+	{
+		delete RoomModel.clients[clientID];
+	},
+
 	setClients ( clients: any[] )
 	{
 		clients.forEach (clientData =>

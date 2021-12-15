@@ -16,6 +16,7 @@ import "./handlers/RoomInfo";
 import "./handlers/PhaseData";
 import "./handlers/ClientList";
 import "./handlers/JoinRoom";
+import "./handlers/LeaveRoom";
 
 
 const RoomView: Component =
