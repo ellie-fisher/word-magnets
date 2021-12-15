@@ -44,7 +44,7 @@ class RoomPhase
 
 		this._state = RoomPhaseState.Start;
 
-		this.sendPhaseDataToAll ();
+		this.sendPhaseData ();
 
 		this._timeLeft = this.startTime;
 		this._tick (onEnd);
@@ -69,7 +69,7 @@ class RoomPhase
 	protected async _onEnd ( onEnd: Function )
 	{
 		this._state = RoomPhaseState.End;
-		this.sendPhaseDataToAll ();
+		this.sendPhaseData ();
 	}
 
 	get type (): RoomPhaseType
@@ -89,14 +89,16 @@ class RoomPhase
 		this.sendPhaseData (recipient);
 	}
 
-	sendPhaseData ( recipient: Client )
+	sendPhaseData ( recipient?: Client )
 	{
-		recipient.packets.sendDataPacket (PacketCommand.PhaseData, { type: this._type, state: this._state });
-	}
-
-	sendPhaseDataToAll ()
-	{
-		this._clients.forEach (this.sendPhaseData.bind (this));
+		if ( arguments.length <= 0 )
+		{
+			this._clients.forEach (this.sendPhaseData.bind (this));
+		}
+		else
+		{
+			recipient.packets.sendDataPacket (PacketCommand.PhaseData, { type: this._type, state: this._state });
+		}
 	}
 
 	protected async _onPreStart ()
