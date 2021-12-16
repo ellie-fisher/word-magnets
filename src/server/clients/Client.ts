@@ -61,6 +61,11 @@ class Client
 		this.score = 0;
 	}
 
+	// TODO: A potentially good idea would be to have clients be just an object with an ID and a name,
+	//       and have everything else "wrap around" it when a client joins a server, so it can simply
+	//       be detached when they leave a room and we don't have to worry about clearing any of this.
+	//
+	//       Kind of similar to how the "entity" part of ECS is just an empty vessel with an ID.
 	onLeaveRoom ()
 	{
 		this.clearSentence ();
