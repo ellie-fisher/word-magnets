@@ -23,7 +23,7 @@ const roomInfoFields =
 	maxClients:
 	{
 		type: "integer",
-		min: 1,
+		min: 2,
 		max: 16,
 		increments: 1,
 		defaultValue: 8,
