@@ -20,7 +20,15 @@ socket.onopen = function ()
 socket.onclose = function ( event )
 {
 	AppModel.view = ViewEnum.SocketError;
-	AppModel.socketErrorMsg = event.reason;
+
+	if ( event.reason === "" )
+	{
+		AppModel.socketErrorMsg = `The connection to the server closed. (Code: ${event.code})`;
+	}
+	else
+	{
+		AppModel.socketErrorMsg = event.reason;
+	}
 
 	m.redraw ();
 };
@@ -29,8 +37,6 @@ socket.onerror = function ( event )
 {
 	AppModel.view = ViewEnum.SocketError;
 	AppModel.socketErrorMsg = "Unexpected socket error.";
-
-	console.log ("Socket Error:", event);
 
 	m.redraw ();
 };
