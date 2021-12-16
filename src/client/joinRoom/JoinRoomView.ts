@@ -17,6 +17,15 @@ const JoinRoomView: Component =
 	{
 		return m ("div",
 		[
+			m ("button",
+			{
+				onclick ()
+				{
+					AppModel.view = ViewEnum.MainMenu;
+				},
+			},
+			"<< Back"),
+
 			m ("h3", "Join a Room"),
 
 			m ("input",
