@@ -1,3 +1,4 @@
+// TODO: Add "description" functionality
 const roomInfoFields =
 {
 	name:
@@ -73,7 +74,17 @@ const roomInfoFields =
 	// {
 	// 	type: "boolean",
 	// 	defaultValue: true,
-	// 	displayName: "Allow player names in sentences",
+	// 	displayName: "Player names in sentences",
+	// 	description: "Allow players to use player names in their sentences",
+	// }
+
+	// TODO: Add toggle for players who join after the round starts to create sentences, vote, etc.
+	// lateParticipation:
+	// {
+	// 	type: "boolean",
+	// 	defaultValue: true,
+	// 	displayName: "Allow late participation",
+	// 	description: "Allow players who join after the round has started to create sentences, vote, etc.",
 	// }
 };
 
