@@ -6,7 +6,7 @@ const roomInfoFields =
 		type: "string",
 		min: 1,
 		max: 32,
-		defaultValue: "My Server",
+		defaultValue: "My Room",
 		displayName: "Name",
 	},
 
@@ -58,15 +58,15 @@ const roomInfoFields =
 	// 	displayName: "Enable chat",
 	// }
 
-	// TODO: Add ability to not show on server list and to join directly from an ID.
+	// TODO: Add ability to not show on room list and to join directly from an ID.
 	//       This should replace passwords because it serves the same purpose as passwords without
-	//       clogging up the server list.
+	//       clogging up the room list.
 	//
 	// showOnList:
 	// {
 	// 	type: "boolean",
 	// 	defaultValue: true,
-	// 	displayName: "Show on server list",
+	// 	displayName: "Show on room list",
 	// }
 
 	// TODO: Add toggle for using player names in sentences.
