@@ -7,18 +7,44 @@ import VotePhaseController from "./VotePhaseController";
 import VotePhaseModel from "./VotePhaseModel";
 
 import "./handlers/SentenceList";
+import "./handlers/PhaseData";
 
 
 const VotePhaseView: Component =
 {
 	view ()
 	{
-		return m ("div", VotePhaseModel.sentenceList.map (sentenceData => m ("div",
+		return m ("table",
 		[
-			m ("button", "Vote"),
-			m ("pre", sentenceData.voteID),
-			m ("span", sentenceData.value),
-		])));
+			m ("thead", m ("tr",
+			[
+				m ("th", ""),
+				m ("th", "Vote ID"),
+				m ("th", "Sentence"),
+			])),
+
+			m ("tbody", VotePhaseModel.sentenceList.map (sentenceData =>
+			{
+				return m ("tr",
+				{
+					style: sentenceData.voteID === VotePhaseModel.vote
+						? { "background-color": "#7B87B7" }
+						: {},
+				},
+				[
+					m ("td", m ("button",
+					{
+						onclick ()
+						{
+							VotePhaseController.setVote (sentenceData.voteID);
+						},
+					}, "Vote")),
+
+					m ("td", m ("pre", sentenceData.voteID)),
+					m ("td", m ("span", sentenceData.value)),
+				]);
+			})),
+		]);
 	},
 };
 

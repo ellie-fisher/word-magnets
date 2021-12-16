@@ -1,9 +1,10 @@
-import { SentenceWord } from "../../../common/wordbanks/Sentence";
+import Sentence from "../../../common/wordbanks/Sentence";
 
 
 const VotePhaseModel =
 {
-	sentenceList: [],
+	sentenceList: [] as Sentence[],
+	vote: -1,
 };
 
 

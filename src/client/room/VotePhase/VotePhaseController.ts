@@ -6,19 +6,27 @@ import RoomModel from "../RoomModel";
 import PacketCommand from "../../../common/packets/PacketCommand";
 import packetManager from "../../packets/packetManager";
 
-import wordsToString from "../../../common/util/wordsToString";
-
-import { SentenceWord } from "../../../common/wordbanks/Sentence";
-
-import { MAX_SENTENCE_LEN } from "../../../common/rooms/constants";
-
 
 const VotePhaseController =
 {
-	setSentenceList ( list: any[][] )
+	setSentenceList ( list: any[] )
 	{
 		VotePhaseModel.sentenceList = list;
 	},
+
+	setVote ( vote: number )
+	{
+		if ( VotePhaseModel.sentenceList.some (sentenceData => sentenceData.voteID === vote) )
+		{
+			VotePhaseModel.vote = vote;
+		}
+	},
+
+	clearSentenceList ()
+	{
+		VotePhaseModel.sentenceList = [];
+		VotePhaseModel.vote = -1;
+	}
 };
 
 
