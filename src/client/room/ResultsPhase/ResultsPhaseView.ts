@@ -24,32 +24,33 @@ const ResultsPhaseView: Component =
 
 		scoreArray.sort (( sentenceA, sentenceB ) => sentenceB.votes - sentenceA.votes);
 
-		return m ("table",
-		[
-			m ("thead", m ("tr",
+		return scoreArray.length <= 0 ? "No results to show. Either nobody submitted anything, or they left."
+			: m ("table",
 			[
-				m ("th", "Author"),
-				m ("th", "Vote ID"),
-				m ("th", "Sentence"),
-				m ("th", "Votes"),
-			])),
-
-			m ("tbody", scoreArray.map (sentenceData =>
-			{
-				return m ("tr",
-				{
-					style: sentenceData.voteID === VotePhaseModel.vote
-						? { "background-color": "#BB87B7" }
-						: {},
-				},
+				m ("thead", m ("tr",
 				[
-					m ("td", m ("strong", RoomController.getClientName (sentenceData.clientID))),
-					m ("td", m ("pre", sentenceData.voteID)),
-					m ("td", m ("span", sentenceData.value)),
-					m ("td", m ("span", sentenceData.votes)),
-				]);
-			})),
-		]);
+					m ("th", "Author"),
+					m ("th", "Vote ID"),
+					m ("th", "Sentence"),
+					m ("th", "Votes"),
+				])),
+
+				m ("tbody", scoreArray.map (sentenceData =>
+				{
+					return m ("tr",
+					{
+						style: sentenceData.voteID === VotePhaseModel.vote
+							? { "background-color": "#BB87B7" }
+							: {},
+					},
+					[
+						m ("td", m ("strong", RoomController.getClientName (sentenceData.clientID))),
+						m ("td", m ("pre", sentenceData.voteID)),
+						m ("td", m ("span", sentenceData.value)),
+						m ("td", m ("span", sentenceData.votes)),
+					]);
+				})),
+			]);
 	},
 };
 
