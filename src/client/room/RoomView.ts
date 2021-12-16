@@ -12,6 +12,7 @@ import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 import CreatePhaseView from "./CreatePhase/CreatePhaseView";
 import VotePhaseView from "./VotePhase/VotePhaseView";
 import ResultsPhaseView from "./ResultsPhase/ResultsPhaseView";
+import GameEndPhaseView from "./GameEndPhase/GameEndPhaseView";
 
 import "./handlers/RoomInfo";
 import "./handlers/PhaseData";
@@ -44,6 +45,10 @@ const RoomView: Component =
 				view = m (ResultsPhaseView);
 				break;
 
+			case RoomPhaseType.GameEnd:
+				view = m (GameEndPhaseView);
+				break;
+
 			default:
 				view = m ("div", [m ("strong", "ERROR:"), " Unknown/Unhandled room phase"]);
 				break;
@@ -52,7 +57,7 @@ const RoomView: Component =
 		return m ("div",
 		[
 			m ("span", { style: headingStyle }, [m ("strong", "Time Left: "), info.timeLeft]),
-			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound} of ${info.maxRounds}`]),
+			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound + 1} of ${info.maxRounds}`]),
 			m ("span", { style: headingStyle }, [m ("strong", "ID: "), info.id]),
 
 			m ("hr"),
