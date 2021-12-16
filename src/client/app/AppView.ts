@@ -7,6 +7,7 @@ import RegistrationView from "../registration/RegistrationView";
 import MainMenuView from "../mainMenu/MainMenuView";
 import CreateRoomView from "../createRoom/CreateRoomView";
 import JoinRoomView from "../joinRoom/JoinRoomView";
+import RoomDestroyedView from "../roomDestroyed/RoomDestroyedView";
 import RoomView from "../room/RoomView";
 
 import socket from "./socket"; /* Invoke side effects: */ socket;
@@ -51,6 +52,11 @@ const AppView: Component =
 			case ViewEnum.JoinRoom:
 			{
 				return m (JoinRoomView);
+			}
+
+			case ViewEnum.RoomDestroyed:
+			{
+				return m (RoomDestroyedView);
 			}
 
 			case ViewEnum.Room:

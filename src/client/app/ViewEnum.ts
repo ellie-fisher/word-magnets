@@ -6,6 +6,7 @@ enum ViewEnum
 	MainMenu,
 	CreateRoom,
 	JoinRoom,
+	RoomDestroyed,
 	Room,
 };
 
