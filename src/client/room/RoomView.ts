@@ -11,6 +11,7 @@ import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 
 import CreatePhaseView from "./CreatePhase/CreatePhaseView";
 import VotePhaseView from "./VotePhase/VotePhaseView";
+import ResultsPhaseView from "./ResultsPhase/ResultsPhaseView";
 
 import "./handlers/RoomInfo";
 import "./handlers/PhaseData";
@@ -37,6 +38,10 @@ const RoomView: Component =
 
 			case RoomPhaseType.Vote:
 				view = m (VotePhaseView);
+				break;
+
+			case RoomPhaseType.Results:
+				view = m (ResultsPhaseView);
 				break;
 
 			default:
