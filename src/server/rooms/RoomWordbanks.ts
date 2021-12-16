@@ -29,6 +29,7 @@ class RoomWordbanks
 		];
 	}
 
+	// TODO: Check rate limit: https://developer.wordnik.com/gettingstarted
 	async fetchWords ( maxRetries: number = 2, timeout: number = 5000 )
 	{
 		await Promise.all (this._wordbanks.map (wordbank => wordbank.fetchWords (maxRetries, timeout)));
