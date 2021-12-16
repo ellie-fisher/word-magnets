@@ -67,6 +67,14 @@ const roomInfoFields =
 	// 	defaultValue: true,
 	// 	displayName: "Show on server list",
 	// }
+
+	// TODO: Add toggle for using player names in sentences
+	// usePlayerNames:
+	// {
+	// 	type: "boolean",
+	// 	defaultValue: true,
+	// 	displayName: "Allow player names in sentences",
+	// }
 };
 
 
