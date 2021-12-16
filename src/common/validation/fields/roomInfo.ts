@@ -50,7 +50,7 @@ const roomInfoFields =
 		displayName: "Rounds",
 	},
 
-	// TODO: Add chat capabilities
+	// TODO: Add chat capabilities.
 	// enableChat:
 	// {
 	// 	type: "boolean",
@@ -69,7 +69,7 @@ const roomInfoFields =
 	// 	displayName: "Show on server list",
 	// }
 
-	// TODO: Add toggle for using player names in sentences
+	// TODO: Add toggle for using player names in sentences.
 	// usePlayerNames:
 	// {
 	// 	type: "boolean",
@@ -85,6 +85,15 @@ const roomInfoFields =
 	// 	defaultValue: true,
 	// 	displayName: "Allow late participation",
 	// 	description: "Allow players who join after the round has started to create sentences, vote, etc.",
+	// }
+
+	// TODO: Add toggle for requiring players to have created a sentence in order to vote.
+	// voteRequiresSentence:
+	// {
+	// 	type: "boolean",
+	// 	defaultValue: false,
+	// 	displayName: "Require sentence to vote",
+	// 	description: "Requires players to have created a sentence of their own in order to vote for other players' sentences.",
 	// }
 };
 
