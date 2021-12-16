@@ -14,7 +14,7 @@ const VotePhaseView: Component =
 {
 	view ()
 	{
-		return VotePhaseModel.sentenceList.length <= 0 ? "No sentences are available."
+		return VotePhaseModel.sentenceList.length <= 0 ? "No sentences are available to vote for."
 			: m ("table",
 			[
 				m ("thead", m ("tr",
