@@ -48,9 +48,17 @@ class Room
 		this.phase = this._phases.get (RoomPhaseType.Create);
 	}
 
-	destroy ( reason: string = "The room was closed." )
+	destroy ( reason: string = "The room was closed.", ignoreOwner: boolean = false )
 	{
-		this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		if ( ignoreOwner )
+		{
+			this.sendDataPacket (PacketCommand.DestroyRoom, reason, [this.clients.getOwner ().id]);
+		}
+		else
+		{
+			this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		}
+
 		this.clients.forEach (client => client.onLeaveRoom ());
 		this.clients.clearClients ();
 
@@ -89,7 +97,7 @@ class Room
 	{
 		if ( this.clients.isOwner (client) )
 		{
-			this.destroy ("The room was closed.");
+			this.destroy ("The room was closed.", true);
 		}
 		else
 		{
