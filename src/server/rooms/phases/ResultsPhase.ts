@@ -55,6 +55,8 @@ class ResultsPhase extends RoomPhase
 			this._info.currentRound++;
 		}
 
+		this._clients.sendClientList ();
+
 		onEnd ();
 	}
 }

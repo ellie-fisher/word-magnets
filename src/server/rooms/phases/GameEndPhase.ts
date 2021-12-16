@@ -29,7 +29,10 @@ class GameEndPhase extends RoomPhase
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
-		this._info.currentRound = 1;
+
+		this._info.currentRound = 0;
+		this._clients.onNewGame ();
+
 		onEnd ();
 	}
 }

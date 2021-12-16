@@ -179,6 +179,18 @@ class RoomClients
 		});
 	}
 
+	sendClientList ( client?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+		}
+		else
+		{
+			client.packets.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+		}
+	}
+
 	forEach ( callback )
 	{
 		this._clients.forEach (callback);

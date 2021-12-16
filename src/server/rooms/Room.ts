@@ -131,7 +131,7 @@ class Room
 
 			case RoomPhaseType.GameEnd:
 			{
-				this._phases.get (RoomPhaseType.GameEnd);
+				this.phase = this._phases.get (RoomPhaseType.Create);
 				break;
 			}
 
@@ -199,14 +199,7 @@ class Room
 
 	sendClientList ( client?: Client )
 	{
-		if ( arguments.length <= 0 )
-		{
-			this.sendDataPacket (PacketCommand.ClientList, this.clients.toJSON ());
-		}
-		else
-		{
-			client.packets.sendDataPacket (PacketCommand.ClientList, this.clients.toJSON ());
-		}
+		this.clients.sendClientList (client);
 	}
 
 	sendWordbanks ( client?: Client )
