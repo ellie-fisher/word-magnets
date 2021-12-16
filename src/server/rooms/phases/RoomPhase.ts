@@ -2,20 +2,21 @@ import Client from "../../clients/Client";
 import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
-import RoomPhaseType from "./RoomPhaseType";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
 
-const DEFAULT_START_SEC = 10;
+const DEFAULT_START_TIME = 10;
 
 class RoomPhase
 {
 	public startTime: number;
 
 	protected _type: RoomPhaseType;
-	protected _timeLeft: number;
+	protected _state: RoomPhaseState;
 	protected _timeout;
 
 	protected _info: RoomInfo;
@@ -28,8 +29,10 @@ class RoomPhase
 		this._clients = clients;
 		this._wordbanks = wordbanks;
 
-		this.startTime = DEFAULT_START_SEC;
-		this._timeLeft = 0;
+		this._type = RoomPhaseType.Unknown;
+		this._state = RoomPhaseState.Ready;
+
+		this.startTime = DEFAULT_START_TIME;
 		this._timeout = -1;
 	}
 
@@ -37,30 +40,34 @@ class RoomPhase
 	{
 		await this._onPreStart ();
 
-		this._clients.sendDataPacket (PacketCommand.StartPhase, this._type);
+		this._state = RoomPhaseState.Start;
 
-		this._timeLeft = this.startTime;
+		this.sendPhaseData ();
+
+		this._info.timeLeft = this.startTime;
 		this._tick (onEnd);
 	}
 
 	protected _tick ( onEnd: Function )
 	{
-		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._timeLeft });
+		this._state = RoomPhaseState.Running;
+		this._clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._info.timeLeft });
 
-		if ( this._timeLeft <= 0 )
+		if ( this._info.timeLeft <= 0 )
 		{
 			this._onEnd (onEnd);
 		}
 		else
 		{
-			this._timeLeft--;
+			this._info.timeLeft--;
 			this._timeout = setTimeout (() => this._tick (onEnd), 1000);
 		}
 	}
 
 	protected async _onEnd ( onEnd: Function )
 	{
-		this._clients.sendDataPacket (PacketCommand.EndPhase, this._type);
+		this._state = RoomPhaseState.End;
+		this.sendPhaseData ();
 	}
 
 	get type (): RoomPhaseType
@@ -68,9 +75,34 @@ class RoomPhase
 		return this._type;
 	}
 
+	get state (): RoomPhaseState
+	{
+		return this._state;
+	}
+
 	receivePacket ( packet: Packet, client: Client ) {}
 
-	protected async _onPreStart () {}
+	sendData ( recipient: Client )
+	{
+		this.sendPhaseData (recipient);
+	}
+
+	sendPhaseData ( recipient?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this._clients.forEach (this.sendPhaseData.bind (this));
+		}
+		else
+		{
+			recipient.packets.sendDataPacket (PacketCommand.PhaseData, { type: this._type, state: this._state });
+		}
+	}
+
+	protected async _onPreStart ()
+	{
+		this._state = RoomPhaseState.PreStart;
+	}
 }
 
 

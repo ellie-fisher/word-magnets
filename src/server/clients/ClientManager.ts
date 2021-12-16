@@ -6,8 +6,8 @@ import ClientInfo from "./ClientInfo";
 
 import ObjectManager from "../misc/ObjectManager";
 
+import serverConfig from "../config/serverConfig";
 
-const DEFAULT_MAX_CLIENTS = 300;
 
 class _ClientManager extends ObjectManager<Client>
 {
@@ -17,9 +17,7 @@ class _ClientManager extends ObjectManager<Client>
 	}
 }
 
-const ClientManager = new _ClientManager (DEFAULT_MAX_CLIENTS);
+const ClientManager = new _ClientManager (serverConfig.limits.clients);
 
 
 export default ClientManager;
-
-export { DEFAULT_MAX_CLIENTS };

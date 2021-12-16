@@ -6,11 +6,10 @@ import wordsToString from "../../common/util/wordsToString";
 
 import fixedWords from "../config/fixedWords";
 
-import { SentenceWord } from "../wordbanks/Sentence";
+import { SentenceWord } from "../../common/wordbanks/Sentence";
 
+import { MIN_SENTENCE_LEN, MAX_SENTENCE_LEN } from "../../common/rooms/constants";
 
-const MIN_SENTENCE_LEN = 1
-const MAX_SENTENCE_LEN = 120;
 
 class RoomWordbanks
 {
@@ -30,6 +29,7 @@ class RoomWordbanks
 		];
 	}
 
+	// TODO: Check rate limit: https://developer.wordnik.com/gettingstarted
 	async fetchWords ( maxRetries: number = 2, timeout: number = 5000 )
 	{
 		await Promise.all (this._wordbanks.map (wordbank => wordbank.fetchWords (maxRetries, timeout)));

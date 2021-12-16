@@ -1,5 +1,5 @@
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "./RoomPhaseType";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
@@ -22,6 +22,8 @@ class CreatePhase extends RoomPhase
 
 	async _onPreStart ()
 	{
+		super._onPreStart ();
+
 		this._clients.forEach (client =>
 		{
 			client.clearSentence ();
@@ -31,21 +33,29 @@ class CreatePhase extends RoomPhase
 		await this._wordbanks.fetchWords ();
 
 		this._clients.onNewRound ();
-		this._clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
-		this._clients.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
+
+		this._clients.forEach (this.sendData.bind (this));
+	}
+
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
+
+		recipient.packets.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
+		recipient.packets.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
 	{
 		if ( packet.command !== PacketCommand.SendSentence )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+			client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 			return;
 		}
 
 		if ( client.sentence.value.length > 0 )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, "You already sent a sentence.");
+			client.packets.sendRejectPacket (packet, "You already sent a sentence.");
 			return;
 		}
 
@@ -53,18 +63,18 @@ class CreatePhase extends RoomPhase
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (client.socket, packet, validation[1]);
+			client.packets.sendRejectPacket (packet, validation[1]);
 			return;
 		}
 
 		client.sentence = { value: validation[1], votes: 0 };
 		// FIXME: Remove `validation[1]` since it's just for debug purposes.
-		client.packets.sendAcceptPacket (client.socket, packet, validation[1]);
+		client.packets.sendAcceptPacket (packet, validation[1]);
 	}
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
+		super._onEnd (onEnd);
 		setTimeout (onEnd, CREATE_ON_END_WAIT);
 	}
 }

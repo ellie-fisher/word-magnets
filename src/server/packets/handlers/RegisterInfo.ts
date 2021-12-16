@@ -6,11 +6,15 @@ import validateFields from "../../validation/validateFields";
 import clientInfoFields from "../../../common/validation/fields/clientInfo";
 
 
+// TODO: Filter names.
+// TODO: Remove repeat and trailing spaces from names.
+// TODO: Add checks for invalid characters.
+// TODO: Add checks for similar-looking characters to prevent impersonation.
 const registerInfoHandler = ( packet: Packet, client: Client ) =>
 {
 	if ( client.roomID !== "" )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "You cannot change your info while in a room.");
+		client.packets.sendRejectPacket (packet, "You cannot change your info while in a room.");
 		return;
 	}
 
@@ -18,13 +22,13 @@ const registerInfoHandler = ( packet: Packet, client: Client ) =>
 
 	if ( validation.length > 0 )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, validation);
+		client.packets.sendRejectPacket (packet, validation);
 		return;
 	}
 
 	if ( ClientNames.isDuplicateName (packet.body.name, client) )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "A player with that name already exists.");
+		client.packets.sendRejectPacket (packet, "A player with that name already exists.");
 		return;
 	}
 
@@ -38,7 +42,7 @@ const registerInfoHandler = ( packet: Packet, client: Client ) =>
 		ClientNames.delete (prevName);
 	}
 
-	client.packets.sendAcceptPacket (client.socket, packet);
+	client.packets.sendAcceptPacket (packet, client.id);
 };
 
 

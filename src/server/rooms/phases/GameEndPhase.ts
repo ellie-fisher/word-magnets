@@ -1,5 +1,5 @@
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "./RoomPhaseType";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
@@ -9,7 +9,7 @@ import Packet from "../../../common/packets/Packet";
 import PacketCommand from "../../../common/packets/PacketCommand";
 
 
-const GAME_END_START_SEC = 20;
+const GAME_END_START_TIME = 20;
 
 class GameEndPhase extends RoomPhase
 {
@@ -18,18 +18,21 @@ class GameEndPhase extends RoomPhase
 		super (info, clients, wordbanks);
 
 		this._type = RoomPhaseType.GameEnd;
-		this.startTime = GAME_END_START_SEC;
+		this.startTime = GAME_END_START_TIME;
 	}
 
 	receivePacket ( packet: Packet, client: Client )
 	{
-		client.packets.sendRejectPacket (client.socket, packet, "You cannot use that command right now.");
+		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 	}
 
 	async _onEnd ( onEnd: Function )
 	{
-		super._onEnd (onEnd);  // Send `EndPhase` packet.
-		this._info.currentRound = 1;
+		super._onEnd (onEnd);
+
+		this._info.currentRound = 0;
+		this._clients.onNewGame ();
+
 		onEnd ();
 	}
 }

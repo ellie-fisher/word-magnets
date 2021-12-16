@@ -10,7 +10,8 @@ import PacketCommand from "../../common/packets/PacketCommand";
 import Client from "../clients/Client";
 
 import RoomPhase from "./phases/RoomPhase";
-import RoomPhaseType from "./phases/RoomPhaseType";
+import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
 import CreatePhase from "./phases/CreatePhase";
 import VotePhase from "./phases/VotePhase";
 import ResultsPhase from "./phases/ResultsPhase";
@@ -47,9 +48,17 @@ class Room
 		this.phase = this._phases.get (RoomPhaseType.Create);
 	}
 
-	destroy ( reason: string = "The room was closed." )
+	destroy ( reason: string = "The room was closed.", ignoreOwner: boolean = false )
 	{
-		this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		if ( ignoreOwner )
+		{
+			this.sendDataPacket (PacketCommand.DestroyRoom, reason, [this.clients.getOwner ().id]);
+		}
+		else
+		{
+			this.sendDataPacket (PacketCommand.DestroyRoom, reason);
+		}
+
 		this.clients.forEach (client => client.onLeaveRoom ());
 		this.clients.clearClients ();
 
@@ -70,8 +79,9 @@ class Room
 
 		if ( this.clients.addClient (client) )
 		{
-			this.sendDataPacket (PacketCommand.JoinRoom, client.id);
+			this.sendDataPacket (PacketCommand.JoinRoom, client.toJSON ());
 			this.sendInfo (client);
+			this.sendPhaseData (client);
 			this.sendClientList (client);
 
 			if ( this.phase.type === RoomPhaseType.Create )
@@ -87,7 +97,7 @@ class Room
 	{
 		if ( this.clients.isOwner (client) )
 		{
-			this.destroy ("The room was closed.");
+			this.destroy ("The room was closed.", true);
 		}
 		else
 		{
@@ -129,7 +139,7 @@ class Room
 
 			case RoomPhaseType.GameEnd:
 			{
-				this._phases.get (RoomPhaseType.GameEnd);
+				this.phase = this._phases.get (RoomPhaseType.Create);
 				break;
 			}
 
@@ -186,20 +196,18 @@ class Room
 		}
 		else
 		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.RoomInfo, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
 		}
+	}
+
+	sendPhaseData ( client: Client )
+	{
+		this.phase.sendData (client);
 	}
 
 	sendClientList ( client?: Client )
 	{
-		if ( arguments.length <= 0 )
-		{
-			this.sendDataPacket (PacketCommand.ClientList, this.clients.toJSON ());
-		}
-		else
-		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.ClientList, this.clients.toJSON ());
-		}
+		this.clients.sendClientList (client);
 	}
 
 	sendWordbanks ( client?: Client )
@@ -210,7 +218,7 @@ class Room
 		}
 		else
 		{
-			client.packets.sendDataPacket (client.socket, PacketCommand.Wordbanks, this.wordbanks.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.Wordbanks, this.wordbanks.toJSON ());
 		}
 	}
 

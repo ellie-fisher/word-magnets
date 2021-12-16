@@ -11,8 +11,8 @@ import Client from "../clients/Client";
 import ClientManager from "../clients/ClientManager";
 import PacketCommand from "../../common/packets/PacketCommand";
 
+import serverConfig from "../config/serverConfig";
 
-const DEFAULT_MAX_ROOMS = 20;
 
 class _RoomManager extends ObjectManager<Room>
 {
@@ -47,9 +47,7 @@ class _RoomManager extends ObjectManager<Room>
 	}
 }
 
-const RoomManager = new _RoomManager (DEFAULT_MAX_ROOMS);
+const RoomManager = new _RoomManager (serverConfig.limits.rooms);
 
 
 export default RoomManager;
-
-export { DEFAULT_MAX_ROOMS };

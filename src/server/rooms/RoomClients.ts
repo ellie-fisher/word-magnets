@@ -60,7 +60,7 @@ class RoomClients
 
 		voteClients.forEach (( client: Client, index: number ) =>
 		{
-			client.voteID = index;
+			client.sentence.voteID = index;
 			this._voteClients.set (index, client);
 		});
 	}
@@ -174,9 +174,21 @@ class RoomClients
 		{
 			if ( except === null || !_except.has (client.id) )
 			{
-				client.packets.sendDataPacket (client.socket, command, body);
+				client.packets.sendDataPacket (command, body);
 			}
 		});
+	}
+
+	sendClientList ( client?: Client )
+	{
+		if ( arguments.length <= 0 )
+		{
+			this.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+		}
+		else
+		{
+			client.packets.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+		}
 	}
 
 	forEach ( callback )
@@ -190,7 +202,7 @@ class RoomClients
 
 		this._clients.forEach (client =>
 		{
-			clients.push (client.id);
+			clients.push (client.toJSON ());
 		});
 
 		return clients;

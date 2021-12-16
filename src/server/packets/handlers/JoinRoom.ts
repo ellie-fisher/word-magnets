@@ -11,11 +11,11 @@ const joinRoomHandler = ( packet: Packet, client: Client ) =>
 
 	if ( error === RoomError.Ok )
 	{
-		client.packets.sendAcceptPacket (client.socket, packet);
+		client.packets.sendAcceptPacket (packet);
 	}
 	else
 	{
-		client.packets.sendRejectPacket (client.socket, packet, getRoomErrorMessage (error));
+		client.packets.sendRejectPacket (packet, getRoomErrorMessage (error));
 	}
 };
 

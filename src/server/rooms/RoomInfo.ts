@@ -1,4 +1,7 @@
-class RoomInfo
+import IRoomInfo from "../../common/rooms/IRoomInfo";
+
+
+class RoomInfo implements IRoomInfo
 {
 	public name: string;
 	public password: string;
@@ -20,7 +23,7 @@ class RoomInfo
 		this.enableChat = info.enableChat;
 		this.showOnList = info.showOnList;
 		this.timeLeft = this.timeLimit;
-		this.currentRound = 1;
+		this.currentRound = 0;
 	}
 
 	toJSON (): object
