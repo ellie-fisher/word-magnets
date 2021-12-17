@@ -26,7 +26,7 @@ app.get ("/*", ( req: any, res: any ) =>
 
 const wss = new WebSocketServer ({ port: socketConfig.port }, () =>
 {
-	console.log (`Farragomate server started on port ${socketConfig.port}`);
+	console.log (`WebSocket server started on port ${socketConfig.port}`);
 });
 
 wss.on ("connection", onNewConnection);
