@@ -50,24 +50,24 @@ const onNewConnection = function ( socket: any, request: any )
 
 const onSocketClose = function ( this: any )
 {
-	const { fmClient } = this;
+	const { __$_gameClient } = this;
 
-	if ( fmClient.roomID !== "" )
+	if ( __$_gameClient.roomID !== "" )
 	{
-		RoomManager.leaveRoom (fmClient);
+		RoomManager.leaveRoom (__$_gameClient);
 	}
 
-	ClientManager.remove (fmClient.id);
-	ClientNames.removeClient (fmClient);
+	ClientManager.remove (__$_gameClient.id);
+	ClientNames.removeClient (__$_gameClient);
 
-	console.log (`${fmClient.id} disconnected.`);
+	console.log (`${__$_gameClient.id} disconnected.`);
 };
 
 const onSocketMessage = function ( this: any, message: any )
 {
 	console.log ("onSocketMessage:", message.toString ());
 
-	const client: Client = this.fmClient;
+	const client: Client = this.__$_gameClient;
 
 	let packet;
 

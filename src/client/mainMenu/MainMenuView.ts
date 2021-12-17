@@ -13,7 +13,7 @@ const MainMenuView: Component =
 	{
 		return m ("div",
 		[
-			m ("h1", "Farragomate"),
+			m ("h1", "Word Magnets"),
 
 			m ("p", m ("button", { onclick () { AppModel.view = ViewEnum.CreateRoom }}, "Create Room")),
 			m ("p", m ("button", { onclick () { AppModel.view = ViewEnum.JoinRoom }}, "Join Room")),

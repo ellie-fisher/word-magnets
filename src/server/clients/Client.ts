@@ -20,7 +20,7 @@ class Client
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
 		// @ts-ignore
-		socket.fmClient = this;  // Monkey-patch custom property. TODO: Rename to something else
+		socket.__$_gameClient = this;  // Monkey-patch custom property. The absurd prefix is to make it unique.
 
 		this.id = id;
 		this.socket = socket;
