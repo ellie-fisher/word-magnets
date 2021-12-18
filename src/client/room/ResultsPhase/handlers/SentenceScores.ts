@@ -9,6 +9,6 @@ import packetManager from "../../../packets/packetManager";
 
 packetManager.on (PacketType.Data, PacketCommand.SentenceScores, ( packet: Packet ) =>
 {
-	ResultsPhaseController.clearSentenceScores ();
-	ResultsPhaseController.setSentenceScores (packet.body);
+	ResultsPhaseController.clearResults ();
+	ResultsPhaseController.setResults (packet.body);
 });

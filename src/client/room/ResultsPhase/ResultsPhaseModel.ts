@@ -1,6 +1,7 @@
 const ResultsPhaseModel =
 {
-	sentenceScores: {},
+	scores: {},
+	nameCache: {},
 };
 
 

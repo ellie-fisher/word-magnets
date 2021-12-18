@@ -15,11 +15,11 @@ const ResultsPhaseView: Component =
 {
 	view ()
 	{
-		const { sentenceScores } = ResultsPhaseModel;
+		const { scores, nameCache } = ResultsPhaseModel;
 
-		const scoreArray = Object.keys (sentenceScores).map (clientID =>
+		const scoreArray = Object.keys (scores).map (clientID =>
 		{
-			return { ...sentenceScores[clientID], clientID };
+			return { ...scores[clientID], clientID };
 		});
 
 		scoreArray.sort (( sentenceA, sentenceB ) => sentenceB.votes - sentenceA.votes);
@@ -37,6 +37,12 @@ const ResultsPhaseView: Component =
 
 				m ("tbody", scoreArray.map (sentenceData =>
 				{
+					const { clientID } = sentenceData;
+
+					const clientName = RoomController.hasClient (clientID)
+						? RoomController.getClientName (clientID)
+						: nameCache[clientID];
+
 					return m ("tr",
 					{
 						style: sentenceData.voteID === VotePhaseModel.vote
@@ -44,7 +50,7 @@ const ResultsPhaseView: Component =
 							: {},
 					},
 					[
-						m ("td", m ("strong", RoomController.getClientName (sentenceData.clientID))),
+						m ("td", m ("strong", clientName)),
 						m ("td", m ("pre", sentenceData.voteID)),
 						m ("td", m ("span", sentenceData.value)),
 						m ("td", m ("span", sentenceData.votes)),
