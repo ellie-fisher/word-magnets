@@ -63,9 +63,7 @@ class Room implements IRoom
 			this.sendDataPacket (PacketCommand.DestroyRoom, reason);
 		}
 
-		this.clients.forEach (client => client.handleLeaveRoom ());
 		this.clients.clearClients ();
-
 		this._onDestroy (this, reason);
 	}
 
@@ -107,7 +105,6 @@ class Room implements IRoom
 		{
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
-			client.handleLeaveRoom ();
 		}
 	}
 

@@ -80,6 +80,7 @@ class RoomClients
 		{
 			const client = this.getClient (id);
 
+			client.handleLeaveRoom ();
 			this._clients.delete (id);
 
 			return true;
@@ -90,6 +91,7 @@ class RoomClients
 
 	clearClients ()
 	{
+		this.forEach (( client: Client ) => client.handleLeaveRoom ());
 		this.ownerID = "";
 		this._clients.clear ();
 	}
