@@ -4,8 +4,6 @@ import Packet from "../../common/packets/Packet";
 import PacketType from "../../common/packets/PacketType";
 import PacketCommand from "../../common/packets/PacketCommand";
 
-import shuffle from "../../common/util/shuffle";
-
 
 class RoomClients
 {
@@ -14,7 +12,6 @@ class RoomClients
 
 	protected _clients: Map<string, Client>;
 	protected _nameCache: Map<string, string>;  // For using player names in sentences.
-	protected _voteClients: Map<number, Client>;
 
 	constructor ( roomID: string, owner: Client )
 	{
@@ -22,7 +19,6 @@ class RoomClients
 		this.ownerID = owner.id;
 		this._clients = new Map ();
 		this._nameCache = new Map ();
-		this._voteClients = new Map ();
 	}
 
 	refreshNameCache ()
@@ -35,73 +31,37 @@ class RoomClients
 		});
 	}
 
-	hasName ( id: string ): boolean
+	getCachedName ( clientID: string ): string
 	{
-		return this._nameCache.has (id);
+		return this.hasName (clientID) ? this._nameCache.get (clientID) : "";
 	}
 
-	/**
-	 * Assign a randomized, anonymous vote ID to each client so other players can't figure out
-	 * which sentence is whose.
-	 */
-	assignVoteIDs ()
+	hasName ( clientID: string ): boolean
 	{
-		const voteClients: Client[] = [];
-
-		this.forEach (( client: Client ) =>
-		{
-			if ( client.sentence.value !== "" )
-			{
-				voteClients.push (client);
-			}
-		});
-
-		shuffle (voteClients);
-
-		voteClients.forEach (( client: Client, index: number ) =>
-		{
-			client.sentence.voteID = index;
-			this._voteClients.set (index, client);
-		});
+		return this._nameCache.has (clientID);
 	}
 
-	clearVoteClients ()
-	{
-		this._voteClients.clear ();
-	}
-
-	getVoteClient ( voteID: number ): Client | null
-	{
-		return this.hasVoteID (voteID) ? this._voteClients.get (voteID) : null;
-	}
-
-	hasVoteID ( voteID: number ): boolean
-	{
-		return this._voteClients.has (voteID);
-	}
-
-	onNewRound ()
+	handleNewRound ()
 	{
 		this.refreshNameCache ();
-		this.clearVoteClients ();
 
 		this.forEach (( client: Client ) =>
 		{
-			client.onNewRound ();
+			client.handleNewRound ();
 		});
 	}
 
-	onNewGame ()
+	handleNewGame ()
 	{
 		this.forEach (( client: Client ) =>
 		{
-			client.onNewGame ();
+			client.handleNewGame ();
 		});
 	}
 
 	addClient ( client: Client ): boolean
 	{
-		const notInRoom = client.roomID === "";
+		const notInRoom = !client.isInRoom ();
 
 		if ( notInRoom && !this.hasClient (client.id) )
 		{
@@ -120,7 +80,6 @@ class RoomClients
 		{
 			const client = this.getClient (id);
 
-			client.roomID = "";
 			this._clients.delete (id);
 
 			return true;
@@ -132,12 +91,6 @@ class RoomClients
 	clearClients ()
 	{
 		this.ownerID = "";
-
-		this._clients.forEach (client =>
-		{
-			client.roomID = "";
-		})
-
 		this._clients.clear ();
 	}
 
