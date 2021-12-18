@@ -1,12 +1,15 @@
+import Client from "../../clients/Client";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
+
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+
+import IRoom from "../IRoom";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
-import Client from "../../clients/Client";
-import Packet from "../../../common/packets/Packet";
-import PacketCommand from "../../../common/packets/PacketCommand";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
 import Sentence from "../../../common/wordbanks/Sentence";
 
@@ -16,9 +19,9 @@ const VOTE_ON_END_WAIT = 5000;
 
 class VotePhase extends RoomPhase
 {
-	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
+	constructor ( room: IRoom )
 	{
-		super (info, clients, wordbanks);
+		super (room);
 
 		this._type = RoomPhaseType.Vote;
 		this.startTime = VOTE_START_TIME;
@@ -28,29 +31,30 @@ class VotePhase extends RoomPhase
 	{
 		super._onPreStart ();
 
-		this._clients.assignVoteIDs ();
+		this._room.sentences.assignVoteIDs ();
 
 		// Send all sentences but the player's own.
-		this._clients.forEach (this.sendData.bind (this));
+		this._room.clients.forEach (this.sendData.bind (this));
 	}
 
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
 
-		const sentences: Sentence[] = [];
+		const packetSentences: Sentence[] = [];
+		const { sentences } = this._room;
 
-		this._clients.forEach (( sentenceClient: Client ) =>
+		this._room.clients.forEach (( sentenceClient: Client ) =>
 		{
-			if ( recipient !== sentenceClient && sentenceClient.hasVoteID () )
+			if ( recipient !== sentenceClient && sentences.hasSentence (sentenceClient.id) )
 			{
-				const { sentence } = sentenceClient;
+				const sentence = sentences.getSentence (sentenceClient.id);
 
-				sentences.push ({ value: sentence.value, voteID: sentence.voteID });
+				packetSentences.push ({ value: sentence.value, voteID: sentence.voteID });
 			}
 		});
 
-		recipient.packets.sendDataPacket (PacketCommand.SentenceList, sentences);
+		recipient.packets.sendDataPacket (PacketCommand.SentenceList, packetSentences);
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -68,14 +72,15 @@ class VotePhase extends RoomPhase
 		}
 
 		const vote = packet.body;
+		const { sentences } = this._room;
 
-		if ( !this._clients.hasVoteID (vote) )
+		if ( !sentences.isValidVoteID (vote) )
 		{
 			client.packets.sendRejectPacket (packet, "Invalid vote ID.");
 			return;
 		}
 
-		if ( this._clients.getVoteClient (vote) === client )
+		if ( sentences.testVoteID (vote, client.id) )
 		{
 			client.packets.sendRejectPacket (packet, "You cannot vote for your own sentence.");
 			return;
@@ -91,17 +96,27 @@ class VotePhase extends RoomPhase
 
 		setTimeout (() =>
 		{
+			const { sentences, clients } = this._room;
+
 			// Tally up the votes.
-			this._clients.forEach (( client: Client ) =>
+			clients.forEach (( client: Client ) =>
 			{
 				const { vote } = client;
 
-				if ( this._clients.hasVoteID (vote) && this._clients.getVoteClient (vote) !== client )
+				if ( this._room.sentences.isValidVoteID (vote) && !sentences.testVoteID (vote, client.id) )
 				{
-					const voteClient = this._clients.getVoteClient (vote);
+					const voteClientID = sentences.getClientID (vote);
+					const sentence = sentences.getSentence (voteClientID);
 
-					voteClient.sentence.votes++;
-					voteClient.score++;
+					if ( clients.hasClient (voteClientID) )
+					{
+						clients.getClient (voteClientID).score++;
+					}
+
+					if ( sentence !== null )
+					{
+						sentence.votes++;
+					}
 				}
 			});
 

@@ -1,8 +1,10 @@
 import { RequestError, TimeoutError } from "got";
 
+import IRoom from "./IRoom";
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
 import RoomWordbanks from "./RoomWordbanks";
+import RoomSentences from "./RoomSentences";
 import RoomError from "./RoomError";
 
 import Packet from "../../common/packets/Packet";
@@ -18,13 +20,14 @@ import ResultsPhase from "./phases/ResultsPhase";
 import GameEndPhase from "./phases/GameEndPhase";
 
 
-class Room
+class Room implements IRoom
 {
 	public id: string;
 	public info: RoomInfo;
 	public clients: RoomClients;
-	public phase: RoomPhase;
 	public wordbanks: RoomWordbanks;
+	public sentences: RoomSentences;
+	public phase: RoomPhase;
 
 	protected _onDestroy: Function;
 	protected _phases: Map<RoomPhaseType, RoomPhase>;
@@ -33,16 +36,17 @@ class Room
 	{
 		this.id = id;
 		this.info = info;
-		this.clients = new RoomClients (id, owner);
 		this._onDestroy = onDestroy;
+		this.clients = new RoomClients (id, owner);
 		this.wordbanks = new RoomWordbanks ();
+		this.sentences = new RoomSentences ();
 
 		this._phases = new Map (
 		[
-			[RoomPhaseType.Create, new CreatePhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.Vote, new VotePhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.Results, new ResultsPhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.GameEnd, new GameEndPhase (this.info, this.clients, this.wordbanks)],
+			[RoomPhaseType.Create, new CreatePhase (this)],
+			[RoomPhaseType.Vote, new VotePhase (this)],
+			[RoomPhaseType.Results, new ResultsPhase (this)],
+			[RoomPhaseType.GameEnd, new GameEndPhase (this)],
 		]);
 
 		this.phase = this._phases.get (RoomPhaseType.Create);
@@ -59,7 +63,7 @@ class Room
 			this.sendDataPacket (PacketCommand.DestroyRoom, reason);
 		}
 
-		this.clients.forEach (client => client.onLeaveRoom ());
+		this.clients.forEach (client => client.handleLeaveRoom ());
 		this.clients.clearClients ();
 
 		this._onDestroy (this, reason);
@@ -103,7 +107,7 @@ class Room
 		{
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
-			client.onLeaveRoom ();
+			client.handleLeaveRoom ();
 		}
 	}
 
@@ -176,6 +180,18 @@ class Room
 	receivePacket ( packet: Packet, client: Client )
 	{
 		this.phase.receivePacket (packet, client);
+	}
+
+	handleNewRound ()
+	{
+		this.sentences.clear ();
+		this.clients.handleNewRound ();
+	}
+
+	handleNewGame ()
+	{
+		this.info.currentRound = 0;
+		this.clients.handleNewGame ();
 	}
 
 	/**

@@ -1,21 +1,24 @@
+import Client from "../../clients/Client";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
+
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+
+import IRoom from "../IRoom";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
-import Client from "../../clients/Client";
-import Packet from "../../../common/packets/Packet";
-import PacketCommand from "../../../common/packets/PacketCommand";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
 
 const GAME_END_START_TIME = 20;
 
 class GameEndPhase extends RoomPhase
 {
-	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
+	constructor ( room: IRoom )
 	{
-		super (info, clients, wordbanks);
+		super (room);
 
 		this._type = RoomPhaseType.GameEnd;
 		this.startTime = GAME_END_START_TIME;
@@ -29,10 +32,7 @@ class GameEndPhase extends RoomPhase
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
-
-		this._info.currentRound = 0;
-		this._clients.onNewGame ();
-
+		this._room.handleNewGame ();
 		onEnd ();
 	}
 }

@@ -1,22 +1,26 @@
+import Client from "../../clients/Client";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
+
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+
+import IRoom from "../IRoom";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
-import Client from "../../clients/Client";
-import Packet from "../../../common/packets/Packet";
-import PacketCommand from "../../../common/packets/PacketCommand";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
 
 const CREATE_ON_END_WAIT = 5000;
 
 class CreatePhase extends RoomPhase
 {
-	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
+	constructor ( room: IRoom )
 	{
-		super (info, clients, wordbanks);
-		this.startTime = info.timeLimit;
+		super (room);
+
+		this.startTime = room.info.timeLimit;
 		this._type = RoomPhaseType.Create;
 	}
 
@@ -24,25 +28,19 @@ class CreatePhase extends RoomPhase
 	{
 		super._onPreStart ();
 
-		this._clients.forEach (client =>
-		{
-			client.clearSentence ();
-		});
-
 		// TODO: Filter words
-		await this._wordbanks.fetchWords ();
+		await this._room.wordbanks.fetchWords ();
 
-		this._clients.onNewRound ();
-
-		this._clients.forEach (this.sendData.bind (this));
+		this._room.handleNewRound ();
+		this._room.clients.forEach (this.sendData.bind (this));
 	}
 
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
 
-		recipient.packets.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._info.currentRound });
-		recipient.packets.sendDataPacket (PacketCommand.Wordbanks, this._wordbanks.toJSON ());
+		recipient.packets.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._room.info.currentRound });
+		recipient.packets.sendDataPacket (PacketCommand.Wordbanks, this._room.wordbanks.toJSON ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -53,13 +51,13 @@ class CreatePhase extends RoomPhase
 			return;
 		}
 
-		if ( client.sentence.value.length > 0 )
+		if ( this._room.sentences.hasSentence (client.id) )
 		{
 			client.packets.sendRejectPacket (packet, "You already sent a sentence.");
 			return;
 		}
 
-		const validation = this._wordbanks.validateSentence (packet.body, this._clients);
+		const validation = this._room.wordbanks.validateSentence (packet.body, this._room.clients);
 
 		if ( !validation[0] )
 		{
@@ -67,7 +65,7 @@ class CreatePhase extends RoomPhase
 			return;
 		}
 
-		client.sentence = { value: validation[1], votes: 0 };
+		this._room.sentences.addSentence ({ value: validation[1], votes: 0 }, client);
 		// FIXME: Remove `validation[1]` since it's just for debug purposes.
 		client.packets.sendAcceptPacket (packet, validation[1]);
 	}
