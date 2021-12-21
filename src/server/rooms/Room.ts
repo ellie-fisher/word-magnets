@@ -178,6 +178,7 @@ class Room implements IRoom
 		}
 		catch ( error )
 		{
+			// TODO: Determine whether or not I want to keep this.
 			console.error ("onPreStart() -", error);
 
 			this.destroy (error instanceof RequestError || error instanceof TimeoutError

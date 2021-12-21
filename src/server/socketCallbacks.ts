@@ -65,6 +65,7 @@ const onSocketClose = function ( this: any )
 
 const onSocketMessage = function ( this: any, message: any )
 {
+	// FIXME: Remove
 	console.log ("onSocketMessage:", message.toString ());
 
 	const client: Client = this.__$_gameClient;
@@ -75,6 +76,7 @@ const onSocketMessage = function ( this: any, message: any )
 	{
 		packet = JSON.parse (message);
 
+		// FIXME: Remove
 		console.log ("PACKET", packet);
 
 		if ( !isValidPacket (packet) )
