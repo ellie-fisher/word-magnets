@@ -25,12 +25,13 @@ class ResultsPhase extends RoomPhase
 	async _onPreStart ()
 	{
 		super._onPreStart ();
-		this._room.clients.sendDataPacket (PacketCommand.SentenceScores, this.createResults ());
+		this._room.clients.forEach (this.sendData.bind (this));
 	}
 
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
+		recipient.packets.sendDataPacket (PacketCommand.SentenceScores, this.createResults ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
