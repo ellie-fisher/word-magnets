@@ -24,7 +24,7 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 		return;
 	}
 
-	if ( client.roomID !== "" )
+	if ( client.isInRoom () )
 	{
 		client.packets.sendRejectPacket (packet, getRoomErrorMessage (RoomError.InRoom));
 		return;

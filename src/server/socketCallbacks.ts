@@ -52,7 +52,7 @@ const onSocketClose = function ( this: any )
 {
 	const { __$_gameClient } = this;
 
-	if ( __$_gameClient.roomID !== "" )
+	if ( __$_gameClient.isInRoom () )
 	{
 		RoomManager.leaveRoom (__$_gameClient);
 	}

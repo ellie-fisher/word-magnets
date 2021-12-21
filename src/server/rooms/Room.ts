@@ -69,7 +69,7 @@ class Room implements IRoom
 
 	join ( client: Client ): RoomError
 	{
-		if ( client.roomID !== "" )
+		if ( client.isInRoom () )
 		{
 			return RoomError.InRoom;
 		}
