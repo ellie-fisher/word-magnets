@@ -13,6 +13,17 @@ class ClientRoomData
 		this.vote = -1;
 	}
 
+	cache ()
+	{
+		return { score: this.score };
+	}
+
+	applyCachedData ( data: any )
+	{
+		this.score = data.score;
+		this.vote = data.vote;
+	}
+
 	clear ()
 	{
 		this.roomID = "";

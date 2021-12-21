@@ -127,6 +127,7 @@ class VotePhase extends RoomPhase
 		setTimeout (() =>
 		{
 			this.tallyVotes ();
+			this._room.clients.refreshCache ();
 			this._room.clients.sendClientList ();  // Send updated scores.
 			onEnd ();
 		}, VOTE_ON_END_WAIT);

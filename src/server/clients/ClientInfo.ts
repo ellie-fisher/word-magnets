@@ -7,6 +7,11 @@ class ClientInfo
 		this.name = info.name;
 	}
 
+	cache ()
+	{
+		return { name: this.name };
+	}
+
 	toJSON (): object
 	{
 		return { name: this.name };

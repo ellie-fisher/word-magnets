@@ -11,39 +11,63 @@ class RoomClients
 	public roomID: string;
 
 	protected _clients: Map<string, Client>;
-	protected _nameCache: Map<string, string>;  // For using player names in sentences.
+
+	// For using player names in sentences, and remembering votes and scores until the next round.
+	protected _cache: Map<string, any>;
 
 	constructor ( roomID: string, owner: Client )
 	{
 		this.roomID = roomID;
 		this.ownerID = owner.id;
 		this._clients = new Map ();
-		this._nameCache = new Map ();
+		this._cache = new Map ();
 	}
 
-	refreshNameCache ()
+	refreshCache ()
 	{
-		this._nameCache.clear ();
+		this._cache.clear ();
 
 		this._clients.forEach (client =>
 		{
-			this._nameCache.set (client.id, client.info.name);
+			this._cache.set (client.id, client.cacheData ());
 		});
+	}
+
+	applyCachedData ( client: Client )
+	{
+		if ( !this.hasCachedClient (client.id) )
+		{
+			return;
+		}
+
+		client.applyCachedData (this._cache.get (client.id));
 	}
 
 	getCachedName ( clientID: string ): string
 	{
-		return this.hasName (clientID) ? this._nameCache.get (clientID) : "";
+		return this.hasCachedClient (clientID) ? this._cache.get (clientID).name : "";
 	}
 
-	hasName ( clientID: string ): boolean
+	getAllCachedData ()
 	{
-		return this._nameCache.has (clientID);
+		const data = [];
+
+		this._cache.forEach (( cachedData, clientID: string ) =>
+		{
+			data.push ({ ...cachedData });
+		});
+
+		return data;
+	}
+
+	hasCachedClient ( clientID: string ): boolean
+	{
+		return this._cache.has (clientID);
 	}
 
 	handleNewRound ()
 	{
-		this.refreshNameCache ();
+		this.refreshCache ();
 
 		this.forEach (( client: Client ) =>
 		{
@@ -66,7 +90,13 @@ class RoomClients
 		if ( notInRoom && !this.hasClient (client.id) )
 		{
 			this._clients.set (client.id, client);
-			this._nameCache.set (client.id, client.info.name);
+
+			if ( this.hasCachedClient (client.id) )
+			{
+				this.applyCachedData (client);
+			}
+
+			this._cache.set (client.id, client.cacheData ());
 
 			client.roomID = this.roomID;
 		}

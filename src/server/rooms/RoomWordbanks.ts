@@ -52,7 +52,7 @@ class RoomWordbanks
 
 			if ( sentenceWord.isName )
 			{
-				if ( !clients.hasName (sentenceWord.word as string) )
+				if ( !clients.hasCachedClient (sentenceWord.word as string) )
 				{
 					return [false, ["Client does not exist or was never in the room.", i]];
 				}

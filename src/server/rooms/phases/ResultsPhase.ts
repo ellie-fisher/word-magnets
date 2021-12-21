@@ -39,7 +39,7 @@ class ResultsPhase extends RoomPhase
 		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 	}
 
-	createResults (): object
+	createResults ()
 	{
 		const scores = {};
 		const nameCache = {};

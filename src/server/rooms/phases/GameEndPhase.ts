@@ -24,9 +24,26 @@ class GameEndPhase extends RoomPhase
 		this.startTime = GAME_END_START_TIME;
 	}
 
+	async _onPreStart ()
+	{
+		super._onPreStart ();
+		this._room.clients.forEach (this.sendData.bind (this));
+	}
+
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
+		recipient.packets.sendDataPacket (PacketCommand.FinalScores, this.createFinalResults ());
+	}
+
 	receivePacket ( packet: Packet, client: Client )
 	{
 		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
+	}
+
+	createFinalResults ()
+	{
+		return this._room.clients.getAllCachedData ();
 	}
 
 	async _onEnd ( onEnd: Function )

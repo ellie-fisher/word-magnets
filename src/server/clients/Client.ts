@@ -27,6 +27,18 @@ class Client
 		this.roomData = new ClientRoomData (this.id);
 	}
 
+	cacheData ()
+	{
+		return { ...this.roomData.cache (), ...this.info.cache (), id: this.id };
+	}
+
+	applyCachedData ( data: any )
+	{
+		/* We don't apply the cached data to `info` or this client because it could change important,
+		   unique things like their ID or their name. */
+		this.roomData.applyCachedData (data);
+	}
+
 	clearRoomData ()
 	{
 		this.roomData.clear ();
