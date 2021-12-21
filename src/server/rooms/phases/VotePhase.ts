@@ -40,21 +40,7 @@ class VotePhase extends RoomPhase
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
-
-		const packetSentences: Sentence[] = [];
-		const { sentences } = this._room;
-
-		this._room.clients.forEach (( sentenceClient: Client ) =>
-		{
-			if ( recipient !== sentenceClient && sentences.hasSentence (sentenceClient.id) )
-			{
-				const sentence = sentences.getSentence (sentenceClient.id);
-
-				packetSentences.push ({ value: sentence.value, voteID: sentence.voteID });
-			}
-		});
-
-		recipient.packets.sendDataPacket (PacketCommand.SentenceList, packetSentences);
+		recipient.packets.sendDataPacket (PacketCommand.SentenceList, this.createSentenceList (recipient));
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -90,36 +76,57 @@ class VotePhase extends RoomPhase
 		client.packets.sendAcceptPacket (packet);
 	}
 
+	createSentenceList ( recipient: Client ): Sentence[]
+	{
+		const packetSentences: Sentence[] = [];
+		const { sentences } = this._room;
+
+		this._room.clients.forEach (( sentenceClient: Client ) =>
+		{
+			if ( recipient !== sentenceClient && sentences.hasSentence (sentenceClient.id) )
+			{
+				const sentence = sentences.getSentence (sentenceClient.id);
+
+				packetSentences.push ({ value: sentence.value, voteID: sentence.voteID });
+			}
+		});
+
+		return packetSentences;
+	}
+
+	tallyVotes ()
+	{
+		const { sentences, clients } = this._room;
+
+		clients.forEach (( client: Client ) =>
+		{
+			const { vote } = client;
+
+			if ( sentences.isValidVoteID (vote) && !sentences.testVoteID (vote, client.id) )
+			{
+				const voteClientID = sentences.getClientID (vote);
+				const sentence = sentences.getSentence (voteClientID);
+
+				if ( clients.hasClient (voteClientID) )
+				{
+					clients.getClient (voteClientID).score++;
+				}
+
+				if ( sentence !== null )
+				{
+					sentence.votes++;
+				}
+			}
+		});
+	}
+
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
 
 		setTimeout (() =>
 		{
-			const { sentences, clients } = this._room;
-
-			// Tally up the votes.
-			clients.forEach (( client: Client ) =>
-			{
-				const { vote } = client;
-
-				if ( this._room.sentences.isValidVoteID (vote) && !sentences.testVoteID (vote, client.id) )
-				{
-					const voteClientID = sentences.getClientID (vote);
-					const sentence = sentences.getSentence (voteClientID);
-
-					if ( clients.hasClient (voteClientID) )
-					{
-						clients.getClient (voteClientID).score++;
-					}
-
-					if ( sentence !== null )
-					{
-						sentence.votes++;
-					}
-				}
-			});
-
+			this.tallyVotes ();
 			onEnd ();
 		}, VOTE_ON_END_WAIT);
 	}

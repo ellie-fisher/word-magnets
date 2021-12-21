@@ -25,7 +25,21 @@ class ResultsPhase extends RoomPhase
 	async _onPreStart ()
 	{
 		super._onPreStart ();
+		this._room.clients.sendDataPacket (PacketCommand.SentenceScores, this.createResults ());
+	}
 
+	sendData ( recipient: Client )
+	{
+		super.sendData (recipient);
+	}
+
+	receivePacket ( packet: Packet, client: Client )
+	{
+		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
+	}
+
+	createResults (): object
+	{
 		const scores = {};
 		const nameCache = {};
 
@@ -37,17 +51,7 @@ class ResultsPhase extends RoomPhase
 			nameCache[clientID] = clients.getCachedName (clientID);
 		});
 
-		this._room.clients.sendDataPacket (PacketCommand.SentenceScores, { scores, nameCache });
-	}
-
-	sendData ( recipient: Client )
-	{
-		super.sendData (recipient);
-	}
-
-	receivePacket ( packet: Packet, client: Client )
-	{
-		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
+		return { scores, nameCache };
 	}
 
 	async _onEnd ( onEnd: Function )
