@@ -58,7 +58,6 @@ class ResultsPhase extends RoomPhase
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
-		this._room.clients.sendClientList ();
 		onEnd ();
 	}
 }
