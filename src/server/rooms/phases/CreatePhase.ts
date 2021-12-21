@@ -31,15 +31,12 @@ class CreatePhase extends RoomPhase
 		// TODO: Filter words
 		await this._room.wordbanks.fetchWords ();
 
-		this._room.handleNewRound ();
 		this._room.clients.forEach (this.sendData.bind (this));
 	}
 
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
-
-		recipient.packets.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this._room.info.currentRound });
 		recipient.packets.sendDataPacket (PacketCommand.Wordbanks, this._room.wordbanks.toJSON ());
 	}
 

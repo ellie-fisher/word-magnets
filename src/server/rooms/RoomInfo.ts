@@ -23,7 +23,7 @@ class RoomInfo implements IRoomInfo
 		this.enableChat = info.enableChat;
 		this.showOnList = info.showOnList;
 		this.timeLeft = this.timeLimit;
-		this.currentRound = 0;
+		this.currentRound = 1;
 	}
 
 	toJSON (): object

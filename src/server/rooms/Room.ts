@@ -155,10 +155,25 @@ class Room implements IRoom
 	{
 		try
 		{
-			await this.phase.start (() =>
+			await this.phase.start (async () =>
 			{
+				const prevPhase = this.phase;
+
 				this.nextPhase ();
-				this.startPhase ();
+				await this.startPhase ();
+
+				if ( this.phase.type === RoomPhaseType.Create )
+				{
+					if ( prevPhase.type !== RoomPhaseType.Create )
+					{
+						this.handleNewRound ();
+					}
+
+					if ( prevPhase.type === RoomPhaseType.GameEnd )
+					{
+						this.handleNewGame ();
+					}
+				}
 			});
 		}
 		catch ( error )
@@ -181,14 +196,25 @@ class Room implements IRoom
 
 	handleNewRound ()
 	{
+		const { info } = this;
+
+		if ( info.currentRound < info.maxRounds )
+		{
+			info.currentRound++;
+		}
+
 		this.sentences.clear ();
+
 		this.clients.handleNewRound ();
+		this.clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this.info.currentRound });
 	}
 
 	handleNewGame ()
 	{
-		this.info.currentRound = 0;
+		this.info.currentRound = 1;
+
 		this.clients.handleNewGame ();
+		this.clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this.info.currentRound });
 	}
 
 	/**

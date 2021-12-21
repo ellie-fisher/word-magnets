@@ -53,16 +53,7 @@ class ResultsPhase extends RoomPhase
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
-
-		const { info } = this._room;
-
-		if ( info.currentRound < info.maxRounds )
-		{
-			info.currentRound++;
-		}
-
 		this._room.clients.sendClientList ();
-
 		onEnd ();
 	}
 }
