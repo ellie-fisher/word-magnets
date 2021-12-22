@@ -23,6 +23,14 @@ const CreateRoomView: Component =
 	{
 		return m ("div",
 		[
+			m ("button",
+			{
+				onclick ()
+				{
+					CreateRoomController.clickBack ();
+				},
+			}, "<< Back"),
+
 			m ("h3", "Create a Room"),
 
 			m ("div", Object.keys (CreateRoomModel.fields).map (( key, index ) =>
@@ -91,11 +99,15 @@ const CreateRoomView: Component =
 				[
 					m ("label", `${field.displayName}: `),
 					input,
-					CreateRoomModel.error.length === 2 && CreateRoomModel.error[0] === key
+					Array.isArray (CreateRoomModel.error) && CreateRoomModel.error[0] === key
 						? CreateRoomModel.error[1]
 						: "",
 				]);
 			})),
+
+			typeof CreateRoomModel.error === "string"
+				? m ("p", m ("strong", CreateRoomModel.error))
+				: "",
 
 			m ("button",
 			{
