@@ -9,15 +9,17 @@ import packetManager from "../../packets/packetManager";
 
 const ResultsPhaseController =
 {
-	setSentenceScores ( scores )
+	setResults ( data )
 	{
-		ResultsPhaseModel.sentenceScores = scores;
+		ResultsPhaseModel.scores = data.scores;
+		ResultsPhaseModel.nameCache = data.nameCache;
 	},
 
-	clearSentenceScores ()
+	clearResults ()
 	{
-		ResultsPhaseModel.sentenceScores = {};
-	}
+		ResultsPhaseModel.scores = {};
+		ResultsPhaseModel.nameCache = {};
+	},
 };
 
 

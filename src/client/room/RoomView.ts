@@ -65,7 +65,7 @@ const RoomView: Component =
 			}, "<< Leave Room"),
 
 			m ("span", { style: headingStyle }, [m ("strong", "Time Left: "), info.timeLeft]),
-			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound + 1} of ${info.maxRounds}`]),
+			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound} of ${info.maxRounds}`]),
 			m ("span", { style: headingStyle }, [m ("strong", "ID: "), info.id]),
 
 			m ("hr"),

@@ -1,8 +1,10 @@
 import { RequestError, TimeoutError } from "got";
 
+import IRoom from "./IRoom";
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
 import RoomWordbanks from "./RoomWordbanks";
+import RoomSentences from "./RoomSentences";
 import RoomError from "./RoomError";
 
 import Packet from "../../common/packets/Packet";
@@ -18,13 +20,14 @@ import ResultsPhase from "./phases/ResultsPhase";
 import GameEndPhase from "./phases/GameEndPhase";
 
 
-class Room
+class Room implements IRoom
 {
 	public id: string;
 	public info: RoomInfo;
 	public clients: RoomClients;
-	public phase: RoomPhase;
 	public wordbanks: RoomWordbanks;
+	public sentences: RoomSentences;
+	public phase: RoomPhase;
 
 	protected _onDestroy: Function;
 	protected _phases: Map<RoomPhaseType, RoomPhase>;
@@ -33,16 +36,17 @@ class Room
 	{
 		this.id = id;
 		this.info = info;
-		this.clients = new RoomClients (id, owner);
 		this._onDestroy = onDestroy;
+		this.clients = new RoomClients (id, owner);
 		this.wordbanks = new RoomWordbanks ();
+		this.sentences = new RoomSentences ();
 
 		this._phases = new Map (
 		[
-			[RoomPhaseType.Create, new CreatePhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.Vote, new VotePhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.Results, new ResultsPhase (this.info, this.clients, this.wordbanks)],
-			[RoomPhaseType.GameEnd, new GameEndPhase (this.info, this.clients, this.wordbanks)],
+			[RoomPhaseType.Create, new CreatePhase (this)],
+			[RoomPhaseType.Vote, new VotePhase (this)],
+			[RoomPhaseType.Results, new ResultsPhase (this)],
+			[RoomPhaseType.GameEnd, new GameEndPhase (this)],
 		]);
 
 		this.phase = this._phases.get (RoomPhaseType.Create);
@@ -59,15 +63,13 @@ class Room
 			this.sendDataPacket (PacketCommand.DestroyRoom, reason);
 		}
 
-		this.clients.forEach (client => client.onLeaveRoom ());
 		this.clients.clearClients ();
-
 		this._onDestroy (this, reason);
 	}
 
 	join ( client: Client ): RoomError
 	{
-		if ( client.roomID !== "" )
+		if ( client.isInRoom () )
 		{
 			return RoomError.InRoom;
 		}
@@ -79,7 +81,7 @@ class Room
 
 		if ( this.clients.addClient (client) )
 		{
-			this.sendDataPacket (PacketCommand.JoinRoom, client.toJSON ());
+			this.sendDataPacket (PacketCommand.JoinRoom, client.getPublicData ());
 			this.sendInfo (client);
 			this.sendPhaseData (client);
 			this.sendClientList (client);
@@ -103,7 +105,6 @@ class Room
 		{
 			this.sendDataPacket (PacketCommand.LeaveRoom, client.id, [client.id]);
 			this.clients.removeClient (client.id);
-			client.onLeaveRoom ();
 		}
 	}
 
@@ -154,14 +155,30 @@ class Room
 	{
 		try
 		{
-			await this.phase.start (() =>
+			await this.phase.start (async () =>
 			{
+				const prevPhase = this.phase;
+
 				this.nextPhase ();
-				this.startPhase ();
+				await this.startPhase ();
+
+				if ( this.phase.type === RoomPhaseType.Create )
+				{
+					if ( prevPhase.type !== RoomPhaseType.Create )
+					{
+						this.handleNewRound ();
+					}
+
+					if ( prevPhase.type === RoomPhaseType.GameEnd )
+					{
+						this.handleNewGame ();
+					}
+				}
 			});
 		}
 		catch ( error )
 		{
+			// TODO: Determine whether or not I want to keep this.
 			console.error ("onPreStart() -", error);
 
 			this.destroy (error instanceof RequestError || error instanceof TimeoutError
@@ -178,6 +195,29 @@ class Room
 		this.phase.receivePacket (packet, client);
 	}
 
+	handleNewRound ()
+	{
+		const { info } = this;
+
+		if ( info.currentRound < info.maxRounds )
+		{
+			info.currentRound++;
+		}
+
+		this.sentences.clear ();
+
+		this.clients.handleNewRound ();
+		this.clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this.info.currentRound });
+	}
+
+	handleNewGame ()
+	{
+		this.info.currentRound = 1;
+
+		this.clients.handleNewGame ();
+		this.clients.sendDataPacket (PacketCommand.RoomInfo, { currentRound: this.info.currentRound });
+	}
+
 	/**
 	 * @param {PacketCommand} command
 	 * @param {any} [body=""]
@@ -192,11 +232,11 @@ class Room
 	{
 		if ( arguments.length <= 0 )
 		{
-			this.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
+			this.sendDataPacket (PacketCommand.RoomInfo, this.getPublicData ());
 		}
 		else
 		{
-			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.getPublicData ());
 		}
 	}
 
@@ -227,9 +267,9 @@ class Room
 		return this.clients.size >= this.info.maxClients;
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
-		const data: any = this.info.toJSON ();
+		const data: any = this.info.getPublicData ();
 		const owner = this.clients.getOwner ();
 
 		data.id = this.id;

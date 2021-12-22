@@ -3,22 +3,19 @@ import m, { Component } from "mithril";
 import PacketCommand from "../../../common/packets/PacketCommand";
 import packetManager from "../../packets/packetManager";
 
+import GameEndPhaseModel from "./GameEndPhaseModel";
 import RoomController from "../RoomController";
-import RoomModel from "../RoomModel";
+
+import "./handlers/FinalScores";
 
 
 const GameEndPhaseView: Component =
 {
 	view ()
 	{
-		const { clients } = RoomModel;
+		const clients = GameEndPhaseModel.results.slice ();
 
-		const clientArray = Object.keys (clients).map (clientID =>
-		{
-			return { ...clients[clientID] };
-		});
-
-		clientArray.sort (( clientA, clientB ) => clientB.score - clientA.score);
+		clients.sort (( clientA, clientB ) => clientB.score - clientA.score);
 
 		return m ("table",
 		[
@@ -28,17 +25,21 @@ const GameEndPhaseView: Component =
 				m ("th", "Score"),
 			])),
 
-			m ("tbody", clientArray.map (client =>
+			m ("tbody", clients.map (cachedClient =>
 			{
+				const name = RoomController.hasClient (cachedClient.id)
+					? RoomController.getClientName (cachedClient.id)
+					: cachedClient.name;
+
 				return m ("tr",
 				{
-					style: client.score >= clientArray[0].score
+					style: cachedClient.score >= clients[0].score
 						? { "background-color": "#BBB787" }
 						: {},
 				},
 				[
-					m ("td", m ("strong", client.name)),
-					m ("td", m ("span", client.score)),
+					m ("td", m ("strong", name)),
+					m ("td", m ("span", cachedClient.score)),
 				]);
 			})),
 		]);

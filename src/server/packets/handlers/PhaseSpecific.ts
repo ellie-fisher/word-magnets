@@ -7,7 +7,7 @@ import RoomManager from "../../rooms/RoomManager";
 // For phase-specific commands like `SendSentence`, `CastVote`, etc.
 const phaseSpecificHandler = ( packet: Packet, client: Client ) =>
 {
-	if ( client.roomID === "" )
+	if ( !client.isInRoom () )
 	{
 		client.packets.sendRejectPacket (packet, "You are not in a room.");
 		return;

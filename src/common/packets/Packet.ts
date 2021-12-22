@@ -25,7 +25,7 @@ class Packet
 		this.requestSeq = requestSeq;
 	}
 
-	toJSON (): object
+	toJSON ()
 	{
 		const object: any =
 		{

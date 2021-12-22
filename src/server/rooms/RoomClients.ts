@@ -4,8 +4,6 @@ import Packet from "../../common/packets/Packet";
 import PacketType from "../../common/packets/PacketType";
 import PacketCommand from "../../common/packets/PacketCommand";
 
-import shuffle from "../../common/util/shuffle";
-
 
 class RoomClients
 {
@@ -13,100 +11,92 @@ class RoomClients
 	public roomID: string;
 
 	protected _clients: Map<string, Client>;
-	protected _nameCache: Map<string, string>;  // For using player names in sentences.
-	protected _voteClients: Map<number, Client>;
+
+	// For using player names in sentences, and remembering votes and scores until the next round.
+	protected _cache: Map<string, any>;
 
 	constructor ( roomID: string, owner: Client )
 	{
 		this.roomID = roomID;
 		this.ownerID = owner.id;
 		this._clients = new Map ();
-		this._nameCache = new Map ();
-		this._voteClients = new Map ();
+		this._cache = new Map ();
 	}
 
-	refreshNameCache ()
+	refreshCache ()
 	{
-		this._nameCache.clear ();
+		this._cache.clear ();
 
 		this._clients.forEach (client =>
 		{
-			this._nameCache.set (client.id, client.info.name);
+			this._cache.set (client.id, client.cacheData ());
 		});
 	}
 
-	hasName ( id: string ): boolean
+	applyCachedData ( client: Client )
 	{
-		return this._nameCache.has (id);
+		if ( !this.hasCachedClient (client.id) )
+		{
+			return;
+		}
+
+		client.applyCachedData (this._cache.get (client.id));
 	}
 
-	/**
-	 * Assign a randomized, anonymous vote ID to each client so other players can't figure out
-	 * which sentence is whose.
-	 */
-	assignVoteIDs ()
+	getCachedName ( clientID: string ): string
 	{
-		const voteClients: Client[] = [];
+		return this.hasCachedClient (clientID) ? this._cache.get (clientID).name : "";
+	}
+
+	getAllCachedData ()
+	{
+		const data = [];
+
+		this._cache.forEach (( cachedData, clientID: string ) =>
+		{
+			data.push ({ ...cachedData });
+		});
+
+		return data;
+	}
+
+	hasCachedClient ( clientID: string ): boolean
+	{
+		return this._cache.has (clientID);
+	}
+
+	handleNewRound ()
+	{
+		this.refreshCache ();
 
 		this.forEach (( client: Client ) =>
 		{
-			if ( client.sentence.value !== "" )
-			{
-				voteClients.push (client);
-			}
-		});
-
-		shuffle (voteClients);
-
-		voteClients.forEach (( client: Client, index: number ) =>
-		{
-			client.sentence.voteID = index;
-			this._voteClients.set (index, client);
+			client.handleNewRound ();
 		});
 	}
 
-	clearVoteClients ()
-	{
-		this._voteClients.clear ();
-	}
-
-	getVoteClient ( voteID: number ): Client | null
-	{
-		return this.hasVoteID (voteID) ? this._voteClients.get (voteID) : null;
-	}
-
-	hasVoteID ( voteID: number ): boolean
-	{
-		return this._voteClients.has (voteID);
-	}
-
-	onNewRound ()
-	{
-		this.refreshNameCache ();
-		this.clearVoteClients ();
-
-		this.forEach (( client: Client ) =>
-		{
-			client.onNewRound ();
-		});
-	}
-
-	onNewGame ()
+	handleNewGame ()
 	{
 		this.forEach (( client: Client ) =>
 		{
-			client.onNewGame ();
+			client.handleNewGame ();
 		});
 	}
 
 	addClient ( client: Client ): boolean
 	{
-		const notInRoom = client.roomID === "";
+		const notInRoom = !client.isInRoom ();
 
 		if ( notInRoom && !this.hasClient (client.id) )
 		{
 			this._clients.set (client.id, client);
-			this._nameCache.set (client.id, client.info.name);
+
+			if ( this.hasCachedClient (client.id) )
+			{
+				this.applyCachedData (client);
+			}
+
+			this._cache.set (client.id, client.cacheData ());
 
 			client.roomID = this.roomID;
 		}
@@ -120,7 +110,7 @@ class RoomClients
 		{
 			const client = this.getClient (id);
 
-			client.roomID = "";
+			client.handleLeaveRoom ();
 			this._clients.delete (id);
 
 			return true;
@@ -131,13 +121,8 @@ class RoomClients
 
 	clearClients ()
 	{
+		this.forEach (( client: Client ) => client.handleLeaveRoom ());
 		this.ownerID = "";
-
-		this._clients.forEach (client =>
-		{
-			client.roomID = "";
-		})
-
 		this._clients.clear ();
 	}
 
@@ -183,11 +168,11 @@ class RoomClients
 	{
 		if ( arguments.length <= 0 )
 		{
-			this.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+			this.sendDataPacket (PacketCommand.ClientList, this.getPublicData ());
 		}
 		else
 		{
-			client.packets.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.ClientList, this.getPublicData ());
 		}
 	}
 
@@ -196,13 +181,13 @@ class RoomClients
 		this._clients.forEach (callback);
 	}
 
-	toJSON ()
+	getPublicData ()
 	{
 		const clients = [];
 
 		this._clients.forEach (client =>
 		{
-			clients.push (client.toJSON ());
+			clients.push (client.getPublicData ());
 		});
 
 		return clients;

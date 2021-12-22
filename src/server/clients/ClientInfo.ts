@@ -7,7 +7,12 @@ class ClientInfo
 		this.name = info.name;
 	}
 
-	toJSON (): object
+	cache ()
+	{
+		return { name: this.name };
+	}
+
+	getPublicData ()
 	{
 		return { name: this.name };
 	}

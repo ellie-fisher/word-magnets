@@ -1,44 +1,37 @@
+import Client from "../../clients/Client";
+import Packet from "../../../common/packets/Packet";
+import PacketCommand from "../../../common/packets/PacketCommand";
+
 import RoomPhase from "./RoomPhase";
-import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+
+import IRoom from "../IRoom";
 import RoomInfo from "../RoomInfo";
 import RoomClients from "../RoomClients";
 import RoomWordbanks from "../RoomWordbanks";
 
-import Client from "../../clients/Client";
-import Packet from "../../../common/packets/Packet";
-import PacketCommand from "../../../common/packets/PacketCommand";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
 import Sentence from "../../../common/wordbanks/Sentence";
 
 
 class ResultsPhase extends RoomPhase
 {
-	constructor ( info: RoomInfo, clients: RoomClients, wordbanks: RoomWordbanks )
+	constructor ( room: IRoom )
 	{
-		super (info, clients, wordbanks);
+		super (room);
 		this._type = RoomPhaseType.Results;
 	}
 
 	async _onPreStart ()
 	{
 		super._onPreStart ();
-
-		const scores = {};
-
-		this._clients.forEach (( client: Client ) =>
-		{
-			if ( client.hasVoteID () )
-			{
-				scores[client.id] = client.sentence;
-			}
-		});
-
-		this._clients.sendDataPacket (PacketCommand.SentenceScores, scores);
+		this._room.clients.forEach (this.sendData.bind (this));
 	}
 
 	sendData ( recipient: Client )
 	{
 		super.sendData (recipient);
+		recipient.packets.sendDataPacket (PacketCommand.SentenceScores, this.createResults ());
 	}
 
 	receivePacket ( packet: Packet, client: Client )
@@ -46,17 +39,25 @@ class ResultsPhase extends RoomPhase
 		client.packets.sendRejectPacket (packet, "You cannot use that command right now.");
 	}
 
+	createResults ()
+	{
+		const scores = {};
+		const nameCache = {};
+
+		const { clients, sentences } = this._room;
+
+		sentences.forEach (( sentence: Sentence, clientID: string ) =>
+		{
+			scores[clientID] = sentence;
+			nameCache[clientID] = clients.getCachedName (clientID);
+		});
+
+		return { scores, nameCache };
+	}
+
 	async _onEnd ( onEnd: Function )
 	{
 		super._onEnd (onEnd);
-
-		if ( this._info.currentRound < this._info.maxRounds )
-		{
-			this._info.currentRound++;
-		}
-
-		this._clients.sendClientList ();
-
 		onEnd ();
 	}
 }

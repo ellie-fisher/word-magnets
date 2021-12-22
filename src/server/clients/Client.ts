@@ -1,6 +1,7 @@
 import { WebSocket } from "ws";
 
 import ClientInfo from "./ClientInfo";
+import ClientRoomData from "./ClientRoomData";
 import Packet from "../../common/packets/Packet";
 import PacketManager from "../../common/packets/PacketManager";
 import Sentence from "../../common/wordbanks/Sentence";
@@ -12,10 +13,7 @@ class Client
 	public socket: WebSocket;
 	public info: ClientInfo;
 	public packets: PacketManager;
-	public roomID: string;
-	public score: number;
-	public sentence: Sentence;
-	public vote: number;
+	public roomData: ClientRoomData;
 
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
@@ -26,52 +24,44 @@ class Client
 		this.socket = socket;
 		this.info = info;
 		this.packets = new PacketManager (socket);
-		this.roomID = "";
-		this.score = 0;
-		this.sentence = { value: "", votes: 0, voteID: -1 };
-		this.vote = -1;
+		this.roomData = new ClientRoomData (this.id);
 	}
 
-	clearSentence ()
+	cacheData ()
 	{
-		this.sentence.value = "";
-		this.sentence.votes = 0;
-		this.sentence.voteID = -1;
+		return { ...this.roomData.cache (), ...this.info.cache (), id: this.id };
 	}
 
-	hasSentence (): boolean
+	applyCachedData ( data: any )
 	{
-		return this.sentence.value !== "";
+		/* We don't apply the cached data to `info` or this client because it could change important,
+		   unique things like their ID or their name. */
+		this.roomData.applyCachedData (data);
 	}
 
-	hasVoteID (): boolean
+	clearRoomData ()
 	{
-		return this.sentence.voteID >= 0;
+		this.roomData.clear ();
 	}
 
-	onNewRound ()
+	handleNewRound ()
 	{
-		this.clearSentence ();
-		this.vote = -1;
+		this.roomData.handleNewRound ();
 	}
 
-	onNewGame ()
+	handleNewGame ()
 	{
-		this.onNewRound ();
-		this.score = 0;
+		this.roomData.handleNewGame ();
 	}
 
-	// TODO: A potentially good idea would be to have clients be just an object with an ID and a name,
-	//       and have everything else "wrap around" it when a client joins a room, so it can simply
-	//       be detached when they leave a room and we don't have to worry about clearing any of this.
-	//
-	//       Kind of similar to how the "entity" part of ECS is just an empty vessel with an ID.
-	onLeaveRoom ()
+	handleLeaveRoom ()
 	{
-		this.clearSentence ();
-		this.roomID = "";
-		this.score = 0;
-		this.vote = -1;
+		this.roomData.handleLeaveRoom ();
+	}
+
+	isInRoom (): boolean
+	{
+		return this.roomData.roomID !== "";
 	}
 
 	sendPacket ( packet: Packet )
@@ -79,14 +69,43 @@ class Client
 		this.packets.sendPacket (packet);
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
-		const object: any = this.info.toJSON ();
+		const object: any = this.info.getPublicData ();
 
 		object.id = this.id;
-		object.score = this.score;
 
-		return object;
+		return { ...object, ...this.roomData.getPublicData () };
+	}
+
+	set roomID ( roomID: string )
+	{
+		this.roomData.roomID = roomID;
+	}
+
+	set vote ( vote: number )
+	{
+		this.roomData.vote = vote;
+	}
+
+	set score ( score: number )
+	{
+		this.roomData.score = score;
+	}
+
+	get roomID (): string
+	{
+		return this.roomData.roomID;
+	}
+
+	get vote (): number
+	{
+		return this.roomData.vote;
+	}
+
+	get score (): number
+	{
+		return this.roomData.score;
 	}
 }
 

@@ -12,7 +12,7 @@ import clientInfoFields from "../../../common/validation/fields/clientInfo";
 // TODO: Add checks for similar-looking characters to prevent impersonation.
 const registerInfoHandler = ( packet: Packet, client: Client ) =>
 {
-	if ( client.roomID !== "" )
+	if ( client.isInRoom () )
 	{
 		client.packets.sendRejectPacket (packet, "You cannot change your info while in a room.");
 		return;

@@ -80,7 +80,7 @@ class ObjectManager<T extends ObjectWithID>
 
 	protected _create ( id: string, ...args: any[] ): T
 	{
-		throw new Error ("ObjectManager::_create() - Unimplemented!");
+		throw new Error ("Unimplemented!");
 	}
 }
 
