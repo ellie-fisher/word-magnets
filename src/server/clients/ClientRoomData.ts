@@ -57,7 +57,7 @@ class ClientRoomData
 		this.clear ();
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
 		return { score: this.score };
 	}

@@ -81,7 +81,7 @@ class Room implements IRoom
 
 		if ( this.clients.addClient (client) )
 		{
-			this.sendDataPacket (PacketCommand.JoinRoom, client.toJSON ());
+			this.sendDataPacket (PacketCommand.JoinRoom, client.getPublicData ());
 			this.sendInfo (client);
 			this.sendPhaseData (client);
 			this.sendClientList (client);
@@ -232,11 +232,11 @@ class Room implements IRoom
 	{
 		if ( arguments.length <= 0 )
 		{
-			this.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
+			this.sendDataPacket (PacketCommand.RoomInfo, this.getPublicData ());
 		}
 		else
 		{
-			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.RoomInfo, this.getPublicData ());
 		}
 	}
 
@@ -267,9 +267,9 @@ class Room implements IRoom
 		return this.clients.size >= this.info.maxClients;
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
-		const data: any = this.info.toJSON ();
+		const data: any = this.info.getPublicData ();
 		const owner = this.clients.getOwner ();
 
 		data.id = this.id;

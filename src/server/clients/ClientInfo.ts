@@ -12,7 +12,7 @@ class ClientInfo
 		return { name: this.name };
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
 		return { name: this.name };
 	}

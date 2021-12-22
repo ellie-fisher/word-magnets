@@ -26,7 +26,7 @@ class RoomInfo implements IRoomInfo
 		this.currentRound = 1;
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
 		return {
 			name: this.name,

@@ -69,13 +69,13 @@ class Client
 		this.packets.sendPacket (packet);
 	}
 
-	toJSON (): object
+	getPublicData ()
 	{
-		const object: any = this.info.toJSON ();
+		const object: any = this.info.getPublicData ();
 
 		object.id = this.id;
 
-		return { ...object, ...this.roomData.toJSON () };
+		return { ...object, ...this.roomData.getPublicData () };
 	}
 
 	set roomID ( roomID: string )

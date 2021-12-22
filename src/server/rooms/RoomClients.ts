@@ -168,11 +168,11 @@ class RoomClients
 	{
 		if ( arguments.length <= 0 )
 		{
-			this.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+			this.sendDataPacket (PacketCommand.ClientList, this.getPublicData ());
 		}
 		else
 		{
-			client.packets.sendDataPacket (PacketCommand.ClientList, this.toJSON ());
+			client.packets.sendDataPacket (PacketCommand.ClientList, this.getPublicData ());
 		}
 	}
 
@@ -181,13 +181,13 @@ class RoomClients
 		this._clients.forEach (callback);
 	}
 
-	toJSON ()
+	getPublicData ()
 	{
 		const clients = [];
 
 		this._clients.forEach (client =>
 		{
-			clients.push (client.toJSON ());
+			clients.push (client.getPublicData ());
 		});
 
 		return clients;
