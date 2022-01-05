@@ -1,4 +1,7 @@
+import AppModel from "../app/AppModel";
 import CreateRoomModel from "./CreateRoomModel";
+
+import ViewEnum from "../app/ViewEnum";
 
 import roomInfoFields from "../../common/validation/fields/roomInfo";
 
@@ -31,6 +34,11 @@ const CreateRoomController =
 		});
 
 		packetManager.sendRequestPacket (PacketCommand.CreateRoom, fields);
+	},
+
+	clickBack ()
+	{
+		AppModel.view = ViewEnum.MainMenu;
 	},
 };
 

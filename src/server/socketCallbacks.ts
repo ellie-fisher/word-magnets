@@ -13,32 +13,29 @@ import registerHandlers from "./packets/registerHandlers";
 import validateFields from "./validation/validateFields";
 import clientInfoFields from "../common/validation/fields/clientInfo";
 
+import { ObjectCreateError } from "./misc/ObjectManager";
+
 
 const CLOSE_SERVER_ERR = 1011;
 const CLOSE_TRY_AGAIN = 1013;
 
 const onNewConnection = function ( socket: any, request: any )
 {
-	if ( ClientManager.hasReachedMax () )
-	{
-		const { maxObjects } = ClientManager;
+	const clientOrError = ClientManager.create (socket, new ClientInfo ({ name: "" }));
 
+	if ( !(clientOrError instanceof Client) )
+	{
 		socket.close (
-			CLOSE_TRY_AGAIN,
-			`The server can only support up to ${maxObjects} connection${maxObjects != 1 ? "s" : ""}.`
-				+ " Please try again later."
+			(clientOrError === ObjectCreateError.GenerateID || clientOrError === ObjectCreateError.ObjectLimit)
+				? CLOSE_TRY_AGAIN
+				: CLOSE_SERVER_ERR,
+			ClientManager.getCreateErrorMessage (clientOrError as ObjectCreateError),
 		);
 
 		return;
 	}
 
-	const client = ClientManager.create (socket, new ClientInfo ({ name: "" }));
-
-	if ( client === null )
-	{
-		socket.close (CLOSE_SERVER_ERR, "A major error has occurred. Please try again later.");
-		return;
-	}
+	const client = clientOrError as Client;
 
 	console.log (`New connection: ${client.id}`);
 

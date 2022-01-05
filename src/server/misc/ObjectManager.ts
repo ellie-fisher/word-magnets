@@ -4,7 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 interface ObjectWithID
 {
 	id: string,
-}
+};
+
+enum ObjectCreateError
+{
+	Ok,
+	ObjectLimit,
+	AlreadyExists,
+	GenerateID,
+};
 
 
 class ObjectManager<T extends ObjectWithID>
@@ -18,26 +26,38 @@ class ObjectManager<T extends ObjectWithID>
 		this._objects = new Map ();
 	}
 
-	add ( object: T ): boolean
+	add ( object: T ): ObjectCreateError
 	{
-		if ( this.getCount () >= this.maxObjects || this.has (object.id) )
+		if ( this.getCount () >= this.maxObjects )
 		{
-			return false;
+			return ObjectCreateError.ObjectLimit;
+		}
+
+		if ( this.has (object.id) )
+		{
+			return ObjectCreateError.AlreadyExists;
 		}
 
 		this._objects.set (object.id, object);
 
-		return true;
+		return ObjectCreateError.Ok;
 	}
 
-	create ( ...args: any[] ): T | null
+	create ( ...args: any[] ): T | ObjectCreateError
 	{
 		if ( this.getCount () >= this.maxObjects )
 		{
-			return null;
+			return ObjectCreateError.ObjectLimit;
 		}
 
-		const object = this._create (uuidv4 (), ...args);
+		const id = this._generateID ();
+
+		if ( id === "" )
+		{
+			return ObjectCreateError.GenerateID;
+		}
+
+		const object = this._create (id, ...args);
 
 		if ( this.has (object.id) )
 		{
@@ -45,9 +65,11 @@ class ObjectManager<T extends ObjectWithID>
 			throw new Error (`Object with ID \`${object.id}\` already exists, somehow`);
 		}
 
-		if ( !this.add (object) )
+		const addError = this.add (object);
+
+		if ( addError !== ObjectCreateError.Ok )
 		{
-			return null;
+			return addError;
 		}
 
 		return object;
@@ -78,11 +100,39 @@ class ObjectManager<T extends ObjectWithID>
 		return this._objects.size;
 	}
 
+	getCreateErrorMessage ( error: ObjectCreateError ): string
+	{
+		switch ( error )
+		{
+			case ObjectCreateError.Ok:
+				return "";
+
+			case ObjectCreateError.ObjectLimit:
+				return "The maximum number of object has been reached.";
+
+			case ObjectCreateError.AlreadyExists:
+				return "The object already exists in the object manager.";
+
+			case ObjectCreateError.GenerateID:
+				return "Failed to create a unique object ID. Please try again later.";
+
+			default:
+				return "Unknown object creation error.";
+		}
+	}
+
 	protected _create ( id: string, ...args: any[] ): T
 	{
 		throw new Error ("Unimplemented!");
+	}
+
+	protected _generateID (): string
+	{
+		return uuidv4 ();
 	}
 }
 
 
 export default ObjectManager;
+
+export { ObjectCreateError };

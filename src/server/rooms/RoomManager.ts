@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { v4 as uuidv4 } from "uuid";
+import { generate } from "randomstring";
 
 import Room from "./Room";
 import RoomInfo from "./RoomInfo";
@@ -13,6 +13,11 @@ import PacketCommand from "../../common/packets/PacketCommand";
 
 import serverConfig from "../config/serverConfig";
 
+import { ObjectCreateError } from "../misc/ObjectManager";
+
+
+const ROOM_ID_LENGTH = 4;
+const ROOM_ID_MAX_GEN = 10;
 
 class _RoomManager extends ObjectManager<Room>
 {
@@ -22,6 +27,26 @@ class _RoomManager extends ObjectManager<Room>
 		{
 			this.remove (id);
 		});
+	}
+
+	protected _generateID (): string
+	{
+		for ( let i = 0; i < ROOM_ID_MAX_GEN; i++ )
+		{
+			const id = generate (
+			{
+				length: ROOM_ID_LENGTH,
+				charset: "alphabetic",
+				capitalization: "uppercase",
+			});
+
+			if ( !this.has (id) )
+			{
+				return id;
+			}
+		}
+
+		return "";
 	}
 
 	joinRoom ( id: string, client: Client ): RoomError
@@ -44,6 +69,31 @@ class _RoomManager extends ObjectManager<Room>
 		}
 
 		this.get (roomID).leave (client);
+	}
+
+	getCreateErrorMessage ( error: ObjectCreateError ): string
+	{
+		const { maxObjects } = this;
+
+		switch ( error )
+		{
+			case ObjectCreateError.Ok:
+				return "";
+
+			case ObjectCreateError.ObjectLimit:
+				return `The server can only support up to ${maxObjects} room${maxObjects != 1 ? "s" : ""}.`
+					+ " Please try again later.";
+
+			case ObjectCreateError.AlreadyExists:
+				return "A room with your room's ID already exists in the room manager."
+					+ " Please report this bug to the developers.";
+
+			case ObjectCreateError.GenerateID:
+				return "Failed to create a unique room ID. Please try again later.";
+
+			default:
+				return "Unknown object creation error.";
+		}
 	}
 }
 

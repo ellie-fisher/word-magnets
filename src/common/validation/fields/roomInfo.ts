@@ -24,7 +24,7 @@ const roomInfoFields =
 	{
 		type: "integer",
 		min: 2,
-		max: 16,
+		max: 12,
 		increments: 1,
 		defaultValue: 8,
 		displayName: "Player Limit",

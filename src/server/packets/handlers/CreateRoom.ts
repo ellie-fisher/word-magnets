@@ -1,8 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
-
 import Packet from "../../../common/packets/Packet";
 import Client from "../../clients/Client";
 
+import Room from "../../rooms/Room";
 import RoomInfo from "../../rooms/RoomInfo";
 import RoomManager from "../../rooms/RoomManager";
 
@@ -11,6 +10,8 @@ import applyDefaults from "../../../common/validation/applyDefaults";
 import roomInfoFields from "../../../common/validation/fields/roomInfo";
 
 import RoomError, { getRoomErrorMessage } from "../../rooms/RoomError";
+
+import { ObjectCreateError } from "../../misc/ObjectManager";
 
 
 const createRoomHandler = ( packet: Packet, client: Client ) =>
@@ -37,7 +38,19 @@ const createRoomHandler = ( packet: Packet, client: Client ) =>
 	// TODO: Add ability to not show on room list and to join directly from an ID.
 	info.showOnList = true;
 
-	const room = RoomManager.create (new RoomInfo (info), client);
+	const roomOrError = RoomManager.create (new RoomInfo (info), client);
+
+	if ( !(roomOrError instanceof Room) )
+	{
+		client.packets.sendRejectPacket (
+			packet,
+			RoomManager.getCreateErrorMessage (roomOrError as ObjectCreateError),
+		);
+
+		return;
+	}
+
+	const room = roomOrError as Room;
 
 	RoomManager.joinRoom (room.id, client);
 	client.packets.sendAcceptPacket (packet, room.id);
