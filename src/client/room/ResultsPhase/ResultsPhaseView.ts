@@ -24,7 +24,7 @@ const ResultsPhaseView: Component =
 
 		scoreArray.sort (( sentenceA, sentenceB ) => sentenceB.votes - sentenceA.votes);
 
-		return scoreArray.length <= 0 ? "No voting results to show. Either nobody submitted anything, or they left."
+		return scoreArray.length <= 0 ? "No voting results to show. Nobody submitted anything."
 			: m ("table",
 			[
 				m ("thead", m ("tr",
