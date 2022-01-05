@@ -5,7 +5,7 @@ const serverConfig =
 	limits:
 	{
 		clients: 300,
-		rooms: 20,
+		rooms: 30,
 	},
 };
 
