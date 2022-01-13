@@ -14,21 +14,21 @@ const censorString = ( str: string, regex: RegExp ): string =>
 	}) as any);
 };
 
-const applyFilter = ( str: string, rules: RegExp[] ): string =>
+const applyFilter = ( str: string, rules: string[] ): string =>
 {
 	let filtered = str;
 
-	rules.forEach (regex =>
+	rules.forEach (regexStr =>
 	{
-		filtered = censorString (filtered, regex);
+		filtered = censorString (filtered, new RegExp (regexStr, "gi"));
 	});
 
 	return filtered;
 };
 
-const checkFilter = ( str: string, rules: RegExp[] ): boolean =>
+const checkFilter = ( str: string, rules: string[] ): boolean =>
 {
-	return rules.some (regex => regex.test (str));
+	return rules.some (regexStr => new RegExp (regexStr, "gi").test (str));
 };
 
 
