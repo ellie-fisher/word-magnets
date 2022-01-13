@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "got": "^11.8.2",
     "mithril": "^2.0.4",
     "randomstring": "^1.2.1",
     "uuid": "^8.3.2",
