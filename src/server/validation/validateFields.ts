@@ -1,5 +1,9 @@
 import has from "../../common/util/has";
 
+import slurFilter from "../config/slurFilter";
+
+import { checkFilter } from "../../common/util/wordFilters";
+
 
 // TODO: Test for invalid characters (https://github.com/textlint-rule/textlint-rule-no-invalid-control-character/blob/master/src/CONTROL_CHARACTERS.js)
 
@@ -45,6 +49,11 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 				if ( value.length > max )
 				{
 					return [key, `Cannot be more than ${max} character(s)`];
+				}
+
+				if ( checkFilter (value, slurFilter) )
+				{
+					return [key, "Fails offensive word filter"];
 				}
 
 				break;
