@@ -26,10 +26,10 @@ const slurFilter =
 	/(\b|[^a-z0-9])w+((\s|\W)*(e|3))+((\s|\W)*t)+((\s|\W)*b)+((\s|\W)*(a|4|@))+((\s|\W)*(c|k))+\w*/gi,
 
 	// Censor permutations of the N-word.
-	/ni+h*gg+/gi,
-	/(\b|[^a-z0-9])n(i|1|!)+h*gg+/gi,
-	/(\b|[^a-z0-9])n(i|1|!)+h*g+er/gi,
 	/ni+h*g+(e|3|a|4|@|r)+/gi,
+	/(\b|[^a-z0-9])n(i|1|!)+h*g+er/gi,
+	/(\b|[^a-z0-9])n(i|1|!)+h*gg+/gi,
+	/ni+h*gg+/gi,
 
 	// Censor permutations of a slur for people from Pakistan unless the word is Pakistan.
 	/(\b|[^a-z0-9])p+((\s|\W)*(a|4|@))+((\s|\W)*h*)*((\s|\W)*k)+((\s|\W)*(i|l|1))+s*[^t]*[^a]*[^n]*\b/gi,
