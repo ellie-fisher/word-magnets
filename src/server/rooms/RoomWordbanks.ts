@@ -19,20 +19,19 @@ class RoomWordbanks
 	{
 		this._wordbanks =
 		[
-			new Wordbank ("Adjectives", ["adjective"]),
-			new Wordbank ("Nouns", ["noun"]),
-			new Wordbank ("Verbs", ["verb"]),
+			new Wordbank ("Adjectives", "adjectives"),
+			new Wordbank ("Nouns", "nouns"),
+			new Wordbank ("Verbs", "verbs"),
 
-			new Wordbank ("Grammar", [], fixedWords.grammar),
-			new Wordbank ("Pronouns", [], fixedWords.pronouns),
-			new Wordbank ("Miscellaneous", [], fixedWords.misc),
+			new Wordbank ("Grammar", fixedWords.grammar),
+			new Wordbank ("Pronouns", fixedWords.pronouns),
+			new Wordbank ("Miscellaneous", fixedWords.misc),
 		];
 	}
 
-	// TODO: Check rate limit: https://developer.wordnik.com/gettingstarted
-	async fetchWords ( maxRetries: number = 2, timeout: number = 5000 )
+	selectWords ()
 	{
-		await Promise.all (this._wordbanks.map (wordbank => wordbank.fetchWords (maxRetries, timeout)));
+		this._wordbanks.map (wordbank => wordbank.selectWords ());
 	}
 
 	validateSentence ( sentence: SentenceWord[], clients: RoomClients ): any[]

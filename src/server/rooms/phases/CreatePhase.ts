@@ -28,9 +28,7 @@ class CreatePhase extends RoomPhase
 	{
 		super._onPreStart ();
 
-		// TODO: Filter words
-		await this._room.wordbanks.fetchWords ();
-
+		this._room.wordbanks.selectWords ();
 		this._room.clients.forEach (this.sendData.bind (this));
 	}
 

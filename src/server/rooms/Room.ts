@@ -1,5 +1,3 @@
-import { RequestError, TimeoutError } from "got";
-
 import IRoom from "./IRoom";
 import RoomInfo from "./RoomInfo";
 import RoomClients from "./RoomClients";
@@ -178,13 +176,9 @@ class Room implements IRoom
 		}
 		catch ( error )
 		{
-			// TODO: Determine whether or not I want to keep this.
-			console.error ("onPreStart() -", error);
+			console.error ("onPreStart() -", error);  // TODO: Do I want to keep this `console.log`?
 
-			this.destroy (error instanceof RequestError || error instanceof TimeoutError
-				? "An API error occurred."
-				: "An internal server error occurred."
-			);
+			this.destroy ("An internal server error occurred.");
 
 			return;
 		}

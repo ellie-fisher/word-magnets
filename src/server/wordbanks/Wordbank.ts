@@ -1,21 +1,25 @@
-import got from "got";
-
-import objectToURL from "../../common/util/objectToURL";
-import apiRequest from "../config/api/apiRequest";
-import apiKey from "../config/api/apiKey";
+import has from "../../common/util/has";
+import wordSelection from "../config/wordSelection";
 
 
 class Wordbank
 {
 	public displayName: string;
-	public partsOfSpeech: string[];
+	public wordbank: string;
 	protected _words: string[];
 
-	constructor ( displayName: string, partsOfSpeech: string[], words: string[] = [] )
+	constructor ( displayName: string, wordbankOrWords: string | string[] )
 	{
+		const isFixed = Array.isArray (wordbankOrWords);
+
+		if ( !isFixed && !has (wordSelection.wordbanks, wordbankOrWords) )
+		{
+			throw new Error (`Invalid wordbank \`${wordbankOrWords}\``);
+		}
+
 		this.displayName = displayName;
-		this.partsOfSpeech = partsOfSpeech;
-		this._words = words;
+		this.wordbank = isFixed ? "" : wordbankOrWords;
+		this._words = isFixed ? wordbankOrWords : [];
 	}
 
 	setWords ( words: string[] )
@@ -33,22 +37,46 @@ class Wordbank
 		return Number.isInteger (index) && index >= 0 && index < this._words.length;
 	}
 
-	async fetchWords ( maxRetries: number = 2, timeout: number = 5000 )
+	selectWords ()
 	{
 		if ( this.isFixed )
 		{
 			return;
 		}
 
-		const url = objectToURL (apiRequest,
+		const { numWords, maxRetries, wordbanks } = wordSelection;
+		const words = wordbanks[this.wordbank];
+
+		const selected = {};
+
+		let wordNum = 0;
+		let retry = 0;
+
+		while ( wordNum < numWords )
 		{
-			includePartOfSpeech: this.partsOfSpeech,
-			api_key: apiKey,
-		});
+			const word = words[Math.floor (Math.random () * words.length)];
 
-		const words: any[] = await got (url, { retry: maxRetries, timeout }).json ();
+			if ( has (selected, word) )
+			{
+				if ( retry >= maxRetries )
+				{
+					throw new Error (
+						`Failed to get a unique \`${this.wordbank}\` word after ${retry} ${
+							retry === 1 ? "retry" : "retries"}.`
+					);
+				}
 
-		this._words = words.map (data => data.word);
+				retry++;
+			}
+			else
+			{
+				wordNum++;
+				retry = 0;
+				selected[word] = true;
+			}
+		}
+
+		this._words = Object.keys (selected);
 	}
 
 	/**
@@ -67,7 +95,7 @@ class Wordbank
 
 	get isFixed ()
 	{
-		return this.partsOfSpeech.length <= 0;
+		return this.wordbank === "";
 	}
 }
 
