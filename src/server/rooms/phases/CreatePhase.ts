@@ -12,7 +12,7 @@ import RoomWordbanks from "../RoomWordbanks";
 import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
 import slurFilter from "../../config/slurFilter";
-import { applyFilter } from "../../../common/util/censor";
+import { applyFilter } from "../../../common/util/wordFilters";
 
 
 const CREATE_ON_END_WAIT = 5000;

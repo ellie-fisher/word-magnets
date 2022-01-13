@@ -26,5 +26,10 @@ const applyFilter = ( str: string, rules: RegExp[] ): string =>
 	return filtered;
 };
 
+const checkFilter = ( str: string, rules: RegExp[] ): boolean =>
+{
+	return rules.some (regex => regex.test (str));
+};
 
-export { censorString, applyFilter };
+
+export { censorString, applyFilter, checkFilter };
