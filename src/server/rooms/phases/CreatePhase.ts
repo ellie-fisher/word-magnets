@@ -11,6 +11,9 @@ import RoomWordbanks from "../RoomWordbanks";
 
 import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
 
+import slurFilter from "../../config/slurFilter";
+import { applyFilter } from "../../../common/util/wordFilters";
+
 
 const CREATE_ON_END_WAIT = 5000;
 
@@ -60,9 +63,11 @@ class CreatePhase extends RoomPhase
 			return;
 		}
 
-		this._room.sentences.addSentence ({ value: validation[1], votes: 0 }, client);
-		// FIXME: Remove `validation[1]` since it's just for debug purposes.
-		client.packets.sendAcceptPacket (packet, validation[1]);
+		const sentence = applyFilter (validation[1], slurFilter);
+
+		this._room.sentences.addSentence ({ value: sentence, votes: 0 }, client);
+		// FIXME: Remove `sentence` since it's just for debug purposes.
+		client.packets.sendAcceptPacket (packet, sentence);
 	}
 
 	async _onEnd ( onEnd: Function )
