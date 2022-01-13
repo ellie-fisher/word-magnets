@@ -37761,9 +37761,18 @@ const verbs =
 	"yearn",
 ];
 
-module.exports =
+const wordSelection =
 {
-	nouns,
-	adjectives,
-	verbs,
+	numWords: 16,
+	maxRetries: 3,  // Number of retries to get a unique word.
+
+	wordbanks:
+	{
+		nouns,
+		adjectives,
+		verbs,
+	},
 };
+
+
+export default wordSelection;
