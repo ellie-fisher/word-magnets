@@ -55,10 +55,10 @@ class ResultsPhase extends RoomPhase
 		return { scores, nameCache };
 	}
 
-	async _onEnd ( onEnd: Function )
+	async _onEnd ()
 	{
-		super._onEnd (onEnd);
-		onEnd ();
+		super._onEnd ();
+		this._onEndCallback ();
 	}
 }
 

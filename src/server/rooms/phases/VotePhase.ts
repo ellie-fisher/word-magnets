@@ -120,16 +120,16 @@ class VotePhase extends RoomPhase
 		});
 	}
 
-	async _onEnd ( onEnd: Function )
+	async _onEnd ()
 	{
-		super._onEnd (onEnd);
+		super._onEnd ();
 
 		setTimeout (() =>
 		{
 			this.tallyVotes ();
 			this._room.clients.refreshCache ();
 			this._room.clients.sendClientList ();  // Send updated scores.
-			onEnd ();
+			this._onEndCallback ();
 		}, VOTE_ON_END_WAIT);
 	}
 }

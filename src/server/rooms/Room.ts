@@ -12,6 +12,8 @@ import Client from "../clients/Client";
 import RoomPhase from "./phases/RoomPhase";
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
+
+import LobbyPhase from "./phases/LobbyPhase";
 import CreatePhase from "./phases/CreatePhase";
 import VotePhase from "./phases/VotePhase";
 import ResultsPhase from "./phases/ResultsPhase";
@@ -41,13 +43,14 @@ class Room implements IRoom
 
 		this._phases = new Map (
 		[
+			[RoomPhaseType.Lobby, new LobbyPhase (this)],
 			[RoomPhaseType.Create, new CreatePhase (this)],
 			[RoomPhaseType.Vote, new VotePhase (this)],
 			[RoomPhaseType.Results, new ResultsPhase (this)],
 			[RoomPhaseType.GameEnd, new GameEndPhase (this)],
 		]);
 
-		this.phase = this._phases.get (RoomPhaseType.Create);
+		this.phase = this._phases.get (RoomPhaseType.Lobby);
 	}
 
 	destroy ( reason: string = "The room was closed.", ignoreOwner: boolean = false )
@@ -83,11 +86,6 @@ class Room implements IRoom
 			this.sendInfo (client);
 			this.sendPhaseData (client);
 			this.sendClientList (client);
-
-			if ( this.phase.type === RoomPhaseType.Create )
-			{
-				this.sendWordbanks (client);
-			}
 		}
 
 		return RoomError.Ok;
@@ -110,6 +108,12 @@ class Room implements IRoom
 	{
 		switch ( this.phase.type )
 		{
+			case RoomPhaseType.Lobby:
+			{
+				this.phase = this._phases.get (RoomPhaseType.Create);
+				break;
+			}
+
 			case RoomPhaseType.Create:
 			{
 				this.phase = this._phases.get (RoomPhaseType.Vote);
@@ -138,7 +142,7 @@ class Room implements IRoom
 
 			case RoomPhaseType.GameEnd:
 			{
-				this.phase = this._phases.get (RoomPhaseType.Create);
+				this.phase = this._phases.get (RoomPhaseType.Lobby);
 				break;
 			}
 
@@ -156,21 +160,19 @@ class Room implements IRoom
 			await this.phase.start (async () =>
 			{
 				const prevPhase = this.phase;
+				const prevType = prevPhase.type;
 
 				this.nextPhase ();
 				await this.startPhase ();
 
-				if ( this.phase.type === RoomPhaseType.Create )
+				if ( prevType === RoomPhaseType.Results || prevType === RoomPhaseType.GameEnd )
 				{
-					if ( prevPhase.type !== RoomPhaseType.Create )
-					{
-						this.handleNewRound ();
-					}
+					this.handleNewRound ();
+				}
 
-					if ( prevPhase.type === RoomPhaseType.GameEnd )
-					{
-						this.handleNewGame ();
-					}
+				if ( prevType === RoomPhaseType.GameEnd )
+				{
+					this.handleNewGame ();
 				}
 			});
 		}
@@ -242,18 +244,6 @@ class Room implements IRoom
 	sendClientList ( client?: Client )
 	{
 		this.clients.sendClientList (client);
-	}
-
-	sendWordbanks ( client?: Client )
-	{
-		if ( arguments.length <= 0 )
-		{
-			this.sendDataPacket (PacketCommand.Wordbanks, this.wordbanks.toJSON ());
-		}
-		else
-		{
-			client.packets.sendDataPacket (PacketCommand.Wordbanks, this.wordbanks.toJSON ());
-		}
 	}
 
 	isFull (): boolean

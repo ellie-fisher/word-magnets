@@ -6,18 +6,19 @@ import ViewEnum from "../app/ViewEnum";
 import PacketCommand from "../../common/packets/PacketCommand";
 import packetManager from "../packets/packetManager";
 
-import IRoomInfo from "../../common/rooms/IRoomInfo";
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
 
 import has from "../../common/util/has";
+
+import { IRoomPublicData } from "../../common/rooms/IRoomInfo";
 
 
 const RoomController =
 {
 	resetToDefaults ()
 	{
-		RoomModel.info = {} as IRoomInfo;
+		RoomModel.info = {} as IRoomPublicData;
 		RoomModel.phaseType = RoomPhaseType.Create;
 		RoomModel.phaseState = RoomPhaseState.Ready;
 		RoomModel.clients = {};
@@ -40,6 +41,8 @@ const RoomController =
 
 	setClients ( clients: any[] )
 	{
+		this.clearClients ();
+
 		clients.forEach (clientData =>
 		{
 			RoomModel.clients[clientData.id] = { ...clientData };

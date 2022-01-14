@@ -1,6 +1,7 @@
 enum RoomPhaseType
 {
 	Unknown,
+	Lobby,
 	Create,
 	Vote,
 	Results,
