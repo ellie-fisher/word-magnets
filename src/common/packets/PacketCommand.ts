@@ -11,6 +11,8 @@ enum PacketCommand
 	LeaveRoom,
 	DestroyRoom,
 
+	StartGame,
+
 	PhaseData,
 
 	KickClient,

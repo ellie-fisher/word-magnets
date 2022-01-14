@@ -70,10 +70,10 @@ class CreatePhase extends RoomPhase
 		client.packets.sendAcceptPacket (packet, sentence);
 	}
 
-	async _onEnd ( onEnd: Function )
+	async _onEnd ()
 	{
-		super._onEnd (onEnd);
-		setTimeout (onEnd, CREATE_ON_END_WAIT);
+		super._onEnd ();
+		setTimeout (this._onEndCallback, CREATE_ON_END_WAIT);
 	}
 }
 

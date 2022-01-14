@@ -18,5 +18,14 @@ interface IRoomInfo
 	currentRound: number;
 };
 
+interface IRoomPublicData extends IRoomInfo
+{
+	ownerID: string;
+	ownerName: string;
+	numClients: number;
+};
+
 
 export default IRoomInfo;
+
+export { IRoomPublicData };

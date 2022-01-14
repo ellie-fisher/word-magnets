@@ -46,10 +46,10 @@ class GameEndPhase extends RoomPhase
 		return this._room.clients.getAllCachedData ();
 	}
 
-	async _onEnd ( onEnd: Function )
+	async _onEnd ()
 	{
-		super._onEnd (onEnd);
-		onEnd ();
+		super._onEnd ();
+		this._onEndCallback ();
 	}
 }
 

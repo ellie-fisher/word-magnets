@@ -17,6 +17,7 @@ const handlers =
 	[PacketType.Request, PacketCommand.CreateRoom, createRoomHandler],
 	[PacketType.Request, PacketCommand.JoinRoom, joinRoomHandler],
 	[PacketType.Data, PacketCommand.LeaveRoom, leaveRoomHandler],
+	[PacketType.Request, PacketCommand.StartGame, phaseSpecificHandler],
 	[PacketType.Request, PacketCommand.SendSentence, phaseSpecificHandler],
 	[PacketType.Request, PacketCommand.CastVote, phaseSpecificHandler],
 ];

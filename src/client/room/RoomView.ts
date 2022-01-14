@@ -9,6 +9,7 @@ import RoomModel from "./RoomModel";
 import ViewEnum from "../app/ViewEnum";
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 
+import LobbyPhaseView from "./LobbyPhase/LobbyPhaseView";
 import CreatePhaseView from "./CreatePhase/CreatePhaseView";
 import VotePhaseView from "./VotePhase/VotePhaseView";
 import ResultsPhaseView from "./ResultsPhase/ResultsPhaseView";
@@ -33,6 +34,10 @@ const RoomView: Component =
 
 		switch ( phaseType )
 		{
+			case RoomPhaseType.Lobby:
+				view = m (LobbyPhaseView);
+				break;
+
 			case RoomPhaseType.Create:
 				view = m (CreatePhaseView);
 				break;

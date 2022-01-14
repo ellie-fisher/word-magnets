@@ -20,6 +20,7 @@ class RoomPhase
 	protected _type: RoomPhaseType;
 	protected _state: RoomPhaseState;
 	protected _timeout;
+	protected _onEndCallback: Function;
 
 	protected _room: IRoom;
 
@@ -32,37 +33,43 @@ class RoomPhase
 
 		this.startTime = DEFAULT_START_TIME;
 		this._timeout = -1;
+		this._onEndCallback = () => {};
 	}
 
 	async start ( onEnd: Function )
 	{
+		this._onEndCallback = onEnd;
+
 		await this._onPreStart ();
 
 		this._state = RoomPhaseState.Start;
-
 		this.sendPhaseData ();
 
 		this._room.info.timeLeft = this.startTime;
-		this._tick (onEnd);
+
+		this._tick ();
 	}
 
-	protected _tick ( onEnd: Function )
+	protected _tick ()
 	{
 		this._state = RoomPhaseState.Running;
 		this._room.clients.sendDataPacket (PacketCommand.RoomInfo, { timeLeft: this._room.info.timeLeft });
 
-		if ( this._room.info.timeLeft <= 0 )
+		if ( this.startTime > 0 )
 		{
-			this._onEnd (onEnd);
-		}
-		else
-		{
-			this._room.info.timeLeft--;
-			this._timeout = setTimeout (() => this._tick (onEnd), 1000);
+			if ( this._room.info.timeLeft <= 0 )
+			{
+				this._onEnd ();
+			}
+			else
+			{
+				this._room.info.timeLeft--;
+				this._timeout = setTimeout (() => this._tick (), 1000);
+			}
 		}
 	}
 
-	protected async _onEnd ( onEnd: Function )
+	protected async _onEnd ()
 	{
 		this._state = RoomPhaseState.End;
 		this.sendPhaseData ();
