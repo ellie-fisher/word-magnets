@@ -16,7 +16,7 @@ import serverConfig from "../config/serverConfig";
 import { ObjectCreateError } from "../misc/ObjectManager";
 
 
-const ROOM_ID_LENGTH = 4;
+const ROOM_ID_LENGTH = 5;
 const ROOM_ID_MAX_GEN = 10;
 
 class _RoomManager extends ObjectManager<Room>
@@ -36,7 +36,7 @@ class _RoomManager extends ObjectManager<Room>
 			const id = generate (
 			{
 				length: ROOM_ID_LENGTH,
-				charset: "alphabetic",
+				charset: "alphanumeric",
 				capitalization: "uppercase",
 			});
 

@@ -71,7 +71,19 @@ const RoomView: Component =
 
 			m ("span", { style: headingStyle }, [m ("strong", "Time Left: "), info.timeLeft]),
 			m ("span", { style: headingStyle }, [m ("strong", "Round: "), `${info.currentRound} of ${info.maxRounds}`]),
-			m ("span", { style: headingStyle }, [m ("strong", "ID: "), info.id]),
+
+			m ("span", { style: headingStyle },
+			[
+				m ("strong", "ID: "),
+				m ("span",
+				{
+					style:
+					{
+						"font-family": "monospace",
+						"font-size": "1vw",
+					},
+				}, info.id),
+			]),
 
 			m ("hr"),
 
