@@ -13,6 +13,11 @@ import "./handlers/JoinRoom";
 
 const JoinRoomView: Component =
 {
+	oninit()
+	{
+		JoinRoomController.setToDefaults ();
+	},
+
 	view ()
 	{
 		return m ("div",
@@ -28,6 +33,29 @@ const JoinRoomView: Component =
 
 			m ("h3", "Join a Room"),
 
+			m ("p",
+			[
+				m ("label", "Username: "),
+
+				m ("input",
+				{
+					type: "text",
+					value: AppModel.clientName,
+					autocomplete: "off",
+					maxLength: 24,
+
+					oninput ( event )
+					{
+						AppModel.clientName = event.target.value;
+					},
+
+					onchange ( event )
+					{
+						AppModel.clientName = event.target.value;
+					},
+				}),
+			]),
+
 			m ("input",
 			{
 				type: "text",
@@ -40,6 +68,8 @@ const JoinRoomView: Component =
 				value: JoinRoomModel.roomID,
 			}),
 
+			m ("div", m ("strong", JSON.stringify (JoinRoomModel.error))),
+
 			m ("button",
 			{
 				onclick ()
@@ -48,8 +78,6 @@ const JoinRoomView: Component =
 				}
 			},
 			"Join Room"),
-
-			m ("div", "TBD"),  // TODO: Replace temp components with room list
 		]);
 	},
 };

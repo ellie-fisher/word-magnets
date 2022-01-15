@@ -18,7 +18,8 @@ class Client
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
 		// @ts-ignore
-		socket.__$_gameClient = this;  // Monkey-patch custom property. The absurd prefix is to make it unique.
+		socket.__$_gameClient = this;  // Monkey-patch custom property. The absurd prefix is to avoid
+		                               // overwriting an existing one.
 
 		this.id = id;
 		this.socket = socket;
@@ -78,6 +79,11 @@ class Client
 		return { ...object, ...this.roomData.getPublicData () };
 	}
 
+	set name ( name: string )
+	{
+		this.info.name = name;
+	}
+
 	set roomID ( roomID: string )
 	{
 		this.roomData.roomID = roomID;
@@ -91,6 +97,11 @@ class Client
 	set score ( score: number )
 	{
 		this.roomData.score = score;
+	}
+
+	get name (): string
+	{
+		return this.info.name;
 	}
 
 	get roomID (): string

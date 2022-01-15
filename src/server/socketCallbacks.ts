@@ -1,7 +1,6 @@
 import Client from "./clients/Client";
 import ClientInfo from "./clients/ClientInfo";
 import ClientManager from "./clients/ClientManager";
-import ClientNames from "./clients/ClientNames";
 
 import RoomManager from "./rooms/RoomManager";
 
@@ -41,6 +40,8 @@ const onNewConnection = function ( socket: any, request: any )
 
 	registerHandlers (client);
 
+	client.packets.sendDataPacket (PacketCommand.ClientConnected, client.id);
+
 	socket.on ("message", onSocketMessage);
 	socket.on ("close", onSocketClose);
 };
@@ -55,7 +56,6 @@ const onSocketClose = function ( this: any )
 	}
 
 	ClientManager.remove (__$_gameClient.id);
-	ClientNames.removeClient (__$_gameClient);
 
 	console.log (`${__$_gameClient.id} disconnected.`);
 };
@@ -99,12 +99,6 @@ const onSocketMessage = function ( this: any, message: any )
 		}
 
 		client.packets.sendErrorPacket (errorMessage);
-		return;
-	}
-
-	if ( client.info.name === "" && packet.command !== PacketCommand.RegisterInfo )
-	{
-		client.packets.sendRejectPacket (packet, "Please set your name first.");
 		return;
 	}
 

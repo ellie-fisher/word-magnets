@@ -13,7 +13,6 @@ const socket = new WebSocket (`${socketConfig.client.url}:${socketConfig.port}`)
 
 socket.onopen = function ()
 {
-	AppModel.view = ViewEnum.Registration;
 	m.redraw ();
 };
 

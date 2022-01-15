@@ -26,14 +26,22 @@ const CreateRoomController =
 
 	createRoom ()
 	{
-		const fields = {};
+		const roomInfo = {};
 
 		Object.keys (CreateRoomModel.fields).forEach (key =>
 		{
-			fields[key] = CreateRoomModel.fields[key].value;
+			roomInfo[key] = CreateRoomModel.fields[key].value;
 		});
 
-		packetManager.sendRequestPacket (PacketCommand.CreateRoom, fields);
+		packetManager.sendRequestPacket (PacketCommand.CreateRoom,
+		{
+			roomInfo,
+
+			clientInfo:
+			{
+				name: AppModel.clientName,
+			},
+		});
 	},
 
 	clickBack ()

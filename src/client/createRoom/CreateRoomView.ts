@@ -33,6 +33,31 @@ const CreateRoomView: Component =
 
 			m ("h3", "Create a Room"),
 
+			m ("p",
+			[
+				m ("label", "Username: "),
+
+				m ("input",
+				{
+					type: "text",
+					value: AppModel.clientName,
+					autocomplete: "off",
+					maxLength: 24,
+
+					oninput ( event )
+					{
+						AppModel.clientName = event.target.value;
+					},
+
+					onchange ( event )
+					{
+						AppModel.clientName = event.target.value;
+					},
+				}),
+			]),
+
+			m ("hr"),
+
 			m ("div", Object.keys (CreateRoomModel.fields).map (( key, index ) =>
 			{
 				const field = CreateRoomModel.fields[key];
@@ -48,6 +73,7 @@ const CreateRoomView: Component =
 							type: "text",
 							value: field.value,
 							autocomplete: "off",
+							maxLength: field.max,
 
 							oninput ( event )
 							{
@@ -99,15 +125,10 @@ const CreateRoomView: Component =
 				[
 					m ("label", `${field.displayName}: `),
 					input,
-					Array.isArray (CreateRoomModel.error) && CreateRoomModel.error[0] === key
-						? CreateRoomModel.error[1]
-						: "",
 				]);
 			})),
 
-			typeof CreateRoomModel.error === "string"
-				? m ("p", m ("strong", CreateRoomModel.error))
-				: "",
+			m ("p", m ("strong", JSON.stringify (CreateRoomModel.error))),
 
 			m ("button",
 			{

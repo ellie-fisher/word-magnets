@@ -17,7 +17,6 @@ const MainMenuView: Component =
 
 			m ("p", m ("button", { onclick () { AppModel.view = ViewEnum.CreateRoom }}, "Create Room")),
 			m ("p", m ("button", { onclick () { AppModel.view = ViewEnum.JoinRoom }}, "Join Room")),
-			m ("p", m ("button", { onclick () { AppModel.view = ViewEnum.Registration }}, "Change Name")),
 		]);
 	},
 };

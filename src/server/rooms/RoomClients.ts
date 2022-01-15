@@ -11,6 +11,7 @@ class RoomClients
 	public roomID: string;
 
 	protected _clients: Map<string, Client>;
+	protected _names: Map<string, string>;
 
 	// For using player names in sentences, and remembering votes and scores until the next round.
 	protected _cache: Map<string, any>;
@@ -20,6 +21,7 @@ class RoomClients
 		this.roomID = roomID;
 		this.ownerID = owner.id;
 		this._clients = new Map ();
+		this._names = new Map ();
 		this._cache = new Map ();
 	}
 
@@ -90,6 +92,7 @@ class RoomClients
 		if ( notInRoom && !this.hasClient (client.id) )
 		{
 			this._clients.set (client.id, client);
+			this._names.set (client.name, client.id);
 
 			if ( this.hasCachedClient (client.id) )
 			{
@@ -111,7 +114,9 @@ class RoomClients
 			const client = this.getClient (id);
 
 			client.handleLeaveRoom ();
+
 			this._clients.delete (id);
+			this._names.delete (client.name);
 
 			return true;
 		}
@@ -124,6 +129,7 @@ class RoomClients
 		this.forEach (( client: Client ) => client.handleLeaveRoom ());
 		this.ownerID = "";
 		this._clients.clear ();
+		this._names.clear ();
 	}
 
 	hasClient ( id: string ): boolean
@@ -144,6 +150,11 @@ class RoomClients
 	isOwner ( client: Client ): boolean
 	{
 		return client !== null && this.getOwner () === client;
+	}
+
+	hasName ( name: string ): boolean
+	{
+		return this._names.has (name);
 	}
 
 	/**

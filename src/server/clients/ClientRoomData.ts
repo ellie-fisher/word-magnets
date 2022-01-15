@@ -1,3 +1,8 @@
+/**
+ * This is for client data that is related to room stuff, like score, voting, etc.
+ *
+ * For client data that is directly controlled by the client, @see `server/clients/ClientInfo.ts`
+ */
 class ClientRoomData
 {
 	public clientID: string;

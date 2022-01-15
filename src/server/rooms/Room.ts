@@ -80,6 +80,11 @@ class Room implements IRoom
 			return RoomError.Full;
 		}
 
+		if ( this.clients.hasName (client.name) )
+		{
+			return RoomError.DuplicateName;
+		}
+
 		if ( this.clients.addClient (client) )
 		{
 			this.sendDataPacket (PacketCommand.JoinRoom, client.getPublicData ());

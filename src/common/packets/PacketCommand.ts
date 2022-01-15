@@ -4,7 +4,7 @@ enum PacketCommand
 	Warning,
 	Message,
 
-	RegisterInfo,  // When registering a username.
+	ClientConnected,
 
 	CreateRoom,
 	JoinRoom,
