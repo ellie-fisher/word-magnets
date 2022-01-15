@@ -1,15 +1,6 @@
 // TODO: Add "description" functionality
 const roomInfoFields =
 {
-	name:
-	{
-		type: "string",
-		min: 1,
-		max: 32,
-		defaultValue: "My Room",
-		displayName: "Name",
-	},
-
 	maxClients:
 	{
 		type: "integer",

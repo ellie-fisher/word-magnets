@@ -7,7 +7,6 @@
 interface IRoomInfo
 {
 	id?: string;
-	name: string;
 	maxClients: number;
 	timeLimit: number;
 	maxRounds: number;
