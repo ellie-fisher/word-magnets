@@ -4,7 +4,6 @@ import IRoomInfo from "../../common/rooms/IRoomInfo";
 class RoomInfo implements IRoomInfo
 {
 	public name: string;
-	public password: string;
 	public maxClients: number;
 	public timeLimit: number;
 	public maxRounds: number;
@@ -15,7 +14,6 @@ class RoomInfo implements IRoomInfo
 	constructor ( info )
 	{
 		this.name = info.name;
-		this.password = info.password;
 		this.maxClients = info.maxClients;
 		this.timeLimit = info.timeLimit;
 		this.maxRounds = info.maxRounds;
@@ -28,7 +26,6 @@ class RoomInfo implements IRoomInfo
 	{
 		return {
 			name: this.name,
-			password: this.password,
 			maxClients: this.maxClients,
 			timeLimit: this.timeLimit,
 			maxRounds: this.maxRounds,

@@ -10,16 +10,6 @@ const roomInfoFields =
 		displayName: "Name",
 	},
 
-	// TODO: Remove password feature.
-	// password:
-	// {
-	// 	type: "password",
-	// 	min: 1,
-	// 	max: 12,
-	// 	defaultValue: "",
-	// 	displayName: "Password",
-	// },
-
 	maxClients:
 	{
 		type: "integer",
