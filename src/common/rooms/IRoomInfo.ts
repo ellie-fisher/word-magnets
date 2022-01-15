@@ -13,7 +13,6 @@ interface IRoomInfo
 	timeLimit: number;
 	maxRounds: number;
 	enableChat: boolean;
-	showOnList: boolean;
 	timeLeft: number;
 	currentRound: number;
 };

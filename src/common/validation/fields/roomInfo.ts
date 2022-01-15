@@ -10,7 +10,7 @@ const roomInfoFields =
 		displayName: "Name",
 	},
 
-	// TODO: Replace password feature with `showOnList`.
+	// TODO: Remove password feature.
 	// password:
 	// {
 	// 	type: "password",
@@ -56,17 +56,6 @@ const roomInfoFields =
 	// 	type: "boolean",
 	// 	defaultValue: false,
 	// 	displayName: "Enable chat",
-	// }
-
-	// TODO: Add ability to not show on room list and to join directly from an ID.
-	//       This should replace passwords because it serves the same purpose as passwords without
-	//       clogging up the room list.
-	//
-	// showOnList:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: true,
-	// 	displayName: "Show on room list",
 	// }
 
 	// TODO: Add toggle for using player names in sentences.
