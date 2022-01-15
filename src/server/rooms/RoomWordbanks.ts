@@ -36,6 +36,11 @@ class RoomWordbanks
 
 	validateSentence ( sentence: SentenceWord[], clients: RoomClients ): any[]
 	{
+		if ( !Array.isArray (sentence) )
+		{
+			return [false, `Expected sentence to be an array, got \`${typeof sentence}\``];
+		}
+
 		const { length } = sentence;
 
 		if ( length > MAX_SENTENCE_LEN )

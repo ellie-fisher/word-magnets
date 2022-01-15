@@ -9,6 +9,11 @@ import { checkFilter } from "../../common/util/wordFilters";
 
 const validateFields = ( fields: object, validation: object ): any[] =>
 {
+	if ( typeof fields !== "object" )
+	{
+		return [`Expected fields to be an object, got \`${typeof fields}\``];
+	}
+
 	const keys: string[] = Object.keys (validation);
 
 	const { length } = keys;
