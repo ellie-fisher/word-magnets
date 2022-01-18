@@ -63,6 +63,16 @@ const validateFields = ( fields: object, validation: object ): ValidationResult 
 					return [false, [key, "Failed offensive word filter"]];
 				}
 
+				if ( !data.trailingSpaces && (value[0] === " " || value[value.length - 1] === " ") )
+				{
+					return [false, [key, "Trailing spaces are not allowed"]];
+				}
+
+				if ( !data.repeatSpaces && value.indexOf ("  ") >= 0 )
+				{
+					return [false, [key, "Repeat spaces are not allowed"]];
+				}
+
 				break;
 			}
 
