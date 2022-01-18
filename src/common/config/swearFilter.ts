@@ -37,7 +37,7 @@ const swearFilter =
 		"p+((\\s|\\W)*u)+((\\s|\\W)*(s|5|\\$))+(\\s|\\W)*y+",
 
 		// Censor permutations of "cock".
-		"(\\b|[^a-z])c+((\\s|\\W)*(o|0))+((\\s|\\W)*c)+((\\s|\\W)*k)+(s|z|(h\\w*)|\\d)*\\b",
+		"(\\b|[^a-z])c+((\\s|\\W)*(o|0))+((\\s|\\W)*c)+((\\s|\\W)*k)+(s|z|\\d)*\\b",
 
 		// Censor permutations of "cunt".
 		"(c|k)+((\\s|\\W)*u)+((\\s|\\W)*n)+(\\s|\\W)*t+",
