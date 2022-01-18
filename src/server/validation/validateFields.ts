@@ -6,6 +6,8 @@ import { ValidationResult } from "../../common/validation/types";
 import { AnyObject } from "../../common/util/types";
 import { checkFilter } from "../../common/util/wordFilters";
 
+import invalidChars from "../../common/config/invalidChars";
+
 
 // TODO: Test for invalid characters (https://github.com/textlint-rule/textlint-rule-no-invalid-control-character/blob/master/src/CONTROL_CHARACTERS.js)
 
@@ -61,6 +63,21 @@ const validateFields = ( fields: object, validation: object ): ValidationResult 
 				if ( checkFilter (value, slurFilter) )
 				{
 					return [false, [key, "Failed offensive word filter"]];
+				}
+
+				if ( !data.trailingSpaces && (value[0] === " " || value[value.length - 1] === " ") )
+				{
+					return [false, [key, "Trailing spaces are not allowed"]];
+				}
+
+				if ( !data.repeatSpaces && value.indexOf ("  ") >= 0 )
+				{
+					return [false, [key, "Repeat spaces are not allowed"]];
+				}
+
+				if ( value.match (new RegExp (invalidChars)) !== null )
+				{
+					return [false, [key, "Contains invalid character(s)"]];
 				}
 
 				break;
