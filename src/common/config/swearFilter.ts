@@ -51,6 +51,10 @@ const swearFilter =
 
 		// Censor permutations of "goddamn".
 		"g+((\\s|\\W)*(o|0))+((\\s|\\W)*d)+((\\s|\\W)*(a|4|@))+((\\s|\\W)*m)+n*",
+
+		// Censor permutations of "whore".
+		"(\\b|[^a-z])w+((\\s|\\W)*h)+((\\s|\\W)*(o|0))+((\\s|\\W)*r)+(e|3)+",
+		"(\\b|[^a-z])w+((\\s|\\W)*h)+((\\s|\\W)*(o|0))+((\\s|\\W)*r)+(\\b|s|z|y|(in.?))+",
 ];
 
 
