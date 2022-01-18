@@ -36,8 +36,8 @@ class _RoomManager extends ObjectManager<Room>
 			const id = generate (
 			{
 				length: ROOM_ID_LENGTH,
-				charset: "alphanumeric",
-				capitalization: "uppercase",
+				// Alphanumeric except for some similar-looking characters.
+				charset: "ABCDEFGHJKLMNPQRSTUVWXYZ23456789",
 			});
 
 			if ( !this.has (id) )
