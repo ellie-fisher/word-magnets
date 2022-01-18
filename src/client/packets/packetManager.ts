@@ -6,9 +6,7 @@ import PacketCommand from "../../common/packets/PacketCommand";
 import socket from "../app/socket";
 
 
-const packetManager = new PacketManager (socket);
-
-packetManager.setFallbackHandler (packet =>
+const packetManager = new PacketManager (socket, packet =>
 {
 	console.error ("Unhandled packet:", packet);
 });

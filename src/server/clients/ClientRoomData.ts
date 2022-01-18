@@ -1,3 +1,11 @@
+import { AnyObject } from "../../common/util/types";
+
+
+/**
+ * This is for client data that is related to room stuff, like score, voting, etc.
+ *
+ * For client data that is directly controlled by the client, @see `server/clients/ClientInfo.ts`
+ */
 class ClientRoomData
 {
 	public clientID: string;
@@ -13,12 +21,12 @@ class ClientRoomData
 		this.vote = -1;
 	}
 
-	cache ()
+	cache (): AnyObject
 	{
 		return { score: this.score };
 	}
 
-	applyCachedData ( data: any )
+	applyCachedData ( data: AnyObject )
 	{
 		this.score = data.score;
 		this.vote = data.vote;
@@ -57,7 +65,7 @@ class ClientRoomData
 		this.clear ();
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
 		return { score: this.score };
 	}

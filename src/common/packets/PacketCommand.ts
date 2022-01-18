@@ -4,7 +4,7 @@ enum PacketCommand
 	Warning,
 	Message,
 
-	RegisterInfo,  // When registering a username.
+	ClientConnected,
 
 	CreateRoom,
 	JoinRoom,
@@ -16,7 +16,7 @@ enum PacketCommand
 	PhaseData,
 
 	KickClient,
-	BanClient,  // Unused until actual accounts are supported.
+	BanClient,  // Unused until actual accounts are supported, if ever.
 
 	ChatMessage,  // TODO: Add chat capabilities
 

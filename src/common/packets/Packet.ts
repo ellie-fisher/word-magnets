@@ -1,6 +1,8 @@
 import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 
+import { AnyObject } from "../util/types";
+
 
 class Packet
 {
@@ -25,9 +27,9 @@ class Packet
 		this.requestSeq = requestSeq;
 	}
 
-	toJSON ()
+	toJSON (): AnyObject
 	{
-		const object: any =
+		const object: AnyObject =
 		{
 			type: this.type,
 			sequence: this.sequence,

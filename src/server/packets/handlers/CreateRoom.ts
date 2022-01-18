@@ -1,5 +1,8 @@
 import Packet from "../../../common/packets/Packet";
+import PacketHandler from "../../../common/packets/PacketHandler";
+
 import Client from "../../clients/Client";
+import ClientInfo from "../../clients/ClientInfo";
 
 import Room from "../../rooms/Room";
 import RoomInfo from "../../rooms/RoomInfo";
@@ -8,55 +11,84 @@ import RoomManager from "../../rooms/RoomManager";
 import validateFields from "../../validation/validateFields";
 import applyDefaults from "../../../common/validation/applyDefaults";
 import roomInfoFields from "../../../common/validation/fields/roomInfo";
+import clientInfoFields from "../../../common/validation/fields/clientInfo";
 
 import RoomError, { getRoomErrorMessage } from "../../rooms/RoomError";
 
 import { ObjectCreateError } from "../../misc/ObjectManager";
+import { ValidationData } from "../../../common/validation/types";
 
 
-const createRoomHandler = ( packet: Packet, client: Client ) =>
+const createRoomHandler = new PacketHandler (
 {
-	const { body } = packet;
-	const validation = validateFields (body, roomInfoFields);
-
-	if ( validation.length > 0 )
+	fields:
 	{
-		client.packets.sendRejectPacket (packet, validation);
-		return;
-	}
+		roomInfo: { type: "object", required: true },
+		clientInfo: { type: "object", required: true },
+	},
 
-	if ( client.isInRoom () )
+	validationFailed ( packet: Packet, client: Client, data: ValidationData )
 	{
-		client.packets.sendRejectPacket (packet, getRoomErrorMessage (RoomError.InRoom));
-		return;
-	}
+		client.packets.sendRejectPacket (packet, data);
+	},
 
-	const info: any = applyDefaults (body, roomInfoFields);
-
-	// TODO: Add chat capabilities and remove this.
-	info.enableChat = false;
-	// TODO: Add ability to not show on room list and to join directly from an ID.
-	info.showOnList = true;
-
-	const roomOrError = RoomManager.create (new RoomInfo (info), client);
-
-	if ( !(roomOrError instanceof Room) )
+	handler ( packet: Packet, client: Client )
 	{
-		client.packets.sendRejectPacket (
-			packet,
-			RoomManager.getCreateErrorMessage (roomOrError as ObjectCreateError),
-		);
+		// TODO: Validation for all expected packet body formats.
 
-		return;
-	}
+		const { body } = packet;
+		const { clientInfo } = body;
+		let { roomInfo } = body;
 
-	const room = roomOrError as Room;
+		let validation = validateFields (clientInfo, clientInfoFields);
 
-	RoomManager.joinRoom (room.id, client);
-	client.packets.sendAcceptPacket (packet, room.id);
+		if ( !validation[0] )
+		{
+			client.packets.sendRejectPacket (packet, validation);
+			return;
+		}
 
-	room.startPhase ();
-};
+		validation = validateFields (roomInfo, roomInfoFields);
+
+		if ( !validation[0] )
+		{
+			client.packets.sendRejectPacket (packet, validation);
+			return;
+		}
+
+		if ( client.isInRoom () )
+		{
+			client.packets.sendRejectPacket (packet, getRoomErrorMessage (RoomError.InRoom));
+			return;
+		}
+
+		roomInfo = applyDefaults (roomInfo, roomInfoFields);
+
+		// TODO: Add chat capabilities and remove this.
+		roomInfo.enableChat = false;
+
+		const roomOrError = RoomManager.create (new RoomInfo (roomInfo), client);
+
+		if ( !(roomOrError instanceof Room) )
+		{
+			client.packets.sendRejectPacket (
+				packet,
+				RoomManager.getCreateErrorMessage (roomOrError as ObjectCreateError),
+			);
+
+			return;
+		}
+
+		client.info = new ClientInfo (clientInfo);
+
+		const room: Room = roomOrError;
+
+		RoomManager.joinRoom (room.id, client);
+		client.packets.sendAcceptPacket (packet, room.id);
+
+		room.startPhase ();
+	},
+});
 
 
 export default createRoomHandler;

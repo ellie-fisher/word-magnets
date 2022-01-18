@@ -19,6 +19,8 @@ import VotePhase from "./phases/VotePhase";
 import ResultsPhase from "./phases/ResultsPhase";
 import GameEndPhase from "./phases/GameEndPhase";
 
+import { AnyObject } from "../../common/util/types";
+
 
 class Room implements IRoom
 {
@@ -78,6 +80,11 @@ class Room implements IRoom
 		if ( this.isFull () )
 		{
 			return RoomError.Full;
+		}
+
+		if ( this.clients.hasName (client.name) )
+		{
+			return RoomError.DuplicateName;
 		}
 
 		if ( this.clients.addClient (client) )
@@ -251,9 +258,9 @@ class Room implements IRoom
 		return this.clients.size >= this.info.maxClients;
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
-		const data: any = this.info.getPublicData ();
+		const data: AnyObject = this.info.getPublicData ();
 		const owner = this.clients.getOwner ();
 
 		data.id = this.id;

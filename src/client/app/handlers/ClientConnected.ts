@@ -4,21 +4,11 @@ import PacketCommand from "../../../common/packets/PacketCommand";
 
 import ViewEnum from "../../app/ViewEnum";
 import AppModel from "../../app/AppModel";
-import JoinRoomModel from "../../joinRoom/JoinRoomModel";
 import packetManager from "../../packets/packetManager";
 
 
-packetManager.on (PacketType.Response, PacketCommand.JoinRoom, ( packet: Packet ) =>
+packetManager.on (PacketType.Data, PacketCommand.ClientConnected, ( packet: Packet ) =>
 {
-	const { body } = packet;
-
-	if ( body.ok )
-	{
-		AppModel.view = ViewEnum.Room;
-		JoinRoomModel.error = "";
-	}
-	else
-	{
-		JoinRoomModel.error = body;
-	}
+	AppModel.clientID = packet.body;
+	AppModel.view = ViewEnum.MainMenu;
 });

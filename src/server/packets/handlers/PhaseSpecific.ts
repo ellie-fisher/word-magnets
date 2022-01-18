@@ -1,27 +1,34 @@
 import Packet from "../../../common/packets/Packet";
+import PacketHandler from "../../../common/packets/PacketHandler";
+
 import Client from "../../clients/Client";
 
 import RoomManager from "../../rooms/RoomManager";
 
+import { ValidationData } from "../../../common/validation/types";
+
 
 // For phase-specific commands like `SendSentence`, `CastVote`, etc.
-const phaseSpecificHandler = ( packet: Packet, client: Client ) =>
+const phaseSpecificHandler = new PacketHandler (
 {
-	if ( !client.isInRoom () )
+	handler ( packet: Packet, client: Client )
 	{
-		client.packets.sendRejectPacket (packet, "You are not in a room.");
-		return;
-	}
+		if ( !client.isInRoom () )
+		{
+			client.packets.sendRejectPacket (packet, "You are not in a room.");
+			return;
+		}
 
-	const room = RoomManager.get (client.roomID);
+		const room = RoomManager.get (client.roomID);
 
-	if ( room === null )
-	{
-		throw new Error (`Client's room \`${client.roomID}\` does not exist!`);
-	}
+		if ( room === null )
+		{
+			throw new Error (`Client's room \`${client.roomID}\` does not exist!`);
+		}
 
-	room.receivePacket (packet, client);
-};
+		room.receivePacket (packet, client);
+	},
+});
 
 
 export default phaseSpecificHandler;

@@ -5,46 +5,49 @@ import Multimap from "../util/Multimap";
 import Packet from "./Packet";
 import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
+import PacketHandler from "./PacketHandler";
 
+
+type Handler = PacketHandler | Function;
 
 class PacketManager
 {
 	protected _socket: any;  // Sigh... We need this to be `any` to make it compatible with both
 	                         // the `ws` WebSocket and the native WebSocket.
 	protected _sequence: number;
-	protected _listeners: Map<PacketType, Multimap>;
+	protected _handlers: Map<PacketType, Multimap>;
 	protected _fallback: Function;
 
-	constructor ( socket: any )
+	constructor ( socket: any, fallback: Function = () => {} )
 	{
 		this._socket = socket;
 		this._sequence = 0;
-		this._listeners = new Map ();
-		this._fallback = () => {};
+		this._handlers = new Map ();
+		this._fallback = fallback;
 	}
 
-	on ( type: PacketType, command: PacketCommand, listener: Function ): Function
+	on ( type: PacketType, command: PacketCommand, handler: Handler ): Handler
 	{
-		if ( !this._listeners.has (type) )
+		if ( !this._handlers.has (type) )
 		{
-			this._listeners.set (type, new Multimap ());
+			this._handlers.set (type, new Multimap ());
 		}
 
-		this._listeners.get (type).add (command, listener);
+		this._handlers.get (type).add (command, handler);
 
-		return listener;
+		return handler;
 	}
 
-	off ( type: PacketType, command: PacketCommand, listener: Function ): Function
+	off ( type: PacketType, command: PacketCommand, handler: Handler ): Handler
 	{
-		if ( !this._listeners.has (type) )
+		if ( !this._handlers.has (type) )
 		{
 			return null;
 		}
 
-		this._listeners.get (type).delete (command, listener);
+		this._handlers.get (type).delete (command, handler);
 
-		return listener;
+		return handler;
 	}
 
 	setFallbackHandler ( fallback: Function ): Function
@@ -55,17 +58,24 @@ class PacketManager
 
 	handlePacket ( packet: Packet, ...args: any[] )
 	{
-		const multimap = this._listeners.get (packet.type);
+		const multimap = this._handlers.get (packet.type);
 
-		if ( !this._listeners.has (packet.type) || !multimap.has (packet.command) )
+		if ( !this._handlers.has (packet.type) || !multimap.has (packet.command) )
 		{
 			this._fallback (packet, ...args);
 		}
 		else
 		{
-			multimap.forEach (packet.command, listener =>
+			multimap.forEach (packet.command, handler =>
 			{
-				listener (packet, ...args);
+				if ( handler instanceof PacketHandler )
+				{
+					handler.handlePacket (packet, ...args);
+				}
+				else
+				{
+					handler (packet, ...args);
+				}
 			});
 		}
 	}

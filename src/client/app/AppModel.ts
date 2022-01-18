@@ -6,6 +6,7 @@ const AppModel =
 	socketErrorMsg: "",
 	view: ViewEnum.Connecting,
 	clientID: "",
+	clientName: "",
 };
 
 

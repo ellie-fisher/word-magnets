@@ -3,6 +3,7 @@ enum RoomError
 	Ok,
 	Full,
 	InvalidInfo,
+	DuplicateName,
 	InRoom,
 	NotInRoom,
 	NotFound,
@@ -21,6 +22,9 @@ const getRoomErrorMessage = function ( error: RoomError )
 
 		case RoomError.InvalidInfo:
 			return "Invalid room info.";
+
+		case RoomError.DuplicateName:
+			return "A player in the room already has that name.";
 
 		case RoomError.InRoom:
 			return "You are already in a room.";

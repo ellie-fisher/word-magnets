@@ -1,25 +1,6 @@
 // TODO: Add "description" functionality
 const roomInfoFields =
 {
-	name:
-	{
-		type: "string",
-		min: 1,
-		max: 32,
-		defaultValue: "My Room",
-		displayName: "Name",
-	},
-
-	// TODO: Replace password feature with `showOnList`.
-	// password:
-	// {
-	// 	type: "password",
-	// 	min: 1,
-	// 	max: 12,
-	// 	defaultValue: "",
-	// 	displayName: "Password",
-	// },
-
 	maxClients:
 	{
 		type: "integer",
@@ -56,17 +37,6 @@ const roomInfoFields =
 	// 	type: "boolean",
 	// 	defaultValue: false,
 	// 	displayName: "Enable chat",
-	// }
-
-	// TODO: Add ability to not show on room list and to join directly from an ID.
-	//       This should replace passwords because it serves the same purpose as passwords without
-	//       clogging up the room list.
-	//
-	// showOnList:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: true,
-	// 	displayName: "Show on room list",
 	// }
 
 	// TODO: Add toggle for using player names in sentences.

@@ -6,6 +6,8 @@ import Packet from "../../common/packets/Packet";
 import PacketManager from "../../common/packets/PacketManager";
 import Sentence from "../../common/wordbanks/Sentence";
 
+import { AnyObject } from "../../common/util/types";
+
 
 class Client
 {
@@ -18,7 +20,8 @@ class Client
 	constructor ( id: string, socket: WebSocket, info: ClientInfo )
 	{
 		// @ts-ignore
-		socket.__$_gameClient = this;  // Monkey-patch custom property. The absurd prefix is to make it unique.
+		socket.__$_gameClient = this;  // Monkey-patch custom property. The absurd prefix is to avoid
+		                               // overwriting an existing one.
 
 		this.id = id;
 		this.socket = socket;
@@ -27,12 +30,12 @@ class Client
 		this.roomData = new ClientRoomData (this.id);
 	}
 
-	cacheData ()
+	cacheData (): AnyObject
 	{
 		return { ...this.roomData.cache (), ...this.info.cache (), id: this.id };
 	}
 
-	applyCachedData ( data: any )
+	applyCachedData ( data: AnyObject )
 	{
 		/* We don't apply the cached data to `info` or this client because it could change important,
 		   unique things like their ID or their name. */
@@ -69,13 +72,18 @@ class Client
 		this.packets.sendPacket (packet);
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
-		const object: any = this.info.getPublicData ();
+		const object = this.info.getPublicData ();
 
 		object.id = this.id;
 
 		return { ...object, ...this.roomData.getPublicData () };
+	}
+
+	set name ( name: string )
+	{
+		this.info.name = name;
 	}
 
 	set roomID ( roomID: string )
@@ -91,6 +99,11 @@ class Client
 	set score ( score: number )
 	{
 		this.roomData.score = score;
+	}
+
+	get name (): string
+	{
+		return this.info.name;
 	}
 
 	get roomID (): string

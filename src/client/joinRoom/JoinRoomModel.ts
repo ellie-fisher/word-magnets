@@ -1,6 +1,7 @@
 const JoinRoomModel =
 {
 	roomID: "",
+	error: "",
 };
 
 

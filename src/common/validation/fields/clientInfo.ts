@@ -4,7 +4,7 @@ const clientInfoFields =
 	{
 		type: "string",
 		min: 1,
-		max: 32,
+		max: 24,
 	},
 };
 
