@@ -15,7 +15,7 @@
 
 const swearFilter =
 [
-		// Censor some permutations of "asshole".
+		// Censor permutations of "asshole".
 		"(a|4|\\@)+(\\s|\\W)*s(\\s|\\W)*s+(\\s|\\W)*h+(\\s|\\W)*(o|0)+(\\s|\\W)*(e|3)*((l|i|1|!)+)(e|3)*",
 
 		// Censor permutations of "bastard".
@@ -25,7 +25,7 @@ const swearFilter =
 		"b+((\\s|\\W)*(i|l|y|1|!))+(\\s|\\W)*t+(\\s|\\W)*c+(\\s|\\W)*h+",
 
 		// Censor permutations of "prick".
-		"(\\b|[^a-z0-9])p+((\\s|\\W)*r)+((\\s|\\W)*(i|l|1|!))+(\\s|\\W)*c+((\\s|\\W)*k)+",
+		"(\\b|[^a-z])p+((\\s|\\W)*r)+((\\s|\\W)*(i|l|1|!))+(\\s|\\W)*c+((\\s|\\W)*k)+",
 
 		// Censor permutations of "twat".
 		"t+((\\s|\\W)*w)+((\\s|\\W)*(a|4|@))+((\\s|\\W)*t)+((\\s|\\W)*(s|z|\\d))*\\b",
@@ -37,14 +37,14 @@ const swearFilter =
 		"p+((\\s|\\W)*u)+((\\s|\\W)*(s|5|\\$))+(\\s|\\W)*y+",
 
 		// Censor permutations of "cock".
-		"(\\b|[^a-z0-9])c+((\\s|\\W)*(o|0))+((\\s|\\W)*c)+((\\s|\\W)*k)+(s|z|(h\\w*)|\\d)*\\b",
+		"(\\b|[^a-z])c+((\\s|\\W)*(o|0))+((\\s|\\W)*c)+((\\s|\\W)*k)+(s|z|(h\\w*)|\\d)*\\b",
 
 		// Censor permutations of "cunt".
 		"(c|k)+((\\s|\\W)*u)+((\\s|\\W)*n)+(\\s|\\W)*t+",
 
 		// Censor permutations of "shit".
 		"(s|5|\\$)+((\\s|\\W)*h)+((\\s|\\W)*i)+((\\s|\\W)*t)+",
-		"(\\b|[^a-z0-9])(s|5|\\$)+((\\s|\\W)*h)+((\\s|\\W)*(i|l|a|y|1|!))+((\\s|\\W)*t)+",
+		"(\\b|[^a-z])(s|5|\\$)+((\\s|\\W)*h)+((\\s|\\W)*(i|l|a|y|1|!))+((\\s|\\W)*t)+",
 
 		// Censor permutations of "fuck", "fuk", etc.
 		"f+((\\s|\\W)*u)+((\\s|\\W)*(c|k))+((\\s|\\W)*(c|k))+",
