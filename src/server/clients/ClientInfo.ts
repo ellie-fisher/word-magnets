@@ -1,3 +1,6 @@
+import { AnyObject } from "../../common/util/types";
+
+
 /**
  * Client data that is directly controlled by the client. Only used for names for now.
  *
@@ -12,12 +15,12 @@ class ClientInfo
 		this.name = info.name;
 	}
 
-	cache ()
+	cache (): AnyObject
 	{
 		return { name: this.name };
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
 		return { name: this.name };
 	}

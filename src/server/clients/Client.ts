@@ -6,6 +6,8 @@ import Packet from "../../common/packets/Packet";
 import PacketManager from "../../common/packets/PacketManager";
 import Sentence from "../../common/wordbanks/Sentence";
 
+import { AnyObject } from "../../common/util/types";
+
 
 class Client
 {
@@ -28,12 +30,12 @@ class Client
 		this.roomData = new ClientRoomData (this.id);
 	}
 
-	cacheData ()
+	cacheData (): AnyObject
 	{
 		return { ...this.roomData.cache (), ...this.info.cache (), id: this.id };
 	}
 
-	applyCachedData ( data: any )
+	applyCachedData ( data: AnyObject )
 	{
 		/* We don't apply the cached data to `info` or this client because it could change important,
 		   unique things like their ID or their name. */
@@ -70,9 +72,9 @@ class Client
 		this.packets.sendPacket (packet);
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
-		const object: any = this.info.getPublicData ();
+		const object = this.info.getPublicData ();
 
 		object.id = this.id;
 

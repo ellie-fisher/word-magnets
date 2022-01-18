@@ -1,5 +1,7 @@
 import IRoomInfo from "../../common/rooms/IRoomInfo";
 
+import { AnyObject } from "../../common/util/types";
+
 
 class RoomInfo implements IRoomInfo
 {
@@ -20,7 +22,7 @@ class RoomInfo implements IRoomInfo
 		this.currentRound = 1;
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
 		return {
 			maxClients: this.maxClients,

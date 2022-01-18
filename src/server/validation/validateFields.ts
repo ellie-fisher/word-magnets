@@ -3,6 +3,7 @@ import has from "../../common/util/has";
 import slurFilter from "../config/slurFilter";
 
 import { ValidationResult } from "../../common/validation/types";
+import { AnyObject } from "../../common/util/types";
 import { checkFilter } from "../../common/util/wordFilters";
 
 
@@ -22,7 +23,7 @@ const validateFields = ( fields: object, validation: object ): ValidationResult 
 	for ( let i = 0; i < length; i++ )
 	{
 		const key: string = keys[i];
-		const data: any = validation[key];
+		const data: AnyObject = validation[key];
 
 		const { type, min, max } = data;
 

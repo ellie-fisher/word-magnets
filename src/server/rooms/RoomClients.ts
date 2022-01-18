@@ -4,6 +4,8 @@ import Packet from "../../common/packets/Packet";
 import PacketType from "../../common/packets/PacketType";
 import PacketCommand from "../../common/packets/PacketCommand";
 
+import { AnyObject } from "../../common/util/types";
+
 
 class RoomClients
 {
@@ -50,7 +52,7 @@ class RoomClients
 		return this.hasCachedClient (clientID) ? this._cache.get (clientID).name : "";
 	}
 
-	getAllCachedData ()
+	getAllCachedData (): AnyObject[]
 	{
 		const data = [];
 
@@ -192,7 +194,7 @@ class RoomClients
 		this._clients.forEach (callback);
 	}
 
-	getPublicData ()
+	getPublicData (): AnyObject
 	{
 		const clients = [];
 
