@@ -94,7 +94,9 @@ class RoomClients
 		if ( notInRoom && !this.hasClient (client.id) )
 		{
 			this._clients.set (client.id, client);
-			this._names.set (client.name, client.id);
+
+			// We set the name to lowercase for case-insensitive duplicate name checking.
+			this._names.set (client.name.toLowerCase (), client.id);
 
 			if ( this.hasCachedClient (client.id) )
 			{
@@ -156,7 +158,7 @@ class RoomClients
 
 	hasName ( name: string ): boolean
 	{
-		return this._names.has (name);
+		return this._names.has (name.toLowerCase ());
 	}
 
 	/**
