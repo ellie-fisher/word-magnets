@@ -9,9 +9,6 @@ import PacketCommand from "../common/packets/PacketCommand";
 import isValidPacket from "../common/packets/isValidPacket";
 import registerHandlers from "./packets/registerHandlers";
 
-import validateFields from "./validation/validateFields";
-import clientInfoFields from "../common/validation/fields/clientInfo";
-
 import { ObjectCreateError } from "./misc/ObjectManager";
 
 

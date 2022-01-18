@@ -63,7 +63,7 @@ class CreatePhase extends RoomPhase
 			return;
 		}
 
-		const sentence = applyFilter (validation[1], slurFilter);
+		const sentence = applyFilter (validation[1] as string, slurFilter);
 
 		this._room.sentences.addSentence ({ value: sentence, votes: 0 }, client);
 		// FIXME: Remove `sentence` since it's just for debug purposes.

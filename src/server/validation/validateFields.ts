@@ -2,16 +2,17 @@ import has from "../../common/util/has";
 
 import slurFilter from "../config/slurFilter";
 
+import { ValidationResult } from "../../common/validation/types";
 import { checkFilter } from "../../common/util/wordFilters";
 
 
 // TODO: Test for invalid characters (https://github.com/textlint-rule/textlint-rule-no-invalid-control-character/blob/master/src/CONTROL_CHARACTERS.js)
 
-const validateFields = ( fields: object, validation: object ): any[] =>
+const validateFields = ( fields: object, validation: object ): ValidationResult =>
 {
 	if ( typeof fields !== "object" )
 	{
-		return [`Expected fields to be an object, got \`${typeof fields}\``];
+		return [false, `Expected fields to be an object, got \`${typeof fields}\``];
 	}
 
 	const keys: string[] = Object.keys (validation);
@@ -32,7 +33,7 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 				continue;
 			}
 
-			return [key, "Missing required field"];
+			return [false, [key, "Missing required field"]];
 		}
 
 		const value: any = fields[key];
@@ -43,22 +44,22 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			{
 				if ( typeof value !== "string" )
 				{
-					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+					return [false, [key, `Expected type \`${type}\`, got \`${typeof value}\``]];
 				}
 
 				if ( value.length < min )
 				{
-					return [key, `Must be at least ${min} character(s)`];
+					return [false, [key, `Must be at least ${min} character(s)`]];
 				}
 
 				if ( value.length > max )
 				{
-					return [key, `Cannot be more than ${max} character(s)`];
+					return [false, [key, `Cannot be more than ${max} character(s)`]];
 				}
 
 				if ( checkFilter (value, slurFilter) )
 				{
-					return [key, "Failed offensive word filter"];
+					return [false, [key, "Failed offensive word filter"]];
 				}
 
 				break;
@@ -71,17 +72,17 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 					|| typeof value !== "number"
 					|| isNaN (value) )
 				{
-					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+					return [false, [key, `Expected type \`${type}\`, got \`${typeof value}\``]];
 				}
 
 				if ( value < min )
 				{
-					return [key, `Must be at least ${min}`];
+					return [false, [key, `Must be at least ${min}`]];
 				}
 
 				if ( value > max )
 				{
-					return [key, `Cannot be more than ${max}`];
+					return [false, [key, `Cannot be more than ${max}`]];
 				}
 
 				break;
@@ -91,7 +92,7 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 			{
 				if ( typeof value !== "boolean" && value !== 0 && value !== 1 )
 				{
-					return [key, `Expected type \`${type}\`, got \`${typeof value}\``];
+					return [false, [key, `Expected type \`${type}\`, got \`${typeof value}\``]];
 				}
 
 				break;
@@ -104,7 +105,7 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 		}
 	}
 
-	return [];
+	return [true];
 };
 
 

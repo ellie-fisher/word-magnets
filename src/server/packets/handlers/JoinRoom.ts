@@ -32,7 +32,7 @@ const joinRoomHandler = new PacketHandler (
 
 		const validation = validateFields (clientInfo, clientInfoFields);
 
-		if ( validation.length > 0 )
+		if ( !validation[0] )
 		{
 			client.packets.sendRejectPacket (packet, validation);
 			return;
