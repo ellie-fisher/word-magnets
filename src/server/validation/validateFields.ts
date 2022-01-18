@@ -58,7 +58,7 @@ const validateFields = ( fields: object, validation: object ): any[] =>
 
 				if ( checkFilter (value, slurFilter) )
 				{
-					return [key, "Fails offensive word filter"];
+					return [key, "Failed offensive word filter"];
 				}
 
 				break;
