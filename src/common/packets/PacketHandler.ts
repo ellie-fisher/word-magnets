@@ -7,7 +7,7 @@ import { ValidationData } from "../validation/types";
 
 interface PacketHandlerArgs
 {
-	fields?: AnyObject;
+	fields?: AnyObject | string;
 	handler: ( Packet, ...args: any[] ) => void;
 	validationFailed?: ( Packet, ...args: any[] ) => void;
 }
@@ -15,7 +15,7 @@ interface PacketHandlerArgs
 
 class PacketHandler
 {
-	protected _fields: AnyObject;  // TODO: Add an `AnyObject` custom type.
+	protected _fields: AnyObject | string;
 	protected _handler: Function;
 	protected _validationFailed: Function;
 
