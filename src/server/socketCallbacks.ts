@@ -8,15 +8,25 @@ import Packet from "../common/packets/Packet";
 import PacketCommand from "../common/packets/PacketCommand";
 import isValidPacket from "../common/packets/isValidPacket";
 import registerHandlers from "./packets/registerHandlers";
+import validateAppInfo from "./validateAppInfo";
 
 import { ObjectCreateError } from "./misc/ObjectManager";
 
 
+const CLOSE_VIOLATION = 1008;
 const CLOSE_SERVER_ERR = 1011;
 const CLOSE_TRY_AGAIN = 1013;
 
 const onNewConnection = function ( socket: any, request: any )
 {
+	const result = validateAppInfo (socket, request);
+
+	if ( !result[0] )
+	{
+		socket.close (CLOSE_VIOLATION, JSON.stringify (result[1]));
+		return;
+	}
+
 	const clientOrError = ClientManager.create (socket, new ClientInfo ({ name: "" }));
 
 	if ( !(clientOrError instanceof Client) )
