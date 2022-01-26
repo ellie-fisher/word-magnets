@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { AnyObject } from "../../../common/util/types";
+import { CreateRoomState } from "./reducer";
 
 
-type CreateRoomProps = AnyObject;
+type CreateRoomProps = CreateRoomState;
 
 class CreateRoom extends Component<CreateRoomProps>
 {
