@@ -14,7 +14,7 @@ module.exports = ( env, argv ) =>
 	return {
 		mode,
 
-		entry: `${CLIENT_DIR}/main.ts`,
+		entry: `${CLIENT_DIR}/main.tsx`,
 		devtool: "inline-source-map",
 
 		module:
@@ -22,7 +22,7 @@ module.exports = ( env, argv ) =>
 			rules:
 			[
 				{
-					test: /\.ts$/,
+					test: /\.tsx?$/,
 					use: "ts-loader",
 					exclude: /node_modules/,
 				},
@@ -31,7 +31,7 @@ module.exports = ( env, argv ) =>
 
 		resolve:
 		{
-			extensions: [".ts", ".js"],
+			extensions: [".ts", ".js", ".tsx", ".jsx"],
 		},
 
 		watchOptions:
