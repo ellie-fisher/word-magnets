@@ -34,8 +34,6 @@ const createRoomHandler = new PacketHandler (
 
 	handler ( packet: Packet, client: Client )
 	{
-		// TODO: Validation for all expected packet body formats.
-
 		const { body } = packet;
 		const { clientInfo } = body;
 		let { roomInfo } = body;
@@ -63,9 +61,6 @@ const createRoomHandler = new PacketHandler (
 		}
 
 		roomInfo = applyDefaults (roomInfo, roomInfoFields);
-
-		// TODO: Add chat capabilities and remove this.
-		roomInfo.enableChat = false;
 
 		const roomOrError = RoomManager.create (new RoomInfo (roomInfo), client);
 

@@ -1,4 +1,3 @@
-// TODO: Add "description" functionality
 const roomInfoFields =
 {
 	maxClients:
@@ -30,41 +29,6 @@ const roomInfoFields =
 		defaultValue: 10,
 		displayName: "Rounds",
 	},
-
-	// TODO: Add chat capabilities.
-	// enableChat:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: false,
-	// 	displayName: "Enable chat",
-	// }
-
-	// TODO: Add toggle for using player names in sentences.
-	// usePlayerNames:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: true,
-	// 	displayName: "Player names in sentences",
-	// 	description: "Allow players to use player names in their sentences",
-	// }
-
-	// TODO: Add toggle for players who join after the round starts to create sentences, vote, etc.
-	// lateParticipation:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: true,
-	// 	displayName: "Allow late participation",
-	// 	description: "Allow players who join after the round has started to create sentences, vote, etc.",
-	// }
-
-	// TODO: Add toggle for requiring players to have created a sentence in order to vote.
-	// voteRequiresSentence:
-	// {
-	// 	type: "boolean",
-	// 	defaultValue: false,
-	// 	displayName: "Require sentence to vote",
-	// 	description: "Requires players to have created a sentence of their own in order to vote for other players' sentences.",
-	// }
 };
 
 

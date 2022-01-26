@@ -9,8 +9,6 @@ import { checkFilter } from "../../common/util/wordFilters";
 import invalidChars from "../../common/config/invalidChars";
 
 
-// TODO: Test for invalid characters (https://github.com/textlint-rule/textlint-rule-no-invalid-control-character/blob/master/src/CONTROL_CHARACTERS.js)
-
 const validateFields = ( fields: object, validation: object ): ValidationResult =>
 {
 	if ( typeof fields !== "object" )
