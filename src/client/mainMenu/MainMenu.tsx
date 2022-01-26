@@ -1,24 +1,35 @@
 import React, { Component } from "react";
-
 import { connect } from "react-redux";
 
-import { CreateRoomState } from "./reducers/createRoom";
+import MainMenuTab from "./MainMenuTab";
+
+import CreateRoom from "./createRoom/CreateRoom";
+import JoinRoom from "./joinRoom/JoinRoom";
+
+import { MainMenuState } from "./reducer";
 
 
-type MainMenuProps = CreateRoomState;
-
+type MainMenuProps = MainMenuState;
 
 class MainMenu extends Component<MainMenuProps>
 {
 	render ()
 	{
-		return <div>MainMenu</div>;
+		const { props } = this;
+
+		return (
+			<div>
+				{props.tab === MainMenuTab.CreateRoom ? <CreateRoom /> : <JoinRoom />}
+			</div>
+		);
 	}
 }
 
 const mapStateToProps = state =>
 {
-	return {};
+	return {
+		tab: state.mainMenu.tab,
+	};
 };
 
 

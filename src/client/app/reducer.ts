@@ -66,9 +66,12 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 				},
 			};
 		}
-	}
 
-	return state;
+		default:
+		{
+			return state;
+		}
+	}
 };
 
 
