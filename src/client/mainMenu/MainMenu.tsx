@@ -6,10 +6,10 @@ import MainMenuTab from "./MainMenuTab";
 import CreateRoom from "./createRoom/CreateRoom";
 import JoinRoom from "./joinRoom/JoinRoom";
 
-import { MainMenuState } from "./reducer";
+import { AnyObject } from "../../common/util/types";
 
 
-type MainMenuProps = MainMenuState;
+type MainMenuProps = AnyObject;
 
 class MainMenu extends Component<MainMenuProps>
 {

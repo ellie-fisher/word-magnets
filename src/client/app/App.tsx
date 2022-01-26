@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import AppView from "./AppView";
 import MainMenu from "../mainMenu/MainMenu";
 
-import { AppState } from "./reducer";
+import { AnyObject } from "../../common/util/types";
 
 
-type AppProps = AppState;
+type AppProps = AnyObject;
 
 class App extends Component<AppProps>
 {
