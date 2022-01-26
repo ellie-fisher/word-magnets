@@ -6,6 +6,8 @@ import App from "./app/App";
 
 import store from "./store";
 
+import "./sockets/socket";
+
 
 ReactDOM.render (
 	<Provider store={store}>
