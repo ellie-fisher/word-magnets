@@ -7,7 +7,7 @@ import CreateRoomActions from "./actionCreators";
 import { CreateRoomState } from "./reducer";
 
 
-type CreateRoomProps = { roomInfo: CreateRoomState } & typeof CreateRoomActions;
+type CreateRoomProps = CreateRoomState & typeof CreateRoomActions;
 
 class CreateRoom extends Component<CreateRoomProps>
 {
@@ -18,9 +18,15 @@ class CreateRoom extends Component<CreateRoomProps>
 		return (
 			<div>
 				<Fields
-					keyPrefix="CreateRoom-field"
+					keyPrefix="CreateRoom-roomInfo-field"
 					fields={props.roomInfo}
-					onChange={( event, key, field ) => props.setField (key, event.target.value)}
+					onChange={( newValue, key, field ) => props.setField ("roomInfo", key, newValue)}
+				/>
+
+				<Fields
+					keyPrefix="CreateRoom-clientInfo-field"
+					fields={props.clientInfo}
+					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 				/>
 			</div>
 		);
@@ -32,7 +38,12 @@ const mapStateToProps = state =>
 	return {
 		roomInfo:
 		{
-			...state.createRoom.roomInfo
+			...state.createRoom.roomInfo,
+		},
+
+		clientInfo:
+		{
+			...state.createRoom.clientInfo,
 		},
 	};
 };
@@ -40,9 +51,9 @@ const mapStateToProps = state =>
 const mapDispatchToProps = dispatch =>
 {
 	return {
-		setField ( key: string, value: any )
+		setField ( type: string, key: string, value: any )
 		{
-			dispatch (CreateRoomActions.setField (key, value));
+			dispatch (CreateRoomActions.setField (type, key, value));
 		},
 	};
 };

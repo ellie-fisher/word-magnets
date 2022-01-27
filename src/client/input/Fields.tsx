@@ -31,9 +31,8 @@ const Fields = ( props: FieldsProps ) =>
 					case "string":
 					{
 						input = <Textbox
-							key={`${keyPrefix}-${field.type}-${key}`}
 							field={field}
-							onChange={event => onChange (event, key, field)}
+							onChange={event => onChange (event.target.value, key, field)}
 						/>;
 
 						break;
@@ -42,9 +41,8 @@ const Fields = ( props: FieldsProps ) =>
 					case "integer":
 					{
 						input = <IntegerDropdown
-							key={`${keyPrefix}-${field.type}-${key}`}
 							field={field}
-							onChange={event => onChange (event, key, field)}
+							onChange={event => onChange (Number (event.target.value), key, field)}
 						/>;
 
 						break;
@@ -58,7 +56,7 @@ const Fields = ( props: FieldsProps ) =>
 				}
 
 				return (
-					<div>
+					<div key={`${keyPrefix}-${field.type}-${key}`}>
 						<label>{field.displayName}: </label>
 						{input}
 					</div>

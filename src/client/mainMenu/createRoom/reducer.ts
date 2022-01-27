@@ -2,6 +2,7 @@ import has from "../../../common/util/has";
 import initializeState from "../../validation/initializeState";
 
 import roomInfoFields, { IRoomInfoFields } from "../../../common/validation/fields/roomInfo";
+import clientInfoFields, { IClientInfoFields } from "../../../common/validation/fields/clientInfo";
 
 import { AnyObject } from "../../../common/util/types";
 import { Action } from "../../types/redux";
@@ -10,11 +11,13 @@ import { Action } from "../../types/redux";
 type CreateRoomState =
 {
 	roomInfo: IRoomInfoFields,
+	clientInfo: IClientInfoFields,
 };
 
 const initialState =
 {
 	roomInfo: initializeState<IRoomInfoFields> (roomInfoFields),
+	clientInfo: initializeState<IClientInfoFields> (clientInfoFields),
 };
 
 const createRoomReducer = ( state: CreateRoomState = initialState, action: Action ) =>
@@ -23,20 +26,20 @@ const createRoomReducer = ( state: CreateRoomState = initialState, action: Actio
 	{
 		case "createRoom/setField":
 		{
-			const { key } = action.payload;
+			const { type, key } = action.payload;
 
-			if ( has (state.roomInfo, key) )
+			if ( has (state, type) && has (state[type], key) )
 			{
 				return {
 					...state,
 
-					roomInfo:
+					[type]:
 					{
-						...state.roomInfo,
+						...state[type],
 
 						[key]:
 						{
-							...state.roomInfo[key],
+							...state[type][key],
 							value: action.payload.value,
 						},
 					},

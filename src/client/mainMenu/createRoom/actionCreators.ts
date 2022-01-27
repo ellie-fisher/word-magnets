@@ -1,10 +1,10 @@
 const CreateRoomActions =
 {
-	setField ( key: string, value: any )
+	setField ( type: string, key: string, value: any )
 	{
 		return {
 			type: "createRoom/setField",
-			payload: { key, value },
+			payload: { type, key, value },
 		};
 	},
 };
