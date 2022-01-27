@@ -28,10 +28,11 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 {
 	switch ( action.type )
 	{
-		case "socket/opened":
+		case "app/setView":
 		{
-			return { ...state, view: AppView.MainMenu };
+			return { ...state, view: action.payload };
 		}
+
 
 		case "socket/closed":
 		{
@@ -39,8 +40,6 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 
 			return {
 				...state,
-
-				view: AppView.Error,
 
 				error:
 				{
@@ -56,8 +55,6 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 		{
 			return {
 				...state,
-
-				view: AppView.Error,
 
 				error:
 				{
