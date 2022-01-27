@@ -1,5 +1,7 @@
 import store from "../store";
 
+import AppActions from "../app/actionCreators";
+
 import packetManager from "./packetManager";
 
 import isValidPacket from "../../common/packets/isValidPacket";
@@ -14,26 +16,17 @@ const socket = new WebSocket (
 
 socket.onopen = function ()
 {
-	store.dispatch ({ type: "socket/opened" });
+	store.dispatch (AppActions.socketOpened ());
 };
 
 socket.onclose = function ( event: CloseEvent )
 {
-	store.dispatch (
-	{
-		type: "socket/closed",
-
-		payload:
-		{
-			code: event.code,
-			reason: event.reason,
-		},
-	});
+	store.dispatch (AppActions.socketClosed (event.code, event.reason));
 };
 
 socket.onerror = function ()
 {
-	store.dispatch ({ type: "socket/error" });
+	store.dispatch (AppActions.socketError ());
 };
 
 socket.onmessage = function ( event: MessageEvent<any> )
