@@ -10,12 +10,13 @@ type FieldsProps =
 {
 	keyPrefix: string,
 	fields: AnyObject,
+	error: any[] | string,
 	onChange: Function,
 };
 
 const Fields = ( props: FieldsProps ) =>
 {
-	const { keyPrefix, fields, onChange } = props;
+	const { keyPrefix, fields, error, onChange } = props;
 
 	return (
 		<div>
@@ -59,6 +60,7 @@ const Fields = ( props: FieldsProps ) =>
 					<div key={`${keyPrefix}-${field.type}-${key}`}>
 						<label>{field.displayName}: </label>
 						{input}
+						{error !== "" && error[0] === key ? <div><strong>{error[1]}</strong></div> : ""}
 					</div>
 				);
 			})

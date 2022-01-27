@@ -10,7 +10,7 @@ const packetMiddleware = store => next => action =>
 
 	switch ( action.type )
 	{
-		case "createRoom/createRoom":
+		case "createRoom/createRoom:request":
 		{
 			const data: AnyObject = {};
 			const { createRoom } = state;

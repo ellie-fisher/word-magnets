@@ -8,9 +8,17 @@ const CreateRoomActions =
 		};
 	},
 
-	createRoom ()
+	createRoomRequest ()
 	{
-		return { type: "createRoom/createRoom" };
+		return { type: "createRoom/createRoom:request" };
+	},
+
+	createRoomResponse ( data: any )
+	{
+		return {
+			type: "createRoom/createRoom:response",
+			payload: data,
+		};
 	},
 };
 

@@ -4,30 +4,61 @@ import { connect } from "react-redux";
 import Fields from "../../input/Fields";
 import CreateRoomActions from "./actionCreators";
 
-import { CreateRoomState } from "./reducer";
+import has from "../../../common/util/has";
+
+import { AnyObject } from "../../../common/util/types";
+
+import "./packetHandlers";
 
 
-type CreateRoomProps = CreateRoomState & typeof CreateRoomActions;
+type CreateRoomProps = AnyObject;
 
 class CreateRoom extends Component<CreateRoomProps>
 {
 	render ()
 	{
 		const { props } = this;
+		const { error } = props;
+
+		let errorWhich = "none";
+		let errorData = "";
+
+		if ( error !== "" )
+		{
+			if ( typeof error === "string" )
+			{
+				errorWhich = "all";
+				errorData = error;
+			}
+			else if ( Array.isArray (error) )
+			{
+				errorWhich = "all";
+				errorData = error[0];
+			}
+			else if ( typeof error === "object" && error !== null )
+			{
+				errorWhich = error.which;
+				errorData = error.validation;
+			}
+		}
 
 		return (
 			<div>
 				<Fields
 					keyPrefix="CreateRoom-roomInfo-field"
 					fields={props.roomInfo}
+					error={errorWhich === "roomInfo" ? errorData : ""}
 					onChange={( newValue, key, field ) => props.setField ("roomInfo", key, newValue)}
 				/>
 
 				<Fields
 					keyPrefix="CreateRoom-clientInfo-field"
 					fields={props.clientInfo}
+					error={errorWhich === "clientInfo" ? errorData : ""}
 					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 				/>
+
+				{errorWhich === "all" ? <strong>{errorData}</strong> : ""}
 
 				<button onClick={props.createRoom}>Create Room</button>
 			</div>
@@ -38,15 +69,9 @@ class CreateRoom extends Component<CreateRoomProps>
 const mapStateToProps = state =>
 {
 	return {
-		roomInfo:
-		{
-			...state.createRoom.roomInfo,
-		},
-
-		clientInfo:
-		{
-			...state.createRoom.clientInfo,
-		},
+		roomInfo: { ...state.createRoom.roomInfo },
+		clientInfo: { ...state.createRoom.clientInfo },
+		error: { ...state.createRoom.error },
 	};
 };
 
@@ -60,7 +85,7 @@ const mapDispatchToProps = dispatch =>
 
 		createRoom ()
 		{
-			dispatch (CreateRoomActions.createRoom ());
+			dispatch (CreateRoomActions.createRoomRequest ());
 		},
 	};
 };

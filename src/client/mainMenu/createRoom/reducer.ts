@@ -4,7 +4,6 @@ import initializeState from "../../validation/initializeState";
 import roomInfoFields, { IRoomInfoFields } from "../../../common/validation/fields/roomInfo";
 import clientInfoFields, { IClientInfoFields } from "../../../common/validation/fields/clientInfo";
 
-import { AnyObject } from "../../../common/util/types";
 import { Action } from "../../types/redux";
 
 
@@ -12,12 +11,14 @@ type CreateRoomState =
 {
 	roomInfo: IRoomInfoFields,
 	clientInfo: IClientInfoFields,
+	error: any;
 };
 
 const initialState =
 {
 	roomInfo: initializeState<IRoomInfoFields> (roomInfoFields),
 	clientInfo: initializeState<IClientInfoFields> (clientInfoFields),
+	error: "",
 };
 
 const createRoomReducer = ( state: CreateRoomState = initialState, action: Action ) =>
@@ -47,6 +48,16 @@ const createRoomReducer = ( state: CreateRoomState = initialState, action: Actio
 			}
 
 			return state;
+		}
+
+		case "createRoom/createRoom:response":
+		{
+			if ( action.payload.ok )
+			{
+				return state;
+			}
+
+			return { ...state, error: action.payload.data };
 		}
 
 		default:
