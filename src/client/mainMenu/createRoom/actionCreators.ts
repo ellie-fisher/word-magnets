@@ -7,6 +7,11 @@ const CreateRoomActions =
 			payload: { type, key, value },
 		};
 	},
+
+	createRoom ()
+	{
+		return { type: "createRoom/createRoom" };
+	},
 };
 
 

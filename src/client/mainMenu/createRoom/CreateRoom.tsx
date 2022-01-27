@@ -28,6 +28,8 @@ class CreateRoom extends Component<CreateRoomProps>
 					fields={props.clientInfo}
 					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 				/>
+
+				<button onClick={props.createRoom}>Create Room</button>
 			</div>
 		);
 	}
@@ -54,6 +56,11 @@ const mapDispatchToProps = dispatch =>
 		setField ( type: string, key: string, value: any )
 		{
 			dispatch (CreateRoomActions.setField (type, key, value));
+		},
+
+		createRoom ()
+		{
+			dispatch (CreateRoomActions.createRoom ());
 		},
 	};
 };
