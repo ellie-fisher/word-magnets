@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import Fields from "../../input/Fields";
+import CreateRoomActions from "./actionCreators";
+
 import { CreateRoomState } from "./reducer";
 
 
-type CreateRoomProps = CreateRoomState;
+type CreateRoomProps = { roomInfo: CreateRoomState } & typeof CreateRoomActions;
 
 class CreateRoom extends Component<CreateRoomProps>
 {
@@ -14,7 +17,11 @@ class CreateRoom extends Component<CreateRoomProps>
 
 		return (
 			<div>
-				CreateRoom
+				<Fields
+					keyPrefix="CreateRoom-field"
+					fields={props.roomInfo}
+					onChange={( event, key, field ) => props.setField (key, event.target.value)}
+				/>
 			</div>
 		);
 	}
@@ -22,8 +29,23 @@ class CreateRoom extends Component<CreateRoomProps>
 
 const mapStateToProps = state =>
 {
-	return {};
+	return {
+		roomInfo:
+		{
+			...state.createRoom.roomInfo
+		},
+	};
+};
+
+const mapDispatchToProps = dispatch =>
+{
+	return {
+		setField ( key: string, value: any )
+		{
+			dispatch (CreateRoomActions.setField (key, value));
+		},
+	};
 };
 
 
-export default connect (mapStateToProps) (CreateRoom);
+export default connect (mapStateToProps, mapDispatchToProps) (CreateRoom);

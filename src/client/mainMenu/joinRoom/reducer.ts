@@ -4,7 +4,7 @@ import { Action } from "../../types/redux";
 interface JoinRoomState
 {
 	// TODO:
-}
+};
 
 const initialState =
 {
