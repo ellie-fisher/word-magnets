@@ -4,6 +4,12 @@ import PacketCommand from "./PacketCommand";
 import { AnyObject } from "../util/types";
 
 
+interface ResponsePacketBody
+{
+	ok: boolean;
+	data?: any;
+};
+
 class Packet
 {
 	public type: PacketType;
@@ -48,3 +54,5 @@ class Packet
 
 
 export default Packet;
+
+export { ResponsePacketBody };
