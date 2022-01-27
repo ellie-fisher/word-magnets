@@ -42,7 +42,7 @@ const createRoomHandler = new PacketHandler (
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (packet, validation);
+			client.packets.sendRejectPacket (packet, { which: "clientInfo", validation: validation[1] });
 			return;
 		}
 
@@ -50,7 +50,7 @@ const createRoomHandler = new PacketHandler (
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (packet, validation);
+			client.packets.sendRejectPacket (packet, { which: "roomInfo", validation: validation[1] });
 			return;
 		}
 
