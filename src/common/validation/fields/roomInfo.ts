@@ -31,5 +31,14 @@ const roomInfoFields =
 	},
 };
 
+interface IRoomInfoFields
+{
+	maxClients?: number;
+	timeLimit?: number;
+	maxRounds?: number;
+};
+
 
 export default roomInfoFields;
+
+export { IRoomInfoFields };

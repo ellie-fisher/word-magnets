@@ -10,5 +10,12 @@ const clientInfoFields =
 	},
 };
 
+interface IClientInfoFields
+{
+	name: string;
+};
+
 
 export default clientInfoFields;
+
+export { IClientInfoFields };
