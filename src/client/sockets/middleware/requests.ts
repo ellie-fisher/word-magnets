@@ -1,10 +1,13 @@
-import PacketCommand from "../../common/packets/PacketCommand";
-import packetManager from "./packetManager";
+import AppActions from "../app/actionCreators";
+import AppView from "../app/AppView";
 
-import { AnyObject } from "../../common/util/types";
+import PacketCommand from "../../../common/packets/PacketCommand";
+import packetManager from "../packetManager";
+
+import { AnyObject } from "../../../common/util/types";
 
 
-const packetMiddleware = store => next => action =>
+const requestsMiddleware = store => next => action =>
 {
 	const state = store.getState ();
 
@@ -42,4 +45,4 @@ const packetMiddleware = store => next => action =>
 };
 
 
-export default packetMiddleware;
+export default requestsMiddleware;
