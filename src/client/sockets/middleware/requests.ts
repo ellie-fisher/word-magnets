@@ -1,5 +1,5 @@
-import AppActions from "../app/actionCreators";
-import AppView from "../app/AppView";
+import AppActions from "../../app/actionCreators";
+import AppView from "../../app/AppView";
 
 import PacketCommand from "../../../common/packets/PacketCommand";
 import packetManager from "../packetManager";

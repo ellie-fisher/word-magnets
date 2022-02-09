@@ -25,6 +25,11 @@ const AppActions =
 	{
 		return { type: "socket/error" };
 	},
+
+	clientID ( clientID: string )
+	{
+		return { type: "app/clientID", payload: clientID };
+	},
 };
 
 

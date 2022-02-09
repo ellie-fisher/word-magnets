@@ -4,6 +4,7 @@ import rootReducer from "./reducer";
 
 import socketMiddleware from "./sockets/middleware/socket";
 import requestsMiddleware from "./sockets/middleware/requests";
+import roomMiddleware from "./room/middleware";
 
 
 // TODO: Only enable devtools in development mode.
@@ -12,7 +13,7 @@ const composeFunction = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore (
 	rootReducer,
-	composeFunction (applyMiddleware (requestsMiddleware, socketMiddleware)),
+	composeFunction (applyMiddleware (requestsMiddleware, socketMiddleware, roomMiddleware)),
 );
 
 

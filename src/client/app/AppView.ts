@@ -3,6 +3,7 @@ enum AppView
 	Connecting,
 	Error,
 	MainMenu,
+	Room,
 };
 
 

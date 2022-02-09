@@ -3,11 +3,15 @@ import { connect } from "react-redux";
 
 import AppView from "./AppView";
 import MainMenu from "../mainMenu/MainMenu";
+import Room from "../room/Room";
 
 import { AppState } from "./reducer";
+import { AnyObject } from "../../common/util/types";
+
+import "./packetHandlers";
 
 
-type AppProps = AppState;
+type AppProps = AnyObject;
 
 class App extends Component<AppProps>
 {
@@ -41,6 +45,12 @@ class App extends Component<AppProps>
 			case AppView.MainMenu:
 			{
 				view = <MainMenu />;
+				break;
+			}
+
+			case AppView.Room:
+			{
+				view = <Room />;
 				break;
 			}
 		}

@@ -9,9 +9,10 @@ import JoinRoom from "./joinRoom/JoinRoom";
 import MainMenuActions from "./actionCreators";
 
 import { MainMenuState } from "./reducer";
+import { AnyObject } from "../../common/util/types";
 
 
-type MainMenuProps = MainMenuState & typeof MainMenuActions;
+type MainMenuProps = AnyObject;
 
 class MainMenu extends Component<MainMenuProps>
 {

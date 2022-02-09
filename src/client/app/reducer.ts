@@ -10,6 +10,7 @@ interface AppState
 		message: string;
 	},
 
+	clientID: string;
 	view: AppView;
 };
 
@@ -21,6 +22,7 @@ const initialState =
 		message: "",
 	},
 
+	clientID: "",
 	view: AppView.Connecting,
 };
 
@@ -61,6 +63,14 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 					header: "Error",
 					message: "An unexpected socket error has occurred.",
 				},
+			};
+		}
+
+		case "app/clientID":
+		{
+			return {
+				...state,
+				clientID: action.payload,
 			};
 		}
 

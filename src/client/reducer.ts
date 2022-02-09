@@ -4,6 +4,7 @@ import appReducer from "./app/reducer";
 import mainMenuReducer from "./mainMenu/reducer";
 import createRoomReducer from "./mainMenu/createRoom/reducer";
 import joinRoomReducer from "./mainMenu/joinRoom/reducer";
+import roomReducer from "./room/reducer";
 
 
 const rootReducer = combineReducers (
@@ -12,6 +13,7 @@ const rootReducer = combineReducers (
 	mainMenu: mainMenuReducer,
 	createRoom: createRoomReducer,
 	joinRoom: joinRoomReducer,
+	room: roomReducer,
 });
 
 
