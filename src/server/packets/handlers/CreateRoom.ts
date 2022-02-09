@@ -79,6 +79,9 @@ const createRoomHandler = new PacketHandler (
 		const room: Room = roomOrError;
 
 		RoomManager.joinRoom (room.id, client);
+
+		// TODO: Remove sending the room ID to make it clearer that the `JoinRoom` data packet is
+		//       where all the view-changing logic should be.
 		client.packets.sendAcceptPacket (packet, room.id);
 
 		room.startPhase ();
