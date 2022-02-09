@@ -5,7 +5,7 @@ import { AnyObject } from "../../common/util/types";
 /**
  * For initializing reducer states that use fields.
  */
-const initializeState = <T>( validation: AnyObject ): T =>
+const initializeState = <T>( validation: AnyObject, onlyValues: boolean = false ): T =>
 {
 	const state = {} as T;
 	const keys = Object.keys (validation);
@@ -37,11 +37,18 @@ const initializeState = <T>( validation: AnyObject ): T =>
 			throw new Error (`Error initializing state for field \`${key}\``);
 		}
 
-		state[key] =
+		if ( onlyValues )
 		{
-			...field,
-			value,
-		};
+			state[key] = value;
+		}
+		else
+		{
+			state[key] =
+			{
+				...field,
+				value,
+			};
+		}
 	});
 
 	return state;

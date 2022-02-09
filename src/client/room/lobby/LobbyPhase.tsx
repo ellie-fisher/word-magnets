@@ -1,0 +1,77 @@
+import React, { Component } from "react";
+import { connect } from "react-redux";
+
+import RoomActions from "../actionCreators";
+import ClientList from "../ClientList";
+
+import { RoomState } from "../reducer";
+import { AnyObject } from "../../../common/util/types";
+
+
+type LobbyPhaseProps = AnyObject;
+
+class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
+{
+	constructor ( props )
+	{
+		super (props);
+
+		this.state =
+		{
+			startGameClicked: false,
+		};
+	}
+
+	clickStartGame ()
+	{
+		this.setState ({ startGameClicked: true });
+		this.props.startGame ();
+	}
+
+	render ()
+	{
+		const { props } = this;
+
+		return (
+			<div>
+				<h3>Pre-Game Lobby</h3>
+				<small>Waiting for room owner to start the game...</small>
+
+				<div style={{ paddingTop: "1vw" }}>
+					<label><strong>Players: </strong></label>
+					<ClientList clients={props.clients} />
+
+					<hr />
+
+					<button
+						onClick={() => this.clickStartGame ()}
+						disabled={this.state.startGameClicked}
+					>
+						Start Game
+					</button>
+				</div>
+			</div>
+		);
+	}
+}
+
+const mapStateToProps = state =>
+{
+	return {
+		phase: state.room.phase,
+		clients: state.room.clients,
+	};
+};
+
+const mapDispatchToProps = dispatch =>
+{
+	return {
+		startGame ()
+		{
+			dispatch (RoomActions.startGame ());
+		},
+	};
+};
+
+
+export default connect (mapStateToProps, mapDispatchToProps) (LobbyPhase);

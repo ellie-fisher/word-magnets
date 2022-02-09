@@ -13,3 +13,13 @@ packetManager.on (PacketType.Data, PacketCommand.JoinRoom, ( packet: Packet ) =>
 {
 	store.dispatch (RoomActions.clientJoinRoom (packet.body));
 });
+
+packetManager.on (PacketType.Data, PacketCommand.LeaveRoom, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.clientLeaveRoom (packet.body));
+});
+
+packetManager.on (PacketType.Data, PacketCommand.RoomInfo, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.roomInfo (packet.body));
+});
