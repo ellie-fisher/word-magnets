@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "start": "ts-node src/server/main.ts",
+    "build": "webpack",
     "watch": "webpack --watch"
   },
   "author": "Ellie Fisher",
