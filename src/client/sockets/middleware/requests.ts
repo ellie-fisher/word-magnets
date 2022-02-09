@@ -7,6 +7,8 @@ import packetManager from "../packetManager";
 import { AnyObject } from "../../../common/util/types";
 
 
+// TODO: Move these to separate middleware in their respective folders.
+
 const requestsMiddleware = store => next => action =>
 {
 	const state = store.getState ();
