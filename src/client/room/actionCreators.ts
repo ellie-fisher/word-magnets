@@ -1,7 +1,8 @@
 import { AnyObject } from "../../common/util/types";
+import { SentenceWord } from "../../common/wordbanks/Sentence";
 
 
-const MainMenuActions =
+const RoomActions =
 {
 	clientJoinRoom ( id: string )
 	{
@@ -27,6 +28,30 @@ const MainMenuActions =
 		};
 	},
 
+	phaseData ( data: AnyObject )
+	{
+		return {
+			type: "room/phaseData",
+			payload: data,
+		};
+	},
+
+	wordbanks ( wordbanks: AnyObject )
+	{
+		return {
+			type: "room/sentence/wordbanks",
+			payload: wordbanks,
+		};
+	},
+
+	addWord ( word: SentenceWord )
+	{
+		return {
+			type: "room/sentence/addWord",
+			payload: word,
+		};
+	},
+
 	leaveRoom ()
 	{
 		return { type: "room/leaveRoom" };
@@ -39,4 +64,4 @@ const MainMenuActions =
 };
 
 
-export default MainMenuActions;
+export default RoomActions;

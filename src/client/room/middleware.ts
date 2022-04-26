@@ -1,3 +1,6 @@
+import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
+
 import AppActions from "../app/actionCreators";
 import AppView from "../app/AppView";
 
@@ -34,6 +37,18 @@ const roomMiddleware = store => next => action =>
 		case "room/startGame":
 		{
 			packetManager.sendRequestPacket (PacketCommand.StartGame);
+			break;
+		}
+
+		case "room/phaseData":
+		{
+			const { payload } = action;
+
+			if ( payload.type === RoomPhaseType.Create && payload.state === RoomPhaseState.End )
+			{
+				packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
+			}
+
 			break;
 		}
 

@@ -58,7 +58,6 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		phase: state.room.phase,
 		clients: state.room.clients,
 	};
 };

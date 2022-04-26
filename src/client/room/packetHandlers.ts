@@ -23,3 +23,13 @@ packetManager.on (PacketType.Data, PacketCommand.RoomInfo, ( packet: Packet ) =>
 {
 	store.dispatch (RoomActions.roomInfo (packet.body));
 });
+
+packetManager.on (PacketType.Data, PacketCommand.PhaseData, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.phaseData (packet.body));
+});
+
+packetManager.on (PacketType.Data, PacketCommand.Wordbanks, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.wordbanks (packet.body));
+});
