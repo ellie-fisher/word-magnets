@@ -33,7 +33,20 @@ const requestsMiddleware = store => next => action =>
 			});
 
 			packetManager.sendRequestPacket (PacketCommand.CreateRoom, data);
+			break;
+		}
 
+		case "joinRoom/joinRoom:request":
+		{
+			const clientInfo: AnyObject = {};
+			const { joinRoom } = state;
+
+			Object.keys (joinRoom.clientInfo).forEach (key =>
+			{
+				clientInfo[key] = joinRoom.clientInfo[key].value;
+			});
+
+			packetManager.sendRequestPacket (PacketCommand.JoinRoom, { roomID: action.payload, clientInfo });
 			break;
 		}
 

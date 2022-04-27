@@ -20,6 +20,14 @@ const RoomActions =
 		};
 	},
 
+	clientList ( list: AnyObject[] )
+	{
+		return {
+			type: "room/clientList",
+			payload: list,
+		};
+	},
+
 	roomInfo ( info: AnyObject )
 	{
 		return {

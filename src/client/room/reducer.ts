@@ -59,6 +59,18 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 			return { ...state, clients };
 		}
 
+		case "room/clientList":
+		{
+			const clients = {};
+
+			action.payload.forEach (client =>
+			{
+				clients[client.id] = { ...client };
+			})
+
+			return { ...state, clients };
+		}
+
 		case "room/roomInfo":
 		{
 			return {
