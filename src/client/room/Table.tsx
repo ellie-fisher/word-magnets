@@ -35,7 +35,7 @@ const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 										{col}
 									</td>
 								);
-							}
+							})
 						}
 						</tr>
 					);
