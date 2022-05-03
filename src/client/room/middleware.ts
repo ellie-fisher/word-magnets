@@ -44,9 +44,27 @@ const roomMiddleware = store => next => action =>
 		{
 			const { payload } = action;
 
-			if ( payload.type === RoomPhaseType.Create && payload.state === RoomPhaseState.End )
+			switch ( payload.type )
 			{
-				packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
+				case RoomPhaseType.Create:
+				{
+					if ( payload.state === RoomPhaseState.End )
+					{
+						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
+					}
+
+					break;
+				}
+
+				case RoomPhaseType.Vote:
+				{
+					if ( payload.state === RoomPhaseState.End )
+					{
+						packetManager.sendRequestPacket (PacketCommand.CastVote, state.room.voteID);
+					}
+
+					break;
+				}
 			}
 
 			break;

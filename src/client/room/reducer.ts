@@ -3,7 +3,7 @@ import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
 
 import sentenceToString from "../util/sentenceToString";
 
-import { SentenceWord } from "../../common/wordbanks/Sentence";
+import Sentence, { SentenceWord } from "../../common/wordbanks/Sentence";
 
 import { Action } from "../types/redux";
 import { IWordbank } from "../types/game";
@@ -20,6 +20,9 @@ interface RoomState
 	info: AnyObject;
 	wordbanks: IWordbank[];
 	sentence: SentenceWord[];
+	sentenceString: string;
+	sentenceList: Sentence[];
+	voteID: string;
 };
 
 const initialState =
@@ -31,6 +34,8 @@ const initialState =
 	wordbanks: [],
 	sentence: [],
 	sentenceString: "",
+	sentenceList: [],
+	voteID: "",
 };
 
 const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
@@ -98,6 +103,8 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 			return {
 				...state,
 				wordbanks: action.payload,
+				sentence: [],
+				sentenceString: "",
 			};
 		}
 
@@ -120,6 +127,20 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 				sentence: sentenceCopy,
 				sentenceString,
 			};
+		}
+
+		case "room/voting/sentenceList":
+		{
+			return {
+				...state,
+				sentenceList: action.payload.slice (),
+				voteID: "",
+			};
+		}
+
+		case "room/voting/setVote":
+		{
+			return { ...state, voteID: action.payload };
 		}
 
 		case "createRoom/createRoom:request":

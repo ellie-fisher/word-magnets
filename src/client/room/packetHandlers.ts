@@ -38,3 +38,8 @@ packetManager.on (PacketType.Data, PacketCommand.Wordbanks, ( packet: Packet ) =
 {
 	store.dispatch (RoomActions.wordbanks (packet.body));
 });
+
+packetManager.on (PacketType.Data, PacketCommand.SentenceList, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.sentenceList (packet.body));
+});

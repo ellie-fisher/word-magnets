@@ -60,6 +60,22 @@ const RoomActions =
 		};
 	},
 
+	sentenceList ( list: AnyObject )
+	{
+		return {
+			type: "room/voting/sentenceList",
+			payload: list,
+		};
+	},
+
+	setVote ( voteID: number )
+	{
+		return {
+			type: "room/voting/setVote",
+			payload: voteID,
+		};
+	},
+
 	leaveRoom ()
 	{
 		return { type: "room/leaveRoom" };

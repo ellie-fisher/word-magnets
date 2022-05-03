@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import RoomActions from "./actionCreators";
 import LobbyPhase from "./lobby/LobbyPhase";
 import CreatePhase from "./create/CreatePhase";
+import VotePhase from "./vote/VotePhase";
 
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 
@@ -37,6 +38,12 @@ class Room extends Component<RoomProps>
 			case RoomPhaseType.Create:
 			{
 				view = <CreatePhase />;
+				break;
+			}
+
+			case RoomPhaseType.Vote:
+			{
+				view = <VotePhase />;
 				break;
 			}
 
