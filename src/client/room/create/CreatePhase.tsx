@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 
 import Wordbank from "./Wordbank";
 
+import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
+
 import RoomActions from "../actionCreators";
 import ClientList from "../ClientList";
 
@@ -38,6 +40,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 					wordbank={playerWordbank}
 					isName={true}
 					onClick={( client: AnyObject ) => props.addWord (-1, client.id, true)}
+					disabled={props.phaseState === RoomPhaseState.End}
 				/>
 
 			{
@@ -47,6 +50,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 						key={`wordbank-${wordbank.displayName}-${index}`}
 						wordbank={wordbank}
 						onClick={( word: string, wordIndex: number ) => props.addWord (index, wordIndex, false)}
+						disabled={props.phaseState === RoomPhaseState.End}
 					/>
 				})
 			}
@@ -64,6 +68,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
+		phaseState: state.room.phaseState,
 		clients: state.room.clients,
 		wordbanks: state.room.wordbanks,
 		sentence: state.room.sentence,

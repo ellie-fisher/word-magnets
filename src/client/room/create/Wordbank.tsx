@@ -4,8 +4,10 @@ import { AnyObject } from "../../../common/util/types";
 
 type WordbankProps = AnyObject;
 
-const Wordbank: FC<WordbankProps> = ({ wordbank, isName = false, onClick = () => {} }): ReactElement =>
+const Wordbank: FC<WordbankProps> = ( props: WordbankProps ): ReactElement =>
 {
+	const { wordbank, disabled = false, isName = false, onClick = () => {} } = props;
+
 	return (
 		<div>
 			<h3>{wordbank.displayName}</h3>
@@ -16,6 +18,7 @@ const Wordbank: FC<WordbankProps> = ({ wordbank, isName = false, onClick = () =>
 					return <button
 						key={`wordbank-${wordbank.displayName}-word-${word}-${index}`}
 						onClick={() => onClick (word, index)}
+						disabled={disabled}
 					>
 						{isName ? word.name : word}
 					</button>;

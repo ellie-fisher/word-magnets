@@ -48,13 +48,13 @@ const roomMiddleware = store => next => action =>
 			{
 				case RoomPhaseType.Create:
 				{
-					if ( payload.state === RoomPhaseState.End )
-					{
-						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
-					}
-					else if ( payload.state === RoomPhaseState.PreStart )
+					if ( payload.state === RoomPhaseState.PreStart )
 					{
 						store.dispatch (RoomActions.newRound ());
+					}
+					else if ( payload.state === RoomPhaseState.End )
+					{
+						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
 					}
 
 					break;
