@@ -48,20 +48,8 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 
 const mapStateToProps = state =>
 {
-	return {
-		sentenceScores: state.room.sentenceScores,
-	};
-};
-
-const mapDispatchToProps = dispatch =>
-{
-	return {
-		setVote ( voteID: number )
-		{
-			dispatch (RoomActions.setVote (voteID));
-		},
-	};
+	return { sentenceScores: state.room.sentenceScores };
 };
 
 
-export default connect (mapStateToProps, mapDispatchToProps) (ResultsPhase);
+export default connect (mapStateToProps) (ResultsPhase);
