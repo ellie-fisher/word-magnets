@@ -6,6 +6,7 @@ import LobbyPhase from "./lobby/LobbyPhase";
 import CreatePhase from "./create/CreatePhase";
 import VotePhase from "./vote/VotePhase";
 import ResultsPhase from "./results/ResultsPhase";
+import GameEndPhase from "./gameEnd/GameEndPhase";
 
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
 
@@ -54,9 +55,15 @@ class Room extends Component<RoomProps>
 				break;
 			}
 
+			case RoomPhaseType.GameEnd:
+			{
+				view = <GameEndPhase />;
+				break;
+			}
+
 			default:
 			{
-				view = <div>Unknown/Unhandled room phase</div>;
+				view = <div>{`Unknown/Unhandled room phase \`${props.phase}\``}</div>;
 				break;
 			}
 		}

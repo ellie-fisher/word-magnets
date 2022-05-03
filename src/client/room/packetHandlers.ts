@@ -48,3 +48,8 @@ packetManager.on (PacketType.Data, PacketCommand.SentenceScores, ( packet: Packe
 {
 	store.dispatch (RoomActions.sentenceScores (packet.body));
 });
+
+packetManager.on (PacketType.Data, PacketCommand.FinalScores, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.finalScores (packet.body));
+});

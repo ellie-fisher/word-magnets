@@ -89,6 +89,14 @@ const RoomActions =
 		};
 	},
 
+	finalScores ( scores: AnyObject )
+	{
+		return {
+			type: "room/gameEnd/finalScores",
+			payload: scores,
+		};
+	},
+
 	leaveRoom ()
 	{
 		return { type: "room/leaveRoom" };

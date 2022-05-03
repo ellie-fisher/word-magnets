@@ -24,6 +24,7 @@ interface RoomState
 	sentenceList: Sentence[];
 	voteID: string;
 	sentenceScores: AnyObject;
+	finalScores: AnyObject[];
 };
 
 const initialState =
@@ -42,6 +43,7 @@ const initialState =
 		sentences: {},
 		nameCache: {},
 	},
+	finalScores: [],
 };
 
 const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
@@ -170,6 +172,14 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 					sentences: action.payload.sentences || {},
 					nameCache: action.payload.nameCache || {},
 				}
+			};
+		}
+
+		case "room/gameEnd/finalScores":
+		{
+			return {
+				...state,
+				finalScores: action.payload,
 			};
 		}
 
