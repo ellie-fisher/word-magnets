@@ -33054,7 +33054,6 @@ const adjectives =
 	"transferable",
 	"transformable",
 	"transgender",
-	"transgendered",
 	"transient",
 	"transiently",
 	"transitional",
