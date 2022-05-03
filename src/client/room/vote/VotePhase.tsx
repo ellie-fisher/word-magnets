@@ -23,23 +23,27 @@ class VotePhase extends Component<VotePhaseProps, AnyObject>
 
 		return (
 			<div>
-				<Table
-					columns={["", "Sentence"]}
-					rows=
-					{
-						props.sentenceList.map (sentence =>
-						[
-							<button
-								key={`player-sentence-btn-${sentence.voteID}`}
-								onClick={() => props.setVote (sentence.voteID)}
-							>
-								Vote
-							</button>,
-							sentence.value
-						])
-					}
-					selected={selected}
-				/>
+			{
+				props.sentenceList.length <= 0
+					? "No sentences to vote for!"
+					: <Table
+						columns={["", "Sentence"]}
+						rows=
+						{
+							props.sentenceList.map (sentence =>
+							[
+								<button
+									key={`player-sentence-btn-${sentence.voteID}`}
+									onClick={() => props.setVote (sentence.voteID)}
+								>
+									Vote
+								</button>,
+								sentence.value
+							])
+						}
+						selected={selected}
+					/>
+			}
 			</div>
 		);
 	}

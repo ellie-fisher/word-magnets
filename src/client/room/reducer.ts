@@ -23,6 +23,7 @@ interface RoomState
 	sentenceString: string;
 	sentenceList: Sentence[];
 	voteID: string;
+	sentenceScores: AnyObject;
 };
 
 const initialState =
@@ -36,6 +37,11 @@ const initialState =
 	sentenceString: "",
 	sentenceList: [],
 	voteID: "",
+	sentenceScores:
+	{
+		sentences: {},
+		nameCache: {},
+	},
 };
 
 const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
@@ -103,8 +109,21 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 			return {
 				...state,
 				wordbanks: action.payload,
+			};
+		}
+
+		case "room/newRound":
+		{
+			return {
+				...state,
 				sentence: [],
 				sentenceString: "",
+				voteID: "",
+				sentenceScores:
+				{
+					sentences: {},
+					nameCache: {},
+				},
 			};
 		}
 
@@ -134,13 +153,24 @@ const RoomReducer = ( state: RoomState = initialState, action: Action ) =>
 			return {
 				...state,
 				sentenceList: action.payload.slice (),
-				voteID: "",
 			};
 		}
 
 		case "room/voting/setVote":
 		{
 			return { ...state, voteID: action.payload };
+		}
+
+		case "room/results/sentenceScores":
+		{
+			return {
+				...state,
+				sentenceScores:
+				{
+					sentences: action.payload.sentences || {},
+					nameCache: action.payload.nameCache || {},
+				}
+			};
 		}
 
 		case "createRoom/createRoom:request":

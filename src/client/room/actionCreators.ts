@@ -44,6 +44,11 @@ const RoomActions =
 		};
 	},
 
+	newRound ()
+	{
+		return { type: "room/newRound" };
+	},
+
 	wordbanks ( wordbanks: AnyObject )
 	{
 		return {
@@ -73,6 +78,14 @@ const RoomActions =
 		return {
 			type: "room/voting/setVote",
 			payload: voteID,
+		};
+	},
+
+	sentenceScores ( scores: AnyObject )
+	{
+		return {
+			type: "room/results/sentenceScores",
+			payload: scores,
 		};
 	},
 

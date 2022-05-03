@@ -3,6 +3,7 @@ import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
 
 import AppActions from "../app/actionCreators";
 import AppView from "../app/AppView";
+import RoomActions from "./actionCreators";
 
 import PacketCommand from "../../common/packets/PacketCommand";
 import packetManager from "../sockets/packetManager";
@@ -30,7 +31,6 @@ const roomMiddleware = store => next => action =>
 		{
 			packetManager.sendDataPacket (PacketCommand.LeaveRoom);
 			store.dispatch (AppActions.setView (AppView.MainMenu));
-
 			break;
 		}
 
@@ -51,6 +51,10 @@ const roomMiddleware = store => next => action =>
 					if ( payload.state === RoomPhaseState.End )
 					{
 						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
+					}
+					else if ( payload.state === RoomPhaseState.PreStart )
+					{
+						store.dispatch (RoomActions.newRound ());
 					}
 
 					break;
