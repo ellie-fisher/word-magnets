@@ -2,13 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Table from "../Table";
-import RoomActions from "../actionCreators";
-import ClientList from "../ClientList";
+import VotePhaseActions from "./actionCreators";
 
-import sentenceToString from "../../util/sentenceToString";
-
-import { RoomState } from "../reducer";
 import { AnyObject } from "../../../common/util/types";
+
+import "./packetHandlers";
 
 
 type VotePhaseProps = AnyObject;
@@ -19,18 +17,18 @@ class VotePhase extends Component<VotePhaseProps, AnyObject>
 	{
 		const { props } = this;
 
-		const selected = props.sentenceList.findIndex (sentence => sentence.voteID === props.voteID);
+		const selected = props.sentences.findIndex (sentence => sentence.voteID === props.voteID);
 
 		return (
 			<div>
 			{
-				props.sentenceList.length <= 0
+				props.sentences.length <= 0
 					? "No sentences to vote for!"
 					: <Table
 						columns={["", "Sentence"]}
 						rows=
 						{
-							props.sentenceList.map (sentence =>
+							props.sentences.map (sentence =>
 							[
 								<button
 									key={`player-sentence-btn-${sentence.voteID}`}
@@ -52,8 +50,8 @@ class VotePhase extends Component<VotePhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		sentenceList: state.room.sentenceList,
-		voteID: state.room.voteID,
+		sentences: state.room.vote.sentences,
+		voteID: state.room.vote.voteID,
 	};
 };
 
@@ -62,7 +60,7 @@ const mapDispatchToProps = dispatch =>
 	return {
 		setVote ( voteID: number )
 		{
-			dispatch (RoomActions.setVote (voteID));
+			dispatch (VotePhaseActions.setVote (voteID));
 		},
 	};
 };

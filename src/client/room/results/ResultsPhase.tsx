@@ -2,13 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Table from "../Table";
-import RoomActions from "../actionCreators";
-import ClientList from "../ClientList";
 
-import sentenceToString from "../../util/sentenceToString";
-
-import { RoomState } from "../reducer";
 import { AnyObject } from "../../../common/util/types";
+
+import "./packetHandlers";
 
 
 type ResultsPhaseProps = AnyObject;
@@ -18,7 +15,7 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 	render ()
 	{
 		const { props } = this;
-		const { nameCache, sentences } = props.sentenceScores;
+		const { nameCache, sentences } = props.sentences;
 
 		const rows = [];
 
@@ -48,7 +45,7 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 
 const mapStateToProps = state =>
 {
-	return { sentenceScores: state.room.sentenceScores };
+	return { sentences: state.room.results.sentences };
 };
 
 

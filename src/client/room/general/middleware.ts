@@ -1,12 +1,12 @@
-import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
-import RoomPhaseState from "../../common/rooms/phases/RoomPhaseState";
+import RoomPhaseType from "../../../common/rooms/phases/RoomPhaseType";
+import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
 
-import AppActions from "../app/actionCreators";
-import AppView from "../app/AppView";
+import AppActions from "../../app/actionCreators";
+import AppView from "../../app/AppView";
 import RoomActions from "./actionCreators";
 
-import PacketCommand from "../../common/packets/PacketCommand";
-import packetManager from "../sockets/packetManager";
+import PacketCommand from "../../../common/packets/PacketCommand";
+import packetManager from "../../sockets/packetManager";
 
 
 const roomMiddleware = store => next => action =>
@@ -54,7 +54,7 @@ const roomMiddleware = store => next => action =>
 					}
 					else if ( payload.state === RoomPhaseState.End )
 					{
-						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.sentence);
+						packetManager.sendRequestPacket (PacketCommand.SendSentence, state.room.create.sentence);
 					}
 
 					break;
@@ -64,7 +64,7 @@ const roomMiddleware = store => next => action =>
 				{
 					if ( payload.state === RoomPhaseState.End )
 					{
-						packetManager.sendRequestPacket (PacketCommand.CastVote, state.room.voteID);
+						packetManager.sendRequestPacket (PacketCommand.CastVote, state.room.vote.voteID);
 					}
 
 					break;

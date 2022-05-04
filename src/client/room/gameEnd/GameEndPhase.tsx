@@ -2,13 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Table from "../Table";
-import RoomActions from "../actionCreators";
-import ClientList from "../ClientList";
 
-import sentenceToString from "../../util/sentenceToString";
-
-import { RoomState } from "../reducer";
 import { AnyObject } from "../../../common/util/types";
+
+import "./packetHandlers";
 
 
 type GameEndProps = AnyObject;
@@ -17,7 +14,7 @@ class GameEnd extends Component<GameEndProps, AnyObject>
 {
 	render ()
 	{
-		const rows = this.props.finalScores.map (data => [data.name, data.score]);
+		const rows = this.props.scores.map (data => [data.name, data.score]);
 
 		rows.sort (( a, b ) => b[1] - a[1]);
 
@@ -39,7 +36,7 @@ class GameEnd extends Component<GameEndProps, AnyObject>
 
 const mapStateToProps = state =>
 {
-	return { finalScores: state.room.finalScores };
+	return { scores: state.room.gameEnd.scores };
 };
 
 

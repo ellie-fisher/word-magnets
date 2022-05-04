@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import RoomActions from "./actionCreators";
+import RoomActions from "./general/actionCreators";
 import LobbyPhase from "./lobby/LobbyPhase";
 import CreatePhase from "./create/CreatePhase";
 import VotePhase from "./vote/VotePhase";
@@ -9,11 +9,9 @@ import ResultsPhase from "./results/ResultsPhase";
 import GameEndPhase from "./gameEnd/GameEndPhase";
 
 import RoomPhaseType from "../../common/rooms/phases/RoomPhaseType";
-
-import { RoomState } from "./reducer";
 import { AnyObject } from "../../common/util/types";
 
-import "./packetHandlers";
+import "./general/packetHandlers";
 
 
 type RoomProps = AnyObject;
@@ -29,7 +27,7 @@ class Room extends Component<RoomProps>
 
 		let view;
 
-		switch ( props.phase )
+		switch ( props.phase.type )
 		{
 			case RoomPhaseType.Lobby:
 			{
@@ -94,8 +92,8 @@ class Room extends Component<RoomProps>
 const mapStateToProps = state =>
 {
 	return {
-		info: state.room.info,
-		phase: state.room.phase,
+		info: state.room.general.info,
+		phase: state.room.general.phase,
 	};
 };
 

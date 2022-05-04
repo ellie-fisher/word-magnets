@@ -5,13 +5,14 @@ import Wordbank from "./Wordbank";
 
 import RoomPhaseState from "../../../common/rooms/phases/RoomPhaseState";
 
-import RoomActions from "../actionCreators";
+import CreatePhaseActions from "./actionCreators";
 import ClientList from "../ClientList";
 
 import sentenceToString from "../../util/sentenceToString";
 
-import { RoomState } from "../reducer";
 import { AnyObject } from "../../../common/util/types";
+
+import "./packetHandlers";
 
 
 type CreatePhaseProps = AnyObject;
@@ -26,7 +27,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 	render ()
 	{
 		const { props } = this;
-		const { clients, wordbanks } = props;
+		const { sentence, clients, wordbanks } = props;
 
 		const playerWordbank =
 		{
@@ -40,7 +41,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 					wordbank={playerWordbank}
 					isName={true}
 					onClick={( client: AnyObject ) => props.addWord (-1, client.id, true)}
-					disabled={props.phaseState === RoomPhaseState.End}
+					disabled={props.phase.state === RoomPhaseState.End}
 				/>
 
 			{
@@ -50,15 +51,15 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 						key={`wordbank-${wordbank.displayName}-${index}`}
 						wordbank={wordbank}
 						onClick={( word: string, wordIndex: number ) => props.addWord (index, wordIndex, false)}
-						disabled={props.phaseState === RoomPhaseState.End}
+						disabled={props.phase.state === RoomPhaseState.End}
 					/>
 				})
 			}
 
-			<hr />
+				<hr />
 
 				<div>
-					{props.sentenceString}
+					{sentenceToString (sentence, wordbanks, clients)}
 				</div>
 			</div>
 		);
@@ -68,11 +69,10 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		phaseState: state.room.phaseState,
-		clients: state.room.clients,
-		wordbanks: state.room.wordbanks,
-		sentence: state.room.sentence,
-		sentenceString: state.room.sentenceString,
+		phase: state.room.general.phase,
+		clients: state.room.general.clients,
+		wordbanks: state.room.create.wordbanks,
+		sentence: state.room.create.sentence,
 	};
 };
 
@@ -88,7 +88,7 @@ const mapDispatchToProps = dispatch =>
 				wordData.wordbank = wordbank;
 			}
 
-			dispatch (RoomActions.addWord (wordData));
+			dispatch (CreatePhaseActions.addWord (wordData));
 		},
 	};
 };

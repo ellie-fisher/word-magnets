@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import RoomActions from "../actionCreators";
+import RoomActions from "../general/actionCreators";
 import ClientList from "../ClientList";
 
-import { RoomState } from "../reducer";
 import { AnyObject } from "../../../common/util/types";
 
 
@@ -58,7 +57,7 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		clients: state.room.clients,
+		clients: state.room.general.clients,
 	};
 };
 
