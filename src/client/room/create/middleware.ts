@@ -14,7 +14,7 @@ const createPhaseMiddleware = store => next => action =>
 
 	switch ( action.type )
 	{
-		case "room/sentence/addWord":
+		case "room/create/addWord":
 		{
 			// This is gross but oh well
 			action.payload.clients = state.room.general.clients;

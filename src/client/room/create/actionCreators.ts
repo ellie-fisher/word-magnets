@@ -7,7 +7,7 @@ const CreatePhaseActions =
 	wordbanks ( wordbanks: AnyObject )
 	{
 		return {
-			type: "room/sentence/wordbanks",
+			type: "room/create/wordbanks",
 			payload: wordbanks,
 		};
 	},
@@ -15,7 +15,7 @@ const CreatePhaseActions =
 	addWord ( word: SentenceWord )
 	{
 		return {
-			type: "room/sentence/addWord",
+			type: "room/create/addWord",
 			payload: { word },
 		};
 	},

@@ -29,7 +29,7 @@ const createPhaseReducer = ( state: CreatePhaseState = initialState, action: Act
 			return { ...initialState };
 		}
 
-		case "room/sentence/wordbanks":
+		case "room/create/wordbanks":
 		{
 			return {
 				...state,
@@ -37,7 +37,7 @@ const createPhaseReducer = ( state: CreatePhaseState = initialState, action: Act
 			};
 		}
 
-		case "room/sentence/addWord":
+		case "room/create/addWord":
 		{
 			const { sentence, wordbanks } = state;
 			const { word, clients } = action.payload;
