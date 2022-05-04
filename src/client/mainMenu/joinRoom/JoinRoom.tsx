@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Fields from "../../input/Fields";
+
 import JoinRoomActions from "./actionCreators";
+import MainMenuActions from "../actionCreators";
 
 import { JoinRoomState } from "./reducer";
 import { AnyObject } from "../../../common/util/types";
@@ -67,7 +69,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		clientInfo: { ...state.joinRoom.clientInfo },
+		clientInfo: { ...state.mainMenu.clientInfo },
 		error: state.joinRoom.error,
 	};
 };
@@ -77,7 +79,7 @@ const mapDispatchToProps = dispatch =>
 	return {
 		setField ( type: string, key: string, value: any )
 		{
-			dispatch (JoinRoomActions.setField (type, key, value));
+			dispatch (MainMenuActions.setField (type, key, value));
 		},
 
 		joinRoom ( roomID: string )

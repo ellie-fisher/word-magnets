@@ -25,7 +25,7 @@ const Fields = ( props: FieldsProps ) =>
 			{
 				const field = fields[key];
 
-				let input = <span>"Unknown field type"</span>;
+				let input = <span>Unknown field type</span>;
 
 				switch ( field.type )
 				{

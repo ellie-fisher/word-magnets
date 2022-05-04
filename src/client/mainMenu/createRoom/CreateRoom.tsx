@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Fields from "../../input/Fields";
+
 import CreateRoomActions from "./actionCreators";
+import MainMenuActions from "../actionCreators";
 
 import has from "../../../common/util/has";
 
@@ -69,8 +71,8 @@ class CreateRoom extends Component<CreateRoomProps>
 const mapStateToProps = state =>
 {
 	return {
-		roomInfo: { ...state.createRoom.roomInfo },
-		clientInfo: { ...state.createRoom.clientInfo },
+		roomInfo: { ...state.mainMenu.roomInfo },
+		clientInfo: { ...state.mainMenu.clientInfo },
 		error: { ...state.createRoom.error },
 	};
 };
@@ -80,7 +82,7 @@ const mapDispatchToProps = dispatch =>
 	return {
 		setField ( type: string, key: string, value: any )
 		{
-			dispatch (CreateRoomActions.setField (type, key, value));
+			dispatch (MainMenuActions.setField (type, key, value));
 		},
 
 		createRoom ()
