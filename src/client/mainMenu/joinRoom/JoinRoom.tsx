@@ -35,17 +35,23 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 	{
 		const { props } = this;
 
+		const roomIDFields =
+		{
+			roomID:
+			{
+				type: "string",
+				displayName: "Room ID",
+			},
+		};
+
 		return (
 			<div>
-				Room ID:
-
-				<input
-					type="text"
-					value={this.state.roomID}
-					onChange={event => this.setRoomID (event.target.value)}
+				<Fields
+					keyPrefix="JoinRoom-roomID-field"
+					fields={roomIDFields}
+					error=""
+					onChange={newValue => this.setRoomID (newValue)}
 				/>
-
-				<br />
 
 				<Fields
 					keyPrefix="JoinRoom-clientInfo-field"
