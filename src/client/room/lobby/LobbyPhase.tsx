@@ -42,12 +42,16 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 
 					<hr />
 
-					<button
-						onClick={() => this.clickStartGame ()}
-						disabled={this.state.startGameClicked}
-					>
-						Start Game
-					</button>
+				{
+					props.clientID !== props.ownerID
+						? ""
+						: <button
+							onClick={() => this.clickStartGame ()}
+							disabled={this.state.startGameClicked}
+						>
+							Start Game
+						</button>
+				}
 				</div>
 			</div>
 		);
@@ -57,6 +61,8 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
+		clientID: state.app.clientID,
+		ownerID: state.room.general.info.ownerID,
 		clients: state.room.general.clients,
 	};
 };
