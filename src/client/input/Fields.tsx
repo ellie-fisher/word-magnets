@@ -19,53 +19,71 @@ const Fields = ( props: FieldsProps ) =>
 	const { keyPrefix, fields, error, onChange } = props;
 
 	return (
-		<div>
-		{
-			Object.keys (fields).map (key =>
-			{
-				const field = fields[key];
-
-				let input = <span>Unknown field type</span>;
-
-				switch ( field.type )
+		<table>
+			<thead>
+				<tr>
 				{
-					case "string":
+					Object.keys (fields).map (key =>
 					{
-						input = <Textbox
-							field={field}
-							onChange={event => onChange (event.target.value, key, field)}
-						/>;
+						const field = fields[key];
 
-						break;
-					}
-
-					case "integer":
-					{
-						input = <IntegerDropdown
-							field={field}
-							onChange={option => onChange (Number (option.value), key, field)}
-						/>;
-
-						break;
-					}
-
-					default:
-					{
-						input = <span>`Unsupported field type \`${field.type}\``</span>;
-						break;
-					}
+						return <th className="field" key={`${keyPrefix}-header-${field.type}-${key}`}>
+							{field.displayName}: 
+						</th>;
+					})
 				}
+				</tr>
+			</thead>
 
-				return (
-					<div key={`${keyPrefix}-${field.type}-${key}`}>
-						<label>{field.displayName}: </label>
-						{input}
-						{error !== "" && error[0] === key ? <div><strong>{error[1]}</strong></div> : ""}
-					</div>
-				);
-			})
-		}
-		</div>
+			<tbody>
+				<tr>
+				{
+					Object.keys (fields).map (key =>
+					{
+						const field = fields[key];
+
+						let input = <span>Unknown field type</span>;
+
+						switch ( field.type )
+						{
+							case "string":
+							{
+								input = <Textbox
+									field={field}
+									onChange={event => onChange (event.target.value, key, field)}
+								/>;
+
+								break;
+							}
+
+							case "integer":
+							{
+								input = <IntegerDropdown
+									field={field}
+									onChange={option => onChange (Number (option.value), key, field)}
+								/>;
+
+								break;
+							}
+
+							default:
+							{
+								input = <span>`Unsupported field type \`${field.type}\``</span>;
+								break;
+							}
+						}
+
+						return (
+							<td className="field" key={`${keyPrefix}-${field.type}-${key}`}>
+								{input}
+								{error !== "" && error[0] === key ? <div><strong>{error[1]}</strong></div> : ""}
+							</td>
+						);
+					})
+				}
+				</tr>
+			</tbody>
+		</table>
 	);
 };
 

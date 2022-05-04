@@ -83,25 +83,18 @@ input[type=text]
 
 	border: 0.1em #AAFF66 dotted;
 
-	color: #CCFF77;
+	color: #FFFF99;
 	font-size: 1em;
 	font-family: "Indie Flower";
 
 	padding: 0.2em;
-	padding-left: 0.7em;
-	padding-right: 0.7em;
 
-	user-select: none;
+	outline: none;
 }
 
-.select
+th.field
 {
-	color: #CCFF77;
-
-	font-size: 1em;
-	font-family: "Indie Flower";
-
-	padding: 0.2em;
-	padding-left: 0.7em;
-	padding-right: 0.7em;
+	padding-right: 1em;
+	font-weight: normal;
+	text-align: left;
 }

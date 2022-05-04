@@ -32,23 +32,30 @@ const styles: any =
 	menu: provided =>
 	({
 		position: "absolute",
-		width: "7vw",
-		height: "3.5vw",
+		width: "3em",
+		border: "0.1em solid",
+		borderColor: "rgba(0, 0, 0, 0.25)",
 	}),
 
 	option: provided =>
 	({
 		...provided,
 
-		color: "#AAFF66",
-		background: "rgba(0, 0, 0, 0.15)",
+		color: "#FFFF99",
+
+		background: "url(\"/img/chalkboard.png\")",
+		backgroundPosition: "50% 50%";
+		backgroundSize: "auto";
+		backgroundColor: "#284F37";  /* Fallback color */
+
 		textAlign: "left",
 
 		overflow: "hidden",
 
 		"&:hover":
 		{
-			backgroundColor: "rgba(0, 0, 0, 0.25)",
+			backgroundColor: "rgba(1, 1, 1, 0.3)",
+			backgroundBlendMode: "multiply"
 		},
 	}),
 
@@ -56,7 +63,7 @@ const styles: any =
 	({
 		...provided,
 
-		color: "#CCFF77",
+		color: "#FFFF99",
 		textAlign: "left",
 		overflow: "hidden",
 	}),
