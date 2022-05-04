@@ -43,7 +43,7 @@ const Fields = ( props: FieldsProps ) =>
 					{
 						input = <IntegerDropdown
 							field={field}
-							onChange={event => onChange (Number (event.target.value), key, field)}
+							onChange={option => onChange (Number (option.value), key, field)}
 						/>;
 
 						break;

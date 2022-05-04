@@ -90,6 +90,8 @@ input[type=text]
 	padding: 0.2em;
 	padding-left: 0.7em;
 	padding-right: 0.7em;
+
+	user-select: none;
 }
 
 .select
