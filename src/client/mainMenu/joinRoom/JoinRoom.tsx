@@ -49,7 +49,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 				<Fields
 					keyPrefix="JoinRoom-clientInfo-field"
-					fields={props.clientInfo}
+					fields={props.info.clientInfo}
 					error={props.error}
 					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 				/>
@@ -69,7 +69,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 const mapStateToProps = state =>
 {
 	return {
-		clientInfo: { ...state.mainMenu.clientInfo },
+		info: { ...state.mainMenu.info },
 		error: state.joinRoom.error,
 	};
 };

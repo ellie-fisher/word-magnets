@@ -18,17 +18,15 @@ const requestsMiddleware = store => next => action =>
 		case "createRoom/createRoom:request":
 		{
 			const data: AnyObject = {};
-			const { createRoom } = state;
+			const { info } = state.mainMenu;
 
-			Object.keys (createRoom).forEach (type =>
+			Object.keys (info).forEach (type =>
 			{
-				const info = createRoom[type];
-
 				data[type] = {};
 
-				Object.keys (info).forEach (key =>
+				Object.keys (info[type]).forEach (key =>
 				{
-					data[type][key] = info[key].value;
+					data[type][key] = info[type][key].value;
 				});
 			});
 
@@ -39,11 +37,11 @@ const requestsMiddleware = store => next => action =>
 		case "joinRoom/joinRoom:request":
 		{
 			const clientInfo: AnyObject = {};
-			const { joinRoom } = state;
+			const { info } = state.mainMenu;
 
-			Object.keys (joinRoom.clientInfo).forEach (key =>
+			Object.keys (info.clientInfo).forEach (key =>
 			{
-				clientInfo[key] = joinRoom.clientInfo[key].value;
+				clientInfo[key] = info.clientInfo[key].value;
 			});
 
 			packetManager.sendRequestPacket (PacketCommand.JoinRoom, { roomID: action.payload, clientInfo });

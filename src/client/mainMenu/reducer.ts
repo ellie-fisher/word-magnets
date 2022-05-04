@@ -11,15 +11,23 @@ import { Action } from "../types/redux";
 
 interface MainMenuState
 {
-	roomInfo: IRoomInfoFields,
-	clientInfo: IClientInfoFields,
+	info:
+	{
+		roomInfo: IRoomInfoFields;
+		clientInfo: IClientInfoFields;
+	};
+
 	tab: MainMenuTab;
 };
 
 const initialState =
 {
-	roomInfo: initializeState<IRoomInfoFields> (roomInfoFields),
-	clientInfo: initializeState<IClientInfoFields> (clientInfoFields),
+	info:
+	{
+		roomInfo: initializeState<IRoomInfoFields> (roomInfoFields),
+		clientInfo: initializeState<IClientInfoFields> (clientInfoFields),
+	},
+
 	tab: MainMenuTab.CreateRoom,
 };
 
@@ -31,19 +39,24 @@ const mainMenuReducer = ( state: MainMenuState = initialState, action: Action ) 
 		{
 			const { type, key } = action.payload;
 
-			if ( has (state, type) && has (state[type], key) )
+			if ( has (state.info, type) && has (state.info[type], key) )
 			{
 				return {
 					...state,
 
-					[type]:
+					info:
 					{
-						...state[type],
+						...state.info,
 
-						[key]:
+						[type]:
 						{
-							...state[type][key],
-							value: action.payload.value,
+							...state.info[type],
+
+							[key]:
+							{
+								...state.info[type][key],
+								value: action.payload.value,
+							},
 						},
 					},
 				};

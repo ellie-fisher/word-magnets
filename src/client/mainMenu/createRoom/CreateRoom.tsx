@@ -48,14 +48,14 @@ class CreateRoom extends Component<CreateRoomProps>
 			<div>
 				<Fields
 					keyPrefix="CreateRoom-roomInfo-field"
-					fields={props.roomInfo}
+					fields={props.info.roomInfo}
 					error={errorWhich === "roomInfo" ? errorData : ""}
 					onChange={( newValue, key, field ) => props.setField ("roomInfo", key, newValue)}
 				/>
 
 				<Fields
 					keyPrefix="CreateRoom-clientInfo-field"
-					fields={props.clientInfo}
+					fields={props.info.clientInfo}
 					error={errorWhich === "clientInfo" ? errorData : ""}
 					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 				/>
@@ -71,8 +71,7 @@ class CreateRoom extends Component<CreateRoomProps>
 const mapStateToProps = state =>
 {
 	return {
-		roomInfo: { ...state.mainMenu.roomInfo },
-		clientInfo: { ...state.mainMenu.clientInfo },
+		info: { ...state.mainMenu.info },
 		error: { ...state.createRoom.error },
 	};
 };
