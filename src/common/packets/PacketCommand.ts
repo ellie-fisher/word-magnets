@@ -18,8 +18,6 @@ enum PacketCommand
 	KickClient,
 	BanClient,  // Unused until actual accounts are supported, if ever.
 
-	ChatMessage,  // TODO: Add chat capabilities
-
 	RoomInfo,
 
 	ClientList,

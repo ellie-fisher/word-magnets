@@ -46,7 +46,7 @@ class Multimap
 	 * @param {*} key - The key we want to delete a value/values from.
 	 * @param {*} value - The value we want to delete.
 	 *
-	 * @returns {number|null} Number of values now at the key, or null if not found.
+	 * @returns {number} Number of values now at the key, or -1 if not found.
 	 */
 	delete ( key, value ): number
 	{
@@ -54,7 +54,7 @@ class Multimap
 
 		if ( !map.has (key) )
 		{
-			return null;
+			return -1;
 		}
 
 		const set = map.get (key);

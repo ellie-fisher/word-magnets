@@ -116,11 +116,12 @@ class RoomClients
 		if ( this.hasClient (id) )
 		{
 			const client = this.getClient (id);
+			const { name } = client;
 
 			client.handleLeaveRoom ();
 
 			this._clients.delete (id);
-			this._names.delete (client.name);
+			this._names.delete (name.toLowerCase ());
 
 			return true;
 		}

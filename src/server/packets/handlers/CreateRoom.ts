@@ -34,8 +34,6 @@ const createRoomHandler = new PacketHandler (
 
 	handler ( packet: Packet, client: Client )
 	{
-		// TODO: Validation for all expected packet body formats.
-
 		const { body } = packet;
 		const { clientInfo } = body;
 		let { roomInfo } = body;
@@ -44,7 +42,7 @@ const createRoomHandler = new PacketHandler (
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (packet, validation);
+			client.packets.sendRejectPacket (packet, { which: "clientInfo", validation: validation[1] });
 			return;
 		}
 
@@ -52,7 +50,7 @@ const createRoomHandler = new PacketHandler (
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (packet, validation);
+			client.packets.sendRejectPacket (packet, { which: "roomInfo", validation: validation[1] });
 			return;
 		}
 
@@ -63,9 +61,6 @@ const createRoomHandler = new PacketHandler (
 		}
 
 		roomInfo = applyDefaults (roomInfo, roomInfoFields);
-
-		// TODO: Add chat capabilities and remove this.
-		roomInfo.enableChat = false;
 
 		const roomOrError = RoomManager.create (new RoomInfo (roomInfo), client);
 
@@ -84,6 +79,9 @@ const createRoomHandler = new PacketHandler (
 		const room: Room = roomOrError;
 
 		RoomManager.joinRoom (room.id, client);
+
+		// TODO: Remove sending the room ID to make it clearer that the `JoinRoom` data packet is
+		//       where all the view-changing logic should be.
 		client.packets.sendAcceptPacket (packet, room.id);
 
 		room.startPhase ();

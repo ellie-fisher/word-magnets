@@ -30,7 +30,6 @@ const wordsToString = ( words: string[] ): string =>
 		}
 	}
 
-	// TODO: Add a censor/sanitizer function
 	return string.replace (/[\x00-\x1F\x7F]/g, "");
 };
 

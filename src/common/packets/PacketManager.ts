@@ -2,10 +2,11 @@ import { WebSocket } from "ws";
 
 import Multimap from "../util/Multimap";
 
-import Packet from "./Packet";
 import PacketType from "./PacketType";
 import PacketCommand from "./PacketCommand";
 import PacketHandler from "./PacketHandler";
+
+import Packet, { ResponsePacketBody } from "./Packet";
 
 
 type Handler = PacketHandler | Function;
@@ -104,7 +105,7 @@ class PacketManager
 
 	sendAcceptPacket ( request: Packet, data: any = null )
 	{
-		const body: any = { ok: true };
+		const body: ResponsePacketBody = { ok: true };
 
 		if ( data !== null )
 		{
@@ -116,7 +117,7 @@ class PacketManager
 
 	sendRejectPacket ( request: Packet, data: any = null )
 	{
-		const body: any = { ok: false };
+		const body: ResponsePacketBody = { ok: false };
 
 		if ( data !== null )
 		{

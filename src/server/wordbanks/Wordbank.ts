@@ -79,15 +79,6 @@ class Wordbank
 		this._words = Object.keys (selected);
 	}
 
-	/**
-	 * Replaces bad words with random ones in `substitutes`.
-	 */
-	filterWords ( substitutes: string[] )
-	{
-		substitutes = substitutes.slice ();
-		// TODO: Filter words with to-be-created rules.
-	}
-
 	toJSON ()
 	{
 		return { displayName: this.displayName, words: this._words.slice () };

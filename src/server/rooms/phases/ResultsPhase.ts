@@ -41,18 +41,18 @@ class ResultsPhase extends RoomPhase
 
 	createResults ()
 	{
-		const scores = {};
+		const sentences = {};
 		const nameCache = {};
 
-		const { clients, sentences } = this._room;
+		const room = this._room;
 
-		sentences.forEach (( sentence: Sentence, clientID: string ) =>
+		room.sentences.forEach (( sentence: Sentence, clientID: string ) =>
 		{
-			scores[clientID] = sentence;
-			nameCache[clientID] = clients.getCachedName (clientID);
+			sentences[clientID] = sentence;
+			nameCache[clientID] = room.clients.getCachedName (clientID);
 		});
 
-		return { scores, nameCache };
+		return { sentences, nameCache };
 	}
 
 	async _onEnd ()
