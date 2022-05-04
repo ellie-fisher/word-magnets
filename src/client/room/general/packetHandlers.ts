@@ -19,6 +19,11 @@ packetManager.on (PacketType.Data, PacketCommand.LeaveRoom, ( packet: Packet ) =
 	store.dispatch (RoomActions.clientLeaveRoom (packet.body));
 });
 
+packetManager.on (PacketType.Data, PacketCommand.DestroyRoom, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.destroyRoom (packet.body));
+});
+
 packetManager.on (PacketType.Data, PacketCommand.ClientList, ( packet: Packet ) =>
 {
 	store.dispatch (RoomActions.clientList (packet.body));

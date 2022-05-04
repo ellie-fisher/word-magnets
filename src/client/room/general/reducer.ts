@@ -15,6 +15,7 @@ interface RoomState
 
 	clients: AnyObject;
 	info: AnyObject;
+	destroyMessage: string;
 };
 
 const initialState =
@@ -27,6 +28,7 @@ const initialState =
 
 	clients: {},
 	info: {},
+	destroyMessage: "",
 };
 
 const roomReducer = ( state: RoomState = initialState, action: Action ) =>
@@ -53,6 +55,14 @@ const roomReducer = ( state: RoomState = initialState, action: Action ) =>
 			delete clients[action.payload];
 
 			return { ...state, clients };
+		}
+
+		case "room/destroyRoom":
+		{
+			return {
+				...state,
+				destroyMessage: action.payload,
+			};
 		}
 
 		case "room/clientList":

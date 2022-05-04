@@ -20,6 +20,14 @@ const RoomActions =
 		};
 	},
 
+	destroyRoom ( reason: string )
+	{
+		return {
+			type: "room/destroyRoom",
+			payload: reason,
+		};
+	},
+
 	clientList ( list: AnyObject[] )
 	{
 		return {

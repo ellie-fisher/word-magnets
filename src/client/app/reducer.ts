@@ -1,4 +1,6 @@
 import AppView from "../app/AppView";
+import AppActions from "../app/actionCreators";
+
 import { Action } from "../types/redux";
 
 
@@ -32,9 +34,40 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 	{
 		case "app/setView":
 		{
-			return { ...state, view: action.payload };
+			return {
+				...state,
+				view: action.payload,
+			};
 		}
 
+		case "room/clientJoinRoom":
+		{
+			if ( action.payload.id === state.clientID )
+			{
+				return {
+					...state,
+					view: AppView.Room,
+				};
+			}
+
+			break;
+		}
+
+		case "room/leaveRoom":
+		{
+			return {
+				...state,
+				view: AppView.MainMenu,
+			};
+		}
+
+		case "room/destroyRoom":
+		{
+			return {
+				...state,
+				view: AppView.RoomDestroyed,
+			};
+		}
 
 		case "socket/closed":
 		{
@@ -76,9 +109,11 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 
 		default:
 		{
-			return state;
+			break;
 		}
 	}
+
+	return state;
 };
 
 

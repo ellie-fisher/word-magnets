@@ -17,20 +17,9 @@ const roomMiddleware = store => next => action =>
 
 	switch ( action.type )
 	{
-		case "room/clientJoinRoom":
-		{
-			if ( action.payload.id === state.app.clientID )
-			{
-				store.dispatch (AppActions.setView (AppView.Room));
-			}
-
-			break;
-		}
-
 		case "room/leaveRoom":
 		{
 			packetManager.sendDataPacket (PacketCommand.LeaveRoom);
-			store.dispatch (AppActions.setView (AppView.MainMenu));
 			break;
 		}
 

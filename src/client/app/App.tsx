@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import AppView from "./AppView";
 import MainMenu from "../mainMenu/MainMenu";
 import Room from "../room/Room";
+import RoomDestroyed from "../mainMenu/RoomDestroyed";
 
 import { AppState } from "./reducer";
 import { AnyObject } from "../../common/util/types";
@@ -51,6 +52,12 @@ class App extends Component<AppProps>
 			case AppView.Room:
 			{
 				view = <Room />;
+				break;
+			}
+
+			case AppView.RoomDestroyed:
+			{
+				view = <RoomDestroyed />;
 				break;
 			}
 		}
