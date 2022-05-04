@@ -23,11 +23,11 @@ class MainMenu extends Component<MainMenuProps>
 		return (
 			<div>
 				<div>
-					<button onClick={( event ) => props.selectTab (MainMenuTab.CreateRoom)}>
+					<button className="magnet" onClick={( event ) => props.selectTab (MainMenuTab.CreateRoom)}>
 						Create Room
 					</button>
 
-					<button onClick={( event ) => props.selectTab (MainMenuTab.JoinRoom)}>
+					<button className="magnet" onClick={( event ) => props.selectTab (MainMenuTab.JoinRoom)}>
 						Join Room
 					</button>
 				</div>

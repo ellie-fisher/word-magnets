@@ -58,7 +58,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 				<hr />
 
-				<button onClick={() => props.joinRoom (this.state.roomID)}>
+				<button className="magnet" onClick={() => props.joinRoom (this.state.roomID)}>
 					Join
 				</button>
 			</div>

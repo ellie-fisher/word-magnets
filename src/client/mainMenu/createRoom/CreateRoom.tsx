@@ -62,7 +62,7 @@ class CreateRoom extends Component<CreateRoomProps>
 
 				{errorWhich === "all" ? <strong>{errorData}</strong> : ""}
 
-				<button onClick={props.createRoom}>Create Room</button>
+				<button className="magnet" onClick={props.createRoom}>Create Room</button>
 			</div>
 		);
 	}
