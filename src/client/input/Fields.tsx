@@ -1,6 +1,4 @@
 import React from "react";
-
-import Textbox from "./Textbox";
 import IntegerDropdown from "./IntegerDropdown";
 
 import { AnyObject } from "../../common/util/types";
@@ -48,8 +46,10 @@ const Fields = ( props: FieldsProps ) =>
 						{
 							case "string":
 							{
-								input = <Textbox
-									field={field}
+								input = <input
+									type="text"
+									maxLength={field.max || null}
+									value={field.value}
 									onChange={event => onChange (event.target.value, key, field)}
 								/>;
 
