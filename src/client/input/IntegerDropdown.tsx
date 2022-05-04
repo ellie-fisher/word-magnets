@@ -25,7 +25,7 @@ const styles: any =
 
 		"&:hover":
 		{
-			backgroundColor: "rgba(0, 0, 0, 0.1)",
+			backgroundColor: "rgba(0, 0, 0, 0.15)",
 		},
 	}),
 
@@ -44,9 +44,9 @@ const styles: any =
 		color: "#FFFF99",
 
 		background: "url(\"/img/chalkboard.png\")",
-		backgroundPosition: "50% 50%";
-		backgroundSize: "auto";
-		backgroundColor: "#284F37";  /* Fallback color */
+		backgroundPosition: "50% 50%",
+		backgroundSize: "auto",
+		backgroundColor: "#284F37",  /* Fallback color */
 
 		textAlign: "left",
 
