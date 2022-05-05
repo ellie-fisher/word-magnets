@@ -67,7 +67,10 @@ const mainMenuReducer = ( state: MainMenuState = initialState, action: Action ) 
 
 		case "mainMenu/selectTab":
 		{
-			return { ...state, tab: action.payload };
+			return {
+				...state,
+				tab: action.payload,
+			};
 		}
 
 		default:

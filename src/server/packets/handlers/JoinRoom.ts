@@ -34,7 +34,7 @@ const joinRoomHandler = new PacketHandler (
 
 		if ( !validation[0] )
 		{
-			client.packets.sendRejectPacket (packet, validation);
+			client.packets.sendRejectPacket (packet, validation[1]);
 			return;
 		}
 

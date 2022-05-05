@@ -81,7 +81,7 @@ const Fields = ( props: FieldsProps ) =>
 
 								<div style={{ float: "left", width: "100%", textAlign: "left" }}>
 									<strong className="error-message">
-										{error.length > 0 && error[0] === key ? error[1] : ""}
+										{error.length > 1 && error[0] === key ? error[1] : ""}
 									</strong>
 								</div>
 							</td>

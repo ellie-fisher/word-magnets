@@ -3,7 +3,7 @@ import { Action } from "../../types/redux";
 
 interface JoinRoomState
 {
-	error: string;
+	error: string | string[];
 };
 
 const initialState =
@@ -22,7 +22,10 @@ const joinRoomReducer = ( state: JoinRoomState = initialState, action: Action ) 
 				return state;
 			}
 
-			return { ...state, error: action.payload.data };
+			return {
+				...state,
+				error: action.payload.data,
+			};
 		}
 
 		default:

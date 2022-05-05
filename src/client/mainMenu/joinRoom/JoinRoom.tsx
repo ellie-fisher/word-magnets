@@ -50,24 +50,31 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 					<Fields
 						keyPrefix="JoinRoom-roomID-field"
 						fields={roomIDFields}
-						error=""
+						error={[]}
 						onChange={newValue => this.setRoomID (newValue)}
 					/>
 
 					<Fields
 						keyPrefix="JoinRoom-clientInfo-field"
 						fields={props.info.clientInfo}
-						error={props.error}
+						error={Array.isArray (props.error) ? props.error : []}
 						onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
 					/>
-				</div>
 
-				<button
-					className="magnet"
-					onClick={() => props.joinRoom (this.state.roomID)}
-				>
-					Join Room
-				</button>
+					<div style={{ float: "left", width: "100%", textAlign: "left" }}>
+						<strong className="error-message">
+							{typeof props.error === "string" ? props.error : ""}
+						</strong>
+					</div>
+
+					<button
+						style={{ float: "left" }}
+						className="magnet"
+						onClick={() => props.joinRoom (this.state.roomID)}
+					>
+						Join Room
+					</button>
+				</div>
 			</div>
 		);
 	}
