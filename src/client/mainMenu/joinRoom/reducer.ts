@@ -25,9 +25,9 @@ const joinRoomReducer = ( state: JoinRoomState = initialState, action: Action ) 
 			return { ...state, error: action.payload.data };
 		}
 
-		case "joinRoom/clearError":
+		default:
 		{
-			return { ...state, error: "" };
+			break;
 		}
 	}
 

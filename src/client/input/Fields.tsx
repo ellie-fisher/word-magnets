@@ -75,8 +75,15 @@ const Fields = ( props: FieldsProps ) =>
 
 						return (
 							<td className="field" key={`${keyPrefix}-${field.type}-${key}`}>
-								{input}
-								{error !== "" && error[0] === key ? <div><strong>{error[1]}</strong></div> : ""}
+								<div style={{ float: "left" }}>
+									{input}
+								</div>
+
+								<div style={{ float: "left", width: "100%", textAlign: "left" }}>
+									<strong className="error-message">
+										{error.length > 0 && error[0] === key ? error[1] : ""}
+									</strong>
+								</div>
 							</td>
 						);
 					})

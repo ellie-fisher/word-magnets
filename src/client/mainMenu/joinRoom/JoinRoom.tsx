@@ -46,26 +46,27 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 		return (
 			<div>
-				<Fields
-					keyPrefix="JoinRoom-roomID-field"
-					fields={roomIDFields}
-					error=""
-					onChange={newValue => this.setRoomID (newValue)}
-				/>
+				<div className="center">
+					<Fields
+						keyPrefix="JoinRoom-roomID-field"
+						fields={roomIDFields}
+						error=""
+						onChange={newValue => this.setRoomID (newValue)}
+					/>
 
-				<Fields
-					keyPrefix="JoinRoom-clientInfo-field"
-					fields={props.info.clientInfo}
-					error={props.error}
-					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
-				/>
+					<Fields
+						keyPrefix="JoinRoom-clientInfo-field"
+						fields={props.info.clientInfo}
+						error={props.error}
+						onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
+					/>
+				</div>
 
-				{props.error !== "" ? <strong>{props.error}</strong> : ""}
-
-				<hr />
-
-				<button className="magnet" onClick={() => props.joinRoom (this.state.roomID)}>
-					Join
+				<button
+					className="magnet"
+					onClick={() => props.joinRoom (this.state.roomID)}
+				>
+					Join Room
 				</button>
 			</div>
 		);

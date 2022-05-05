@@ -21,7 +21,7 @@ class MainMenu extends Component<MainMenuProps>
 		const { props } = this;
 
 		return (
-			<div>
+			<div className="center">
 				<div>
 					<button className="magnet" onClick={( event ) => props.selectTab (MainMenuTab.CreateRoom)}>
 						Create Room
@@ -31,8 +31,6 @@ class MainMenu extends Component<MainMenuProps>
 						Join Room
 					</button>
 				</div>
-
-				<hr />
 
 				<div>
 					{props.tab === MainMenuTab.CreateRoom ? <CreateRoom /> : <JoinRoom />}
