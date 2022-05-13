@@ -28,12 +28,12 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 	setRoomID ( roomID: string )
 	{
-		this.setState ({ roomID });
+		this.setState ({ roomID: roomID.toUpperCase () });
 	}
 
 	render ()
 	{
-		const { props } = this;
+		const { props, state } = this;
 
 		const roomIDFields =
 		{
@@ -41,6 +41,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 			{
 				type: "string",
 				displayName: "Room ID",
+				value: state.roomID,
 			},
 		};
 
