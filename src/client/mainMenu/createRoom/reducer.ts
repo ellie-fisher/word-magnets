@@ -25,6 +25,11 @@ const createRoomReducer = ( state: CreateRoomState = initialState, action: Actio
 			return { ...state, error: action.payload.data };
 		}
 
+		case "mainMenu/selectTab":
+		{
+			return { ...state, error: "" };
+		}
+
 		default:
 		{
 			return state;

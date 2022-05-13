@@ -28,6 +28,11 @@ const joinRoomReducer = ( state: JoinRoomState = initialState, action: Action ) 
 			};
 		}
 
+		case "mainMenu/selectTab":
+		{
+			return { ...state, error: "" };
+		}
+
 		default:
 		{
 			break;
