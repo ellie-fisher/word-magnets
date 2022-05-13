@@ -15,7 +15,7 @@ html, body, #app-root
 	overflow: hidden;
 
 	color: #AAFF66;
-	font-size: 1.3em;
+	font-size: 2vw;
 	font-family: "Indie Flower";
 
 	user-select: none;
@@ -44,7 +44,7 @@ html, body, #app-root
 	padding-right: 1em;
 
 	background-color: #EEE;
-	font-size: 0.6em;
+	font-size: 1.2vw;
 
 	font-family: "Helvetica", sans-serif;
 	color: #000;
@@ -69,10 +69,10 @@ html, body, #app-root
 
 	position: static;
 
-	top: 0vw;
-	padding: 0.75vw;
+	top: 0em;
+	padding: 0.75em;
 
-	font-size: 1.5vw;
+	font-size: 3vw;
 
 	color: #FFFF99;
 }
@@ -84,7 +84,7 @@ input[type=text]
 	border: 0.1em #AAFF66 dotted;
 
 	color: #FFFF99;
-	font-size: 1em;
+	font-size: 2vw;
 	font-family: "Indie Flower";
 
 	padding: 0.2em;
@@ -109,4 +109,44 @@ th.field
 .error-message
 {
 	font-style: italic;
+}
+
+.dashed-tab, .dashed-tab-right, .dashed-tab-left
+{
+	background: none;
+	border: 0.1em #AAFF66 dashed;
+	font-family: "Indie Flower";
+	font-size: 1.5vw;
+	color: #AAFF66;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.dashed-tab:hover
+{
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.15);
+}
+
+.dashed-tab:active
+{
+	background: rgba(0, 0, 0, 0.25);
+}
+
+.dashed-tab-left
+{
+	border-right: none;
+}
+
+.dashed-tab-right
+{
+	border-left: none;
+}
+
+.dashed-tab-selected
+{
+	background-color: rgba(255, 255, 255, 0.1);
+	border-style: dotted;
+	border-color: #FFFF99;
+	color: #FFFF99;
 }
