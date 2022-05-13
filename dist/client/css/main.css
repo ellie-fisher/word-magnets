@@ -65,14 +65,14 @@ html, body, #app-root
 .topbar
 {
 	background: url("/img/topbar.png");
-	background-size: cover;
+	background-size: 100% 100%;
 
 	position: static;
 
 	top: 0em;
-	padding: 0.75em;
+	padding: 0.25em;
 
-	font-size: 3vw;
+	font-size: 1.75vw;
 
 	color: #FFFF99;
 }
@@ -111,7 +111,7 @@ th.field
 	font-style: italic;
 }
 
-.dashed-tab, .dashed-tab-right, .dashed-tab-left
+.dashed-btn, .dashed-btn-right, .dashed-btn-left
 {
 	background: none;
 	border: 0.1em #AAFF66 dashed;
@@ -122,31 +122,37 @@ th.field
 	padding-right: 1em;
 }
 
-.dashed-tab:hover
+.dashed-btn:hover
 {
 	cursor: pointer;
 	background: rgba(0, 0, 0, 0.15);
 }
 
-.dashed-tab:active
+.dashed-btn:active
 {
 	background: rgba(0, 0, 0, 0.25);
 }
 
-.dashed-tab-left
+.dashed-btn-left
 {
 	border-right: none;
 }
 
-.dashed-tab-right
+.dashed-btn-right
 {
 	border-left: none;
 }
 
-.dashed-tab-selected
+.dashed-btn-selected
 {
 	background-color: rgba(255, 255, 255, 0.1);
 	border-style: dotted;
 	border-color: #FFFF99;
 	color: #FFFF99;
+}
+
+.orange
+{
+	color: #FFBB88;
+	border-color: #FFBB88;
 }

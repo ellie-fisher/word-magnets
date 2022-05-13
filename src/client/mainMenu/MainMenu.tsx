@@ -27,14 +27,14 @@ class MainMenu extends Component<MainMenuProps>
 			<div className="center">
 				<div>
 					<button
-						className={`dashed-tab ${isCreateSelected ? "dashed-tab-selected" : "dashed-tab-left"}`}
+						className={`dashed-btn ${isCreateSelected ? "dashed-btn-selected" : "dashed-btn-left"}`}
 						onClick={event => props.selectTab (MainMenuTab.CreateRoom)}
 					>
 						Create Room
 					</button>
 
 					<button
-						className={`dashed-tab ${isJoinSelected ? "dashed-tab-selected" : "dashed-tab-right"}`}
+						className={`dashed-btn ${isJoinSelected ? "dashed-btn-selected" : "dashed-btn-right"}`}
 						onClick={event => props.selectTab (MainMenuTab.JoinRoom)}
 					>
 						Join Room
