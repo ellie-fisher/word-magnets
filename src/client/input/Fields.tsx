@@ -26,7 +26,7 @@ const Fields = ( props: FieldsProps ) =>
 						const field = fields[key];
 
 						return <th className="field" key={`${keyPrefix}-header-${field.type}-${key}`}>
-							{field.displayName}: 
+							<label>{field.displayName}: </label>
 						</th>;
 					})
 				}

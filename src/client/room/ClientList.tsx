@@ -1,45 +1,64 @@
-import React from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+
+import RoomActions from "./general/actionCreators";
 
 import { AnyObject } from "../../common/util/types";
 
 
 type ClientListProps = AnyObject;
 
-const ClientList = ( props: ClientListProps ) =>
+class ClientList extends Component<ClientListProps>
 {
-	const { clients, onClick = null } = props;
-
-	if ( onClick === null )
+	render ()
 	{
+		const { props } = this;
+		const { clients = [] } = props;
+
 		return (
-			<ul>
-			{
-				Object.keys (clients).map (( key, index ) =>
+			<div style={{ padding: "1em" }}>
+				<label><small>Players:</small></label>
+
+				<div className="client-list">
 				{
-					return <li key={`ClientList-li-${index}`}>{clients[key].name}</li>;
-				})
-			}
-			</ul>
+					clients.map (( client, index ) =>
+					{
+						return <span
+							className={index < clients.length - 1 ? "client-list-item" : "client-list-item-last"}
+							key={`ClientList-span-${index}`}
+						>
+							<span className="client-list-delete" onClick={() => props.kickClient (client.id)}>
+								x
+							</span>
+
+							{client.name}
+						</span>;
+					})
+				}
+				</div>
+			</div>
 		);
 	}
+};
 
-	return (
-		<div>
+const mapStateToProps = state =>
+{
+	const { clients } = state.room.general;
+
+	return {
+		clients: Object.keys (clients).map (clientID => clients[clientID]),
+	};
+};
+
+const mapDispatchToProps = dispatch =>
+{
+	return {
+		kickClient ( clientID: string )
 		{
-			Object.keys (clients).map (( key, index ) =>
-			{
-				const client = clients[key];
-
-				return (
-					<button key={`ClientList-button-${index}`} onClick={() => onClick (key)}>
-						{client.name}
-					</button>
-				);
-			})
-		}
-		</div>
-	);
+			dispatch (RoomActions.kickClientRequest (clientID));
+		},
+	};
 };
 
 
-export default ClientList;
+export default connect (mapStateToProps, mapDispatchToProps) (ClientList);

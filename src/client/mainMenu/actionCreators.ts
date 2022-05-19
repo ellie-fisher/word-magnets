@@ -18,6 +18,14 @@ const MainMenuActions =
 			payload: tab,
 		};
 	},
+
+	setMessage ( title: string, body: string )
+	{
+		return {
+			type: "mainMenu/setMessage",
+			payload: { title, body },
+		};
+	},
 };
 
 

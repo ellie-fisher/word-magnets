@@ -44,7 +44,7 @@ html, body, #app-root
 	padding-right: 1em;
 
 	background-color: #EEE;
-	font-size: 1.2vw;
+	font-size: 0.6em;
 
 	font-family: "Helvetica", sans-serif;
 	color: #000;
@@ -72,9 +72,15 @@ html, body, #app-root
 	top: 0em;
 	padding: 0.25em;
 
-	font-size: 1.75vw;
+	font-size: 0.9em;
 
 	color: #FFFF99;
+}
+
+.room
+{
+	padding: 1em;
+	padding-top: 0em;
 }
 
 input[type=text]
@@ -125,12 +131,12 @@ th.field
 .dashed-btn:hover
 {
 	cursor: pointer;
-	background: rgba(0, 0, 0, 0.15);
+	background: rgba(0, 0, 0, 0.2);
 }
 
 .dashed-btn:active
 {
-	background: rgba(0, 0, 0, 0.25);
+	background: rgba(0, 0, 0, 0.3);
 }
 
 .dashed-btn-left
@@ -155,4 +161,47 @@ th.field
 {
 	color: #FFBB88;
 	border-color: #FFBB88;
+}
+
+.header
+{
+	margin: 0em;
+}
+
+.client-list
+{
+	border: 0.05em #AAFF66 dashed;
+
+	padding: 0.25em;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+
+	margin-top: 0.25em;
+
+	font-size: 1.5vw;
+}
+
+.client-list-item, .client-list-item-last
+{
+	padding-right: 1em;
+	border-right: 0.05em #AAFF66 dashed;
+	margin-right: 1em;
+}
+
+.client-list-item-last
+{
+	border-right: 0em;
+}
+
+.client-list-delete
+{
+	color: #FF5154;
+	margin-right: 0.5em;
+}
+
+.client-list-delete:hover
+{
+	color: #FF5154;
+	margin-right: 0.5em;
+	cursor: pointer;
 }

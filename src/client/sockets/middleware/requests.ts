@@ -48,6 +48,12 @@ const requestsMiddleware = store => next => action =>
 			break;
 		}
 
+		case "room/kickClient:request":
+		{
+			packetManager.sendRequestPacket (PacketCommand.KickClient, action.payload);
+			break;
+		}
+
 		default:
 		{
 			break;

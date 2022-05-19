@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Topbar from "./Topbar";
+import ClientList from "./ClientList";
 import LobbyPhase from "./lobby/LobbyPhase";
 import CreatePhase from "./create/CreatePhase";
 import VotePhase from "./vote/VotePhase";
@@ -21,7 +22,7 @@ class Room extends Component<RoomProps>
 	render ()
 	{
 		const { props } = this;
-		const { phase } = props;
+		const { phase, clients } = props;
 
 		let view;
 
@@ -67,7 +68,11 @@ class Room extends Component<RoomProps>
 		return (
 			<div>
 				<Topbar />
-				{view}
+				<ClientList />
+
+				<div className="room">
+					{view}
+				</div>
 			</div>
 		);
 	}
@@ -77,6 +82,7 @@ const mapStateToProps = state =>
 {
 	return {
 		phase: state.room.general.phase,
+		clients: state.room.general.clients,
 	};
 };
 

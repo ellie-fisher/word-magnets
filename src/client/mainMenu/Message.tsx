@@ -7,9 +7,9 @@ import AppView from "../app/AppView";
 import { AnyObject } from "../../common/util/types";
 
 
-type RoomDestroyedProps = AnyObject;
+type MessageProps = AnyObject;
 
-class RoomDestroyed extends Component<RoomDestroyedProps>
+class Message extends Component<MessageProps>
 {
 	render ()
 	{
@@ -17,12 +17,10 @@ class RoomDestroyed extends Component<RoomDestroyedProps>
 
 		return (
 			<div>
-				<h1>Room Closed</h1>
-				<p>{props.reason}</p>
+				<h1>{props.title}</h1>
+				<p>{props.body}</p>
 
-				<button onClick={props.clickOK}>
-					OK
-				</button>
+				<button onClick={props.clickOK}>OK</button>
 			</div>
 		);
 	}
@@ -30,9 +28,7 @@ class RoomDestroyed extends Component<RoomDestroyedProps>
 
 const mapStateToProps = state =>
 {
-	return {
-		reason: state.room.general.destroyMessage,
-	};
+	return { ...state.mainMenu.message };
 };
 
 const mapDispatchToProps = dispatch =>
@@ -46,4 +42,4 @@ const mapDispatchToProps = dispatch =>
 };
 
 
-export default connect (mapStateToProps, mapDispatchToProps) (RoomDestroyed);
+export default connect (mapStateToProps, mapDispatchToProps) (Message);

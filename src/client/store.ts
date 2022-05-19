@@ -3,6 +3,7 @@ import { createStore, compose, applyMiddleware } from "redux";
 import rootReducer from "./reducer";
 
 import appMidleware from "./app/middleware";
+import mainMenuMiddleware from "./mainMenu/middleware";
 import socketMiddleware from "./sockets/middleware/socket";
 import requestsMiddleware from "./sockets/middleware/requests";
 import roomMiddleware from "./room/general/middleware";
@@ -17,6 +18,7 @@ const store = createStore (
 	rootReducer,
 	composeFunction (applyMiddleware (
 		appMidleware,
+		mainMenuMiddleware,
 		requestsMiddleware,
 		socketMiddleware,
 		roomMiddleware,

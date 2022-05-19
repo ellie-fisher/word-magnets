@@ -66,6 +66,30 @@ const RoomActions =
 	{
 		return { type: "room/startGame" };
 	},
+
+	kickClient ( clientID: string )
+	{
+		return {
+			type: "room/kickClient",
+			payload: clientID,
+		};
+	},
+
+	kickClientRequest ( clientID: string )
+	{
+		return {
+			type: "room/kickClient:request",
+			payload: clientID,
+		};
+	},
+
+	kickClientResponse ( data: any )
+	{
+		return {
+			type: "room/kickClient:response",
+			payload: data,
+		};
+	},
 };
 
 
