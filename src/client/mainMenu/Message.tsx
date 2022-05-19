@@ -16,11 +16,13 @@ class Message extends Component<MessageProps>
 		const { props } = this;
 
 		return (
-			<div>
+			<div className="center">
 				<h1>{props.title}</h1>
 				<p>{props.body}</p>
 
-				<button onClick={props.clickOK}>OK</button>
+				<button className="magnet" onClick={props.clickOK}>
+					OK
+				</button>
 			</div>
 		);
 	}
