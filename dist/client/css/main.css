@@ -193,13 +193,13 @@ th.field
 	border-right: 0em;
 }
 
-.client-list-delete
+.client-list-kick
 {
 	color: #FF5154;
 	margin-right: 0.5em;
 }
 
-.client-list-delete:hover
+.client-list-kick:hover
 {
 	color: #FF5154;
 	margin-right: 0.5em;

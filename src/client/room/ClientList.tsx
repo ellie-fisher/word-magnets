@@ -27,9 +27,13 @@ class ClientList extends Component<ClientListProps>
 							className={index < clients.length - 1 ? "client-list-item" : "client-list-item-last"}
 							key={`ClientList-span-${index}`}
 						>
-							<span className="client-list-delete" onClick={() => props.kickClient (client.id)}>
-								x
-							</span>
+						{
+							props.clientID !== props.ownerID || client.id === props.ownerID
+								? ""
+								: <span className="client-list-kick" onClick={() => props.kickClient (client.id)}>
+									x
+								</span>
+						}
 
 							{client.name}
 						</span>;
@@ -43,10 +47,13 @@ class ClientList extends Component<ClientListProps>
 
 const mapStateToProps = state =>
 {
-	const { clients } = state.room.general;
+	const { general } = state.room;
+	const { clients } = general;
 
 	return {
 		clients: Object.keys (clients).map (clientID => clients[clientID]),
+		clientID: state.app.clientID,
+		ownerID: general.info.ownerID,
 	};
 };
 
