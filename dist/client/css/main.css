@@ -73,6 +73,18 @@ label > small
 	content: "\200B";
 }
 
+.magnet:disabled
+{
+	color: #888;
+	cursor: not-allowed;
+}
+
+.magnet:disabled:hover
+{
+	background-color: #EEE;
+	color: #888;
+}
+
 .magnet.small
 {
 	font-size: 0.4em;
@@ -116,6 +128,11 @@ input[type=text]
 	padding: 0.2em;
 
 	outline: none;
+}
+
+button:disabled
+{
+	cursor: not-allowed;
 }
 
 th.field

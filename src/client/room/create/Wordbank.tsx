@@ -15,7 +15,7 @@ const Wordbank: FC<WordbankProps> = ( props: WordbankProps ): ReactElement =>
 			{
 				let wordValue = isName ? word.name : word;
 
-				// Make spaces empty so the `:empty` pseudo-element rule gets activated.
+				// Make spaces empty so the `:empty` selector gets activated.
 				if ( wordValue === " " )
 				{
 					wordValue = "";
