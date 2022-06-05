@@ -37,14 +37,20 @@ html, body, #app-root
 	box-sizing: border-box;
 }
 
-table
-{
-	border-collapse: collapse;
-}
-
 h1
 {
 	font-size: 1.4em;
+}
+
+table
+{
+	border-collapse: collapse;
+	font-size: 0.9em;
+}
+
+tr
+{
+	text-align: left;
 }
 
 .magnet

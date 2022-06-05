@@ -9,7 +9,7 @@ const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 	const { columns = [], rows = [], selected = -1, onClick = () => {} } = props;
 
 	return (
-		<table className="keep-white-space">
+		<table style={{ width: "100%" }} className="keep-white-space">
 			<thead>
 				<tr className="dashed">
 				{

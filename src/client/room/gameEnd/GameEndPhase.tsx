@@ -19,7 +19,7 @@ class GameEnd extends Component<GameEndProps, AnyObject>
 		rows.sort (( a, b ) => b[1] - a[1]);
 
 		return (
-			<div>
+			<div style={{ width: "50%" }} className="center">
 				<h1>Final Scores</h1>
 			{
 				rows.length <= 0

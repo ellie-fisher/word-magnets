@@ -22,7 +22,7 @@ class VotePhase extends Component<VotePhaseProps, AnyObject>
 		const selected = props.sentences.findIndex (sentence => sentence.voteID === props.voteID);
 
 		return (
-			<div>
+			<div style={{ width: "100%" }} className="center">
 			{
 				props.sentences.length <= 0
 					? "No sentences to vote for!"

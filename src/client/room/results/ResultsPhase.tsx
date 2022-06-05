@@ -29,7 +29,7 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 		rows.sort (( a, b ) => b[1] - a[1]);
 
 		return (
-			<div>
+			<div style={{ width: "100%" }} className="center">
 			{
 				rows.length <= 0
 					? "No sentences were created."

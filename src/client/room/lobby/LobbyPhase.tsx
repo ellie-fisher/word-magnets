@@ -32,7 +32,7 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 		const { props } = this;
 
 		return (
-			<div>
+			<div className="center">
 				<h1 className="header">Pre-Game Lobby</h1>
 				<small>Waiting for room owner to start the game...</small>
 
