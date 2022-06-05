@@ -45,7 +45,7 @@ class CreateRoom extends Component<CreateRoomProps>
 		}
 
 		return (
-			<div>
+			<div className="center">
 				<Fields
 					keyPrefix="CreateRoom-roomInfo-field"
 					fields={props.info.roomInfo}

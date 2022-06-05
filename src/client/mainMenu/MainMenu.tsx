@@ -24,7 +24,7 @@ class MainMenu extends Component<MainMenuProps>
 		const isJoinSelected = props.tab === MainMenuTab.JoinRoom;
 
 		return (
-			<div className="center columns full-size">
+			<div className="center">
 				<div>
 					<button
 						className={`dashed btn ${isCreateSelected ? "dashed btn-selected" : "dashed btn-left"}`}
@@ -41,7 +41,7 @@ class MainMenu extends Component<MainMenuProps>
 					</button>
 				</div>
 
-				<div>
+				<div className="center">
 					{isCreateSelected ? <CreateRoom /> : <JoinRoom />}
 				</div>
 			</div>

@@ -16,7 +16,7 @@ class Message extends Component<MessageProps>
 		const { props } = this;
 
 		return (
-			<div className="center columns">
+			<div className="center">
 				<h1>{props.title}</h1>
 				<p>{props.body}</p>
 

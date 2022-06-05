@@ -34,7 +34,7 @@ class App extends Component<AppProps>
 			{
 				view =
 				(
-					<div className="center columns">
+					<div className="center">
 						<h1>{props.error.header}</h1>
 						<p>{props.error.message}</p>
 					</div>
@@ -62,7 +62,7 @@ class App extends Component<AppProps>
 			}
 		}
 
-		return <div className="full-size">{view}</div>;
+		return <div>{view}</div>;
 	}
 }
 
