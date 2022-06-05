@@ -67,6 +67,12 @@ label > small
 	background-color: #DEDEDE;
 }
 
+/* Keep height even if element is blank */
+.magnet:empty::after
+{
+	content: "\200B";
+}
+
 .magnet.small
 {
 	font-size: 0.4em;
@@ -239,4 +245,9 @@ th.field
 	color: #FF5154;
 	margin-right: 0.5em;
 	cursor: pointer;
+}
+
+.keep-white-space
+{
+	white-space: pre-wrap;
 }

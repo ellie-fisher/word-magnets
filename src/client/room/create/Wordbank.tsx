@@ -13,13 +13,21 @@ const Wordbank: FC<WordbankProps> = ( props: WordbankProps ): ReactElement =>
 		{
 			wordbank.words.map (( word, index ) =>
 			{
+				let wordValue = isName ? word.name : word;
+
+				// Make spaces empty so the `:empty` pseudo-element rule gets activated.
+				if ( wordValue === " " )
+				{
+					wordValue = "";
+				}
+
 				return <button
 					key={`wordbank-${wordbank.displayName}-word-${word}-${index}`}
 					className="magnet small"
 					onClick={() => onClick (word, index)}
 					disabled={disabled}
 				>
-					{isName ? word.name : word}
+					{wordValue}
 				</button>;
 			})
 		}

@@ -56,7 +56,7 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 				})
 			}
 
-				<div>
+				<div className="keep-white-space">
 					{sentenceToString (sentence, wordbanks, clients)}
 				</div>
 			</div>
