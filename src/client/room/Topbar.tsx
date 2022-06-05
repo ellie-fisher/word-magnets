@@ -19,7 +19,7 @@ class Topbar extends Component<TopbarProps>
 
 		return (
 			<div className="topbar">
-				<button className="dashed-btn orange" onClick={() => props.clickBack ()}>
+				<button className="dashed btn orange" onClick={() => props.clickBack ()}>
 					{"<< Leave Room"}
 				</button>
 

@@ -19,7 +19,7 @@ class ClientList extends Component<ClientListProps>
 			<div style={{ padding: "1em" }}>
 				<label><small>Players:</small></label>
 
-				<div className="client-list">
+				<div className="client-list dashed padded">
 				{
 					clients.map (( client, index ) =>
 					{
