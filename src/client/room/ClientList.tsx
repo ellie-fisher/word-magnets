@@ -17,7 +17,7 @@ class ClientList extends Component<ClientListProps>
 
 		return (
 			<div style={{ padding: "1em", paddingTop: "0em" }}>
-				<label className=""><small>Players:</small></label>
+				<label><small>Players:</small></label>
 
 				<div className="client-list dashed bold-border padded">
 				{
