@@ -32,7 +32,7 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 			<div>
 			{
 				rows.length <= 0
-					? "No results to show!"
+					? "No sentences were created."
 					: <Table
 						columns={["Author", "Votes", "Sentence"]}
 						rows={rows}

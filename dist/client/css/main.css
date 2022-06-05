@@ -42,11 +42,6 @@ table
 	border-collapse: collapse;
 }
 
-table.dashed
-{
-	font-size: 1em;
-}
-
 h1
 {
 	font-size: 1.4em;
@@ -233,6 +228,11 @@ tr.dashed
 	border-top: none;
 	border-left: none;
 	border-right: none;
+}
+
+tr.dashed > th
+{
+	color: #FFFF99;
 }
 
 tr.dashed.last

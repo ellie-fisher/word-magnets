@@ -41,7 +41,7 @@ class MainMenu extends Component<MainMenuProps>
 					</button>
 				</div>
 
-				<div>
+				<div className="center">
 					{isCreateSelected ? <CreateRoom /> : <JoinRoom />}
 				</div>
 			</div>
