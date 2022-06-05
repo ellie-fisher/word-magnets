@@ -33,7 +33,7 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 
 		return (
 			<div>
-				<h3 className="header">Pre-Game Lobby</h3>
+				<h1 className="header">Pre-Game Lobby</h1>
 				<small>Waiting for room owner to start the game...</small>
 
 				<div style={{ marginTop: "1em" }}>

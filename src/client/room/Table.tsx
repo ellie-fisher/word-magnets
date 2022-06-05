@@ -11,9 +11,17 @@ const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 	return (
 		<table className="keep-white-space">
 			<thead>
-				<tr>{columns.map (( col, colIndex ) => <th key={`col-${colIndex}-${col}`}>{col}</th>)}</tr>
+				<tr className="dashed">
+				{
+					columns.map (( col, colIndex ) =>
+					{
+						return <th key={`col-${colIndex}-${col}`}><small>{col}</small></th>;
+					})
+				}
+				</tr>
 			</thead>
-			<tbody>
+
+			<tbody className="dashed bold-border">
 			{
 				rows.map (( cols, rowIndex ) =>
 				{
@@ -26,12 +34,19 @@ const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 					}
 
 					return (
-						<tr key={`row-${rowIndex}-${isSelected}`} style={style}>
+						<tr
+							key={`row-${rowIndex}-${isSelected}`}
+							style={style}
+							className={`dashed ${rowIndex === rows.length - 1 ? "last" : ""}`}
+						>
 						{
 							cols.map (( col, colIndex ) =>
 							{
 								return (
-									<td key={`row-${rowIndex}-${isSelected}-col-${colIndex}`}>
+									<td
+										key={`row-${rowIndex}-${isSelected}-col-${colIndex}`}
+										className={`dashed ${colIndex === cols.length - 1 ? "last" : ""}`}
+									>
 										{col}
 									</td>
 								);
