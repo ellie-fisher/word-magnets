@@ -47,7 +47,7 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 		return (
 			<div>
-				<div className="center">
+				<div>
 					<Fields
 						keyPrefix="JoinRoom-roomID-field"
 						fields={roomIDFields}
