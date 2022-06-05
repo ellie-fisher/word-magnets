@@ -195,12 +195,12 @@ th.field
 
 .orange
 {
-	color: #FFBB88;
+	color: #FFBB88 !important;
 }
 
 .dashed.orange
 {
-	border-color: #FFBB88;
+	border-color: #FFBB88 !important;
 }
 
 .header
