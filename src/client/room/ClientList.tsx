@@ -16,10 +16,10 @@ class ClientList extends Component<ClientListProps>
 		const { clients = [] } = props;
 
 		return (
-			<div style={{ padding: "1em" }}>
-				<label><small>Players:</small></label>
+			<div style={{ padding: "1em", paddingTop: "0em" }}>
+				<label className=""><small>Players:</small></label>
 
-				<div className="client-list dashed padded">
+				<div className="client-list dashed bold-border padded">
 				{
 					clients.map (( client, index ) =>
 					{

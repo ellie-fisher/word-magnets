@@ -56,8 +56,6 @@ class CreatePhase extends Component<CreatePhaseProps, AnyObject>
 				})
 			}
 
-				<hr />
-
 				<div>
 					{sentenceToString (sentence, wordbanks, clients)}
 				</div>
