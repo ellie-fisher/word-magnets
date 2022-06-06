@@ -8,6 +8,8 @@ enum RoomError
 	NotInRoom,
 	NotFound,
 	NotOwner,
+	ClientNotFound,
+	KickOwner,
 }
 
 const getRoomErrorMessage = function ( error: RoomError )
@@ -33,10 +35,16 @@ const getRoomErrorMessage = function ( error: RoomError )
 			return "You are not in that room.";
 
 		case RoomError.NotFound:
-			return "That room does not exist.";
+			return "Room does not exist.";
 
 		case RoomError.NotOwner:
 			return "You are not the owner of the room.";
+
+		case RoomError.ClientNotFound:
+			return "Player not found.";
+
+		case RoomError.KickOwner:
+			return "You cannot kick the owner of the room.";
 
 		default:
 			return "Unknown room error.";

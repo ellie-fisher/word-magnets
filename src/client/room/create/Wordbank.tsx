@@ -9,21 +9,28 @@ const Wordbank: FC<WordbankProps> = ( props: WordbankProps ): ReactElement =>
 	const { wordbank, disabled = false, isName = false, onClick = () => {} } = props;
 
 	return (
-		<div>
-			<h3>{wordbank.displayName}</h3>
-
+		<div className="dashed padded margin-v">
+		{
+			wordbank.words.map (( word, index ) =>
 			{
-				wordbank.words.map (( word, index ) =>
+				let wordValue = isName ? word.name : word;
+
+				// Make spaces empty so the `:empty` selector gets activated.
+				if ( wordValue === " " )
 				{
-					return <button
-						key={`wordbank-${wordbank.displayName}-word-${word}-${index}`}
-						onClick={() => onClick (word, index)}
-						disabled={disabled}
-					>
-						{isName ? word.name : word}
-					</button>;
-				})
-			}
+					wordValue = "";
+				}
+
+				return <button
+					key={`wordbank-${wordbank.displayName}-word-${word}-${index}`}
+					className="magnet small"
+					onClick={() => onClick (word, index)}
+					disabled={disabled}
+				>
+					{wordValue}
+				</button>;
+			})
+		}
 		</div>
 	);
 };

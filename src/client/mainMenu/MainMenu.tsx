@@ -20,22 +20,29 @@ class MainMenu extends Component<MainMenuProps>
 	{
 		const { props } = this;
 
+		const isCreateSelected = props.tab === MainMenuTab.CreateRoom;
+		const isJoinSelected = props.tab === MainMenuTab.JoinRoom;
+
 		return (
-			<div>
+			<div className="center">
 				<div>
-					<button onClick={( event ) => props.selectTab (MainMenuTab.CreateRoom)}>
+					<button
+						className={`dashed btn ${isCreateSelected ? "dashed btn-selected" : "dashed btn-left"}`}
+						onClick={event => props.selectTab (MainMenuTab.CreateRoom)}
+					>
 						Create Room
 					</button>
 
-					<button onClick={( event ) => props.selectTab (MainMenuTab.JoinRoom)}>
+					<button
+						className={`dashed btn ${isJoinSelected ? "dashed btn-selected" : "dashed btn-right"}`}
+						onClick={event => props.selectTab (MainMenuTab.JoinRoom)}
+					>
 						Join Room
 					</button>
 				</div>
 
-				<hr />
-
-				<div>
-					{props.tab === MainMenuTab.CreateRoom ? <CreateRoom /> : <JoinRoom />}
+				<div className="center">
+					{isCreateSelected ? <CreateRoom /> : <JoinRoom />}
 				</div>
 			</div>
 		);

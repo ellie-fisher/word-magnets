@@ -8,6 +8,7 @@ import PacketHandler from "../../common/packets/PacketHandler";
 import createRoomHandler from "./handlers/CreateRoom";
 import joinRoomHandler from "./handlers/JoinRoom";
 import leaveRoomHandler from "./handlers/LeaveRoom";
+import kickClientHandler from "./handlers/KickClient";
 import phaseSpecificHandler from "./handlers/PhaseSpecific";
 
 
@@ -16,6 +17,7 @@ const handlers =
 	[PacketType.Request, PacketCommand.CreateRoom, createRoomHandler],
 	[PacketType.Request, PacketCommand.JoinRoom, joinRoomHandler],
 	[PacketType.Data, PacketCommand.LeaveRoom, leaveRoomHandler],
+	[PacketType.Request, PacketCommand.KickClient, kickClientHandler],
 	[PacketType.Request, PacketCommand.StartGame, phaseSpecificHandler],
 	[PacketType.Request, PacketCommand.SendSentence, phaseSpecificHandler],
 	[PacketType.Request, PacketCommand.CastVote, phaseSpecificHandler],

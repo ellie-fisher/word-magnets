@@ -1,0 +1,349 @@
+@font-face
+{
+	font-family: "Indie Flower";
+	src: url("/fonts/IndieFlower.ttf");
+}
+
+html, body, #app-root
+{
+	width: 100%;
+	height: 100%;
+
+	padding: 0px;
+	margin: 0px;
+
+	overflow: hidden;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+
+	color: #AAFF66;
+	font-size: 1.25em;
+	font-family: "Indie Flower";
+
+	user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+}
+
+#app-root
+{
+	background: url("/img/chalkboard.png");
+
+	background-position: 50% 50%;
+	background-size: cover;
+	background-color: #284F37;  /* Fallback color */
+
+	box-sizing: border-box;
+}
+
+h1
+{
+	font-size: 1.4em;
+}
+
+table
+{
+	border-collapse: collapse;
+	font-size: 0.9em;
+}
+
+tr
+{
+	text-align: left;
+}
+
+.magnet
+{
+	margin: 0.15em;
+
+	padding: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+
+	background-color: #EEE;
+	font-size: 0.7em;
+
+	font-family: "Helvetica", sans-serif;
+	color: #000;
+}
+
+.magnet:hover
+{
+	cursor: pointer;
+	background-color: #FEFEFE;
+	color: #111;
+}
+
+.magnet:active
+{
+	background-color: #DEDEDE;
+}
+
+/* Keep height even if element is blank */
+.magnet:empty::after
+{
+	content: "\200B";
+}
+
+.magnet:disabled
+{
+	color: #888;
+	cursor: not-allowed;
+}
+
+.magnet:disabled:hover
+{
+	background-color: #EEE;
+	color: #888;
+}
+
+.magnet.small
+{
+	font-size: 0.5em;
+
+	padding: 0.2em;
+	padding-left: 0.4em;
+	padding-right: 0.4em;
+}
+
+.topbar
+{
+	background: url("/img/topbar.png");
+	background-size: 100% 100%;
+
+	position: static;
+
+	top: 0em;
+	padding: 0.25em;
+
+	font-size: 1.3vw;
+
+	color: #FFFF99;
+}
+
+.topbar-item
+{
+	padding: 1em;
+}
+
+.room
+{
+	padding: 1em;
+	padding-top: 0em;
+}
+
+input[type=text]
+{
+	background: none;
+
+	border: 0.1em #AAFF66 dotted;
+
+	color: #FFFF99;
+	font-size: 1.25em;
+	font-family: "Indie Flower";
+
+	padding: 0.2em;
+
+	outline: none;
+}
+
+button:disabled, button.disabled
+{
+	cursor: not-allowed !important;
+}
+
+th.field
+{
+	padding-right: 1em;
+	font-weight: normal;
+	text-align: left;
+}
+
+.center
+{
+	margin: 2em auto;
+	text-align: center;
+	width: 60%;
+}
+
+.error-message
+{
+	font-style: italic;
+}
+
+.dashed
+{
+	border: 0.05em #AAFF66 dashed;
+}
+
+.dashed.bold-border
+{
+	border-width: 0.1em;
+}
+
+.dashed.btn, .dashed.btn-right, .dashed.btn-left
+{
+	background: none;
+	font-family: "Indie Flower";
+	font-size: 1em;
+	color: #AAFF66;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.dashed.btn:hover
+{
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.dashed.btn:active
+{
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.dashed.btn-left
+{
+	border-right: none;
+}
+
+.dashed.btn-right
+{
+	border-left: none;
+}
+
+.dashed.btn-selected
+{
+	background-color: rgba(255, 255, 255, 0.1);
+	border-style: dotted;
+	border-color: #FFFF99;
+	color: #FFFF99;
+}
+
+.dashed.btn.disabled, .dashed.btn:disabled
+{
+	background: rgba(64, 64, 64, 0.8);
+}
+
+.dashed.padded
+{
+	padding: 0.1em;
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+}
+
+.dashed.margin-v
+{
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+}
+
+.dashed:disabled, .dashed.disabled
+{
+	cursor: not-allowed;
+}
+
+tr.dashed
+{
+	border-top: none;
+	border-left: none;
+	border-right: none;
+}
+
+tr.dashed > th
+{
+	color: #FFFF99;
+}
+
+tr.dashed.last
+{
+	border-bottom: none;
+}
+
+tr.dashed > td, tr.dashed > th
+{
+	padding: 0.25em 0.5em 0.25em 0.5em;
+}
+
+td.dashed, th.dashed
+{
+	border-top: none;
+	border-left: none;
+	border-bottom: none;
+}
+
+td.dashed.last, th.dashed.last
+{
+	border-right: none;
+}
+
+tr.dashed.selected
+{
+	background: rgba(0, 0, 0, 0.2);
+	border-color: #FFBB88;
+	color: #FFBB88;
+}
+
+.orange
+{
+	color: #FFBB88 !important;
+}
+
+.dashed.orange
+{
+	border-color: #FFBB88 !important;
+}
+
+.orange:disabled, .orange.disabled
+{
+	color: #DEC2AD !important;
+}
+
+.dashed.orange:disabled, .dashed.orange.disabled
+{
+	border-color: #DEC2AD !important;
+}
+
+.header
+{
+	margin: 0em;
+}
+
+.client-list
+{
+	border: 0.05em #AAFF66 dashed;
+	margin-top: 0.25em;
+	padding: 0.3em 0.6em 0.3em 0.6em !important;
+	font-size: 0.8em;
+}
+
+.client-list-item, .client-list-item-last
+{
+	padding-right: 1em;
+	border-right: 0.05em #AAFF66 dashed;
+	margin-right: 1em;
+}
+
+.client-list-item-last
+{
+	border-right: 0em;
+}
+
+.client-list-kick
+{
+	color: #FF5154;
+	margin-right: 0.5em;
+}
+
+.client-list-kick:hover
+{
+	color: #FF5154;
+	margin-right: 0.5em;
+	cursor: pointer;
+}
+
+.keep-white-space
+{
+	white-space: pre-wrap;
+}

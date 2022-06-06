@@ -19,34 +19,23 @@ class VotePhase extends Component<VotePhaseProps, AnyObject>
 	{
 		const { props } = this;
 
-		const selected = props.sentences.findIndex (sentence => sentence.voteID === props.voteID);
+		let content: any = "No sentences to vote for!";
 
-		return (
-			<div>
-			{
-				props.sentences.length <= 0
-					? "No sentences to vote for!"
-					: <Table
-						columns={["", "Sentence"]}
-						rows=
-						{
-							props.sentences.map (sentence =>
-							[
-								<button
-									key={`player-sentence-btn-${sentence.voteID}`}
-									onClick={() => props.setVote (sentence.voteID)}
-									disabled={props.phase.state === RoomPhaseState.End}
-								>
-									Vote
-								</button>,
-								sentence.value
-							])
-						}
-						selected={selected}
-					/>
-			}
-			</div>
-		);
+		if ( props.phase.state === RoomPhaseState.End )
+		{
+			content = "Please wait...";
+		}
+		else if ( props.sentences.length > 0 )
+		{
+			content = <Table
+				columns={["Sentence"]}
+				rows={props.sentences.map (sentence => [sentence.value])}
+				selected={props.sentences.findIndex (sentence => sentence.voteID === props.voteID)}
+				onClick={index => props.setVote (props.sentences[index].voteID)}
+			/>;
+		}
+
+		return <div style={{ width: "100%" }} className="center">{content}</div>;
 	}
 }
 

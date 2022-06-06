@@ -2,6 +2,8 @@ import { createStore, compose, applyMiddleware } from "redux";
 
 import rootReducer from "./reducer";
 
+import appMidleware from "./app/middleware";
+import mainMenuMiddleware from "./mainMenu/middleware";
 import socketMiddleware from "./sockets/middleware/socket";
 import requestsMiddleware from "./sockets/middleware/requests";
 import roomMiddleware from "./room/general/middleware";
@@ -14,9 +16,14 @@ const composeFunction = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore (
 	rootReducer,
-	composeFunction (
-		applyMiddleware (requestsMiddleware, socketMiddleware, roomMiddleware, createPhaseMiddleware)
-	),
+	composeFunction (applyMiddleware (
+		appMidleware,
+		mainMenuMiddleware,
+		requestsMiddleware,
+		socketMiddleware,
+		roomMiddleware,
+		createPhaseMiddleware,
+	)),
 );
 
 

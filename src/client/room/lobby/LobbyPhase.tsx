@@ -8,8 +8,9 @@ import { AnyObject } from "../../../common/util/types";
 
 
 type LobbyPhaseProps = AnyObject;
+type LobbyPhaseLocalState = AnyObject;
 
-class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
+class LobbyPhase extends Component<LobbyPhaseProps, LobbyPhaseLocalState>
 {
 	constructor ( props )
 	{
@@ -32,20 +33,16 @@ class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
 		const { props } = this;
 
 		return (
-			<div>
-				<h3>Pre-Game Lobby</h3>
+			<div className="center">
+				<h1 className="header">Pre-Game Lobby</h1>
 				<small>Waiting for room owner to start the game...</small>
 
-				<div style={{ paddingTop: "1vw" }}>
-					<label><strong>Players: </strong></label>
-					<ClientList clients={props.clients} />
-
-					<hr />
-
+				<div style={{ marginTop: "1em" }}>
 				{
 					props.clientID !== props.ownerID
 						? ""
 						: <button
+							className="magnet"
 							onClick={() => this.clickStartGame ()}
 							disabled={this.state.startGameClicked}
 						>

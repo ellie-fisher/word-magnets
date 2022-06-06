@@ -38,3 +38,8 @@ packetManager.on (PacketType.Data, PacketCommand.PhaseData, ( packet: Packet ) =
 {
 	store.dispatch (RoomActions.phaseData (packet.body));
 });
+
+packetManager.on (PacketType.Data, PacketCommand.KickClient, ( packet: Packet ) =>
+{
+	store.dispatch (RoomActions.kickClient (packet.body));
+});

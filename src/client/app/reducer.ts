@@ -65,7 +65,7 @@ const appReducer = ( state: AppState = initialState, action: Action ) =>
 		{
 			return {
 				...state,
-				view: AppView.RoomDestroyed,
+				view: AppView.Message,
 			};
 		}
 

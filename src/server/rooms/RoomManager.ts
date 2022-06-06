@@ -71,6 +71,18 @@ class _RoomManager extends ObjectManager<Room>
 		this.get (roomID).leave (client);
 	}
 
+	kick ( initiator: Client, target: Client ): RoomError
+	{
+		const { roomID } = initiator;
+
+		if ( !this.has (roomID) )
+		{
+			return RoomError.NotFound;
+		}
+
+		return this.get (roomID).kick (initiator, target);
+	}
+
 	getCreateErrorMessage ( error: ObjectCreateError ): string
 	{
 		const { maxObjects } = this;

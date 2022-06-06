@@ -17,6 +17,12 @@ interface MainMenuState
 		clientInfo: IClientInfoFields;
 	};
 
+	message:
+	{
+		title: string;
+		body: string;
+	};
+
 	tab: MainMenuTab;
 };
 
@@ -28,6 +34,12 @@ const initialState =
 		clientInfo: initializeState<IClientInfoFields> (clientInfoFields),
 	},
 
+	message:
+	{
+		title: "",
+		body: "",
+	},
+
 	tab: MainMenuTab.CreateRoom,
 };
 
@@ -35,6 +47,14 @@ const mainMenuReducer = ( state: MainMenuState = initialState, action: Action ) 
 {
 	switch ( action.type )
 	{
+		case "mainMenu/setMessage":
+		{
+			return {
+				...state,
+				message: action.payload,
+			};
+		}
+
 		case "mainMenu/setField":
 		{
 			const { type, key } = action.payload;
@@ -67,7 +87,10 @@ const mainMenuReducer = ( state: MainMenuState = initialState, action: Action ) 
 
 		case "mainMenu/selectTab":
 		{
-			return { ...state, tab: action.payload };
+			return {
+				...state,
+				tab: action.payload,
+			};
 		}
 
 		default:

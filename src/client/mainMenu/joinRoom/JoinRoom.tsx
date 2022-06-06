@@ -12,8 +12,9 @@ import { AnyObject } from "../../../common/util/types";
 import "./packetHandlers";
 
 type JoinRoomProps = AnyObject;
+type JoinRoomLocalState = AnyObject;
 
-class JoinRoom extends Component<JoinRoomProps, AnyObject>
+class JoinRoom extends Component<JoinRoomProps, JoinRoomLocalState>
 {
 	constructor ( props )
 	{
@@ -28,39 +29,54 @@ class JoinRoom extends Component<JoinRoomProps, AnyObject>
 
 	setRoomID ( roomID: string )
 	{
-		this.setState ({ roomID });
+		this.setState ({ roomID: roomID.toUpperCase () });
 	}
 
 	render ()
 	{
-		const { props } = this;
+		const { props, state } = this;
+
+		const roomIDFields =
+		{
+			roomID:
+			{
+				type: "string",
+				displayName: "Room ID",
+				value: state.roomID,
+			},
+		};
 
 		return (
 			<div>
-				Room ID:
+				<div className="center">
+					<Fields
+						keyPrefix="JoinRoom-roomID-field"
+						fields={roomIDFields}
+						error={[]}
+						onChange={newValue => this.setRoomID (newValue)}
+					/>
 
-				<input
-					type="text"
-					value={this.state.roomID}
-					onChange={event => this.setRoomID (event.target.value)}
-				/>
+					<Fields
+						keyPrefix="JoinRoom-clientInfo-field"
+						fields={props.info.clientInfo}
+						error={Array.isArray (props.error) ? props.error : []}
+						onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
+					/>
 
-				<br />
+					<div style={{ float: "left", width: "100%", textAlign: "left" }}>
+						<strong className="error-message">
+							{typeof props.error === "string" ? props.error : ""}
+						</strong>
+					</div>
 
-				<Fields
-					keyPrefix="JoinRoom-clientInfo-field"
-					fields={props.info.clientInfo}
-					error={props.error}
-					onChange={( newValue, key, field ) => props.setField ("clientInfo", key, newValue)}
-				/>
-
-				{props.error !== "" ? <strong>{props.error}</strong> : ""}
-
-				<hr />
-
-				<button onClick={() => props.joinRoom (this.state.roomID)}>
-					Join
-				</button>
+					<button
+						style={{ float: "left" }}
+						className="magnet"
+						onClick={() => props.joinRoom (this.state.roomID)}
+					>
+						Join Room
+					</button>
+				</div>
 			</div>
 		);
 	}

@@ -111,6 +111,34 @@ class Room implements IRoom
 		}
 	}
 
+	kick ( initiator: Client, target: Client ): RoomError
+	{
+		if ( !this.clients.hasClient (initiator.id) )
+		{
+			return RoomError.NotInRoom;
+		}
+
+		if ( !this.clients.hasClient (target.id) )
+		{
+			return RoomError.ClientNotFound;
+		}
+
+		if ( !this.clients.isOwner (initiator) )
+		{
+			return RoomError.NotOwner;
+		}
+
+		if ( this.clients.isOwner (target) )
+		{
+			return RoomError.KickOwner;
+		}
+
+		this.sendDataPacket (PacketCommand.KickClient, target.id);
+		this.leave (target);
+
+		return RoomError.Ok;
+	}
+
 	nextPhase ()
 	{
 		switch ( this.phase.type )

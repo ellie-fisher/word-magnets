@@ -4,7 +4,7 @@ enum AppView
 	Error,
 	MainMenu,
 	Room,
-	RoomDestroyed,
+	Message,
 };
 
 

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import RoomActions from "./general/actionCreators";
+import Topbar from "./Topbar";
+import ClientList from "./ClientList";
 import LobbyPhase from "./lobby/LobbyPhase";
 import CreatePhase from "./create/CreatePhase";
 import VotePhase from "./vote/VotePhase";
@@ -21,13 +22,11 @@ class Room extends Component<RoomProps>
 	render ()
 	{
 		const { props } = this;
-		const { info } = props;
-
-		const headerStyle = { padding: "1vw" };
+		const { phase, clients } = props;
 
 		let view;
 
-		switch ( props.phase.type )
+		switch ( phase.type )
 		{
 			case RoomPhaseType.Lobby:
 			{
@@ -61,29 +60,19 @@ class Room extends Component<RoomProps>
 
 			default:
 			{
-				view = <div>{`Unknown/Unhandled room phase \`${props.phase}\``}</div>;
+				view = <div>{`Unknown/Unhandled room phase \`${phase}\``}</div>;
 				break;
 			}
 		}
 
 		return (
 			<div>
-				<button onClick={() => props.clickBack ()}>{"<< Leave Room"}</button>
+				<Topbar />
+				<ClientList />
 
-				<span style={headerStyle}>Time Left: {info.timeLeft}</span>
-				<span style={headerStyle}>Round: {info.currentRound} of {info.maxRounds}</span>
-
-				<span style={headerStyle}>
-					<strong>ID: </strong>
-
-					<span style={{ fontFamily: "monospace", fontSize: "1vw" }}>
-						{info.id}
-					</span>
-				</span>
-
-				<hr />
-
-				{view}
+				<div className="room">
+					{view}
+				</div>
 			</div>
 		);
 	}
@@ -92,20 +81,10 @@ class Room extends Component<RoomProps>
 const mapStateToProps = state =>
 {
 	return {
-		info: state.room.general.info,
 		phase: state.room.general.phase,
-	};
-};
-
-const mapDispatchToProps = dispatch =>
-{
-	return {
-		clickBack ()
-		{
-			dispatch (RoomActions.leaveRoom ());
-		},
+		clients: state.room.general.clients,
 	};
 };
 
 
-export default connect (mapStateToProps, mapDispatchToProps) (Room);
+export default connect (mapStateToProps) (Room);

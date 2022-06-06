@@ -45,7 +45,7 @@ class CreateRoom extends Component<CreateRoomProps>
 		}
 
 		return (
-			<div>
+			<div className="center">
 				<Fields
 					keyPrefix="CreateRoom-roomInfo-field"
 					fields={props.info.roomInfo}
@@ -62,7 +62,9 @@ class CreateRoom extends Component<CreateRoomProps>
 
 				{errorWhich === "all" ? <strong>{errorData}</strong> : ""}
 
-				<button onClick={props.createRoom}>Create Room</button>
+				<button style={{ float: "left" }} className="magnet" onClick={props.createRoom}>
+					Create Room
+				</button>
 			</div>
 		);
 	}

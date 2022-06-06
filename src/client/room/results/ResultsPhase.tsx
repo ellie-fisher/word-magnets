@@ -29,10 +29,10 @@ class ResultsPhase extends Component<ResultsPhaseProps, AnyObject>
 		rows.sort (( a, b ) => b[1] - a[1]);
 
 		return (
-			<div>
+			<div style={{ width: "100%" }} className="center">
 			{
 				rows.length <= 0
-					? "No results to show!"
+					? "No sentences were created."
 					: <Table
 						columns={["Author", "Votes", "Sentence"]}
 						rows={rows}

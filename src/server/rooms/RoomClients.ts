@@ -113,20 +113,20 @@ class RoomClients
 
 	removeClient ( id: string ): boolean
 	{
-		if ( this.hasClient (id) )
+		if ( !this.hasClient (id) )
 		{
-			const client = this.getClient (id);
-			const { name } = client;
-
-			client.handleLeaveRoom ();
-
-			this._clients.delete (id);
-			this._names.delete (name.toLowerCase ());
-
-			return true;
+			return false;
 		}
 
-		return false;
+		const client = this.getClient (id);
+		const { name } = client;
+
+		client.handleLeaveRoom ();
+
+		this._clients.delete (id);
+		this._names.delete (name.toLowerCase ());
+
+		return true;
 	}
 
 	clearClients ()
