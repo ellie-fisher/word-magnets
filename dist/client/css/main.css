@@ -263,6 +263,13 @@ td.dashed.last, th.dashed.last
 	border-right: none;
 }
 
+tr.dashed.selected
+{
+	background: rgba(0, 0, 0, 0.2);
+	border-color: #FFBB88;
+	color: #FFBB88;
+}
+
 .orange
 {
 	color: #FFBB88 !important;

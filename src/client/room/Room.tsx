@@ -70,7 +70,7 @@ class Room extends Component<RoomProps>
 				<Topbar />
 				<ClientList />
 
-				<div className="room full-size">
+				<div className="room">
 					{view}
 				</div>
 			</div>

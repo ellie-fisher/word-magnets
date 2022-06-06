@@ -62,7 +62,7 @@ class App extends Component<AppProps>
 			}
 		}
 
-		return <div>{view}</div>;
+		return view;
 	}
 }
 

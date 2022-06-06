@@ -6,7 +6,7 @@ type TableProps = AnyObject;
 
 const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 {
-	const { columns = [], rows = [], selected = -1, onClick = () => {} } = props;
+	const { columns = [], rows = [], selected = -1, onClick = null } = props;
 
 	return (
 		<table style={{ width: "100%" }} className="keep-white-space">
@@ -28,16 +28,29 @@ const Table: FC<TableProps> = ( props: TableProps ): ReactElement =>
 					const style: AnyObject = {};
 					const isSelected = rowIndex === selected;
 
+					let classes = "dashed";
+
+					if ( rowIndex === rows.length - 1 )
+					{
+						classes += " last";
+					}
+
 					if ( isSelected )
 					{
-						style.backgroundColor = "#61636B";
+						classes += " selected"
+					}
+
+					if ( typeof onClick === "function" )
+					{
+						style.cursor = "pointer";
 					}
 
 					return (
 						<tr
 							key={`row-${rowIndex}-${isSelected}`}
 							style={style}
-							className={`dashed ${rowIndex === rows.length - 1 ? "last" : ""}`}
+							className={classes}
+							onClick={() => onClick (rowIndex)}
 						>
 						{
 							cols.map (( col, colIndex ) =>
