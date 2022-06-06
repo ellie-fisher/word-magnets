@@ -122,6 +122,11 @@ tr
 	color: #FFFF99;
 }
 
+.topbar-item
+{
+	padding: 1em;
+}
+
 .room
 {
 	padding: 1em;
@@ -143,9 +148,9 @@ input[type=text]
 	outline: none;
 }
 
-button:disabled
+button:disabled, button.disabled
 {
-	cursor: not-allowed;
+	cursor: not-allowed !important;
 }
 
 th.field
@@ -216,6 +221,11 @@ th.field
 	color: #FFFF99;
 }
 
+.dashed.btn.disabled, .dashed.btn:disabled
+{
+	background: rgba(64, 64, 64, 0.8);
+}
+
 .dashed.padded
 {
 	padding: 0.1em;
@@ -227,6 +237,11 @@ th.field
 {
 	margin-top: 0.3em;
 	margin-bottom: 0.3em;
+}
+
+.dashed:disabled, .dashed.disabled
+{
+	cursor: not-allowed;
 }
 
 tr.dashed
@@ -278,6 +293,16 @@ tr.dashed.selected
 .dashed.orange
 {
 	border-color: #FFBB88 !important;
+}
+
+.orange:disabled, .orange.disabled
+{
+	color: #DEC2AD !important;
+}
+
+.dashed.orange:disabled, .dashed.orange.disabled
+{
+	border-color: #DEC2AD !important;
 }
 
 .header
