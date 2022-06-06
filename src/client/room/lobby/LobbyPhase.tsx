@@ -8,8 +8,9 @@ import { AnyObject } from "../../../common/util/types";
 
 
 type LobbyPhaseProps = AnyObject;
+type LobbyPhaseLocalState = AnyObject;
 
-class LobbyPhase extends Component<LobbyPhaseProps, AnyObject>
+class LobbyPhase extends Component<LobbyPhaseProps, LobbyPhaseLocalState>
 {
 	constructor ( props )
 	{

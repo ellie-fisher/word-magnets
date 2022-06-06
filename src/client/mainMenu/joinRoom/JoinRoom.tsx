@@ -12,8 +12,9 @@ import { AnyObject } from "../../../common/util/types";
 import "./packetHandlers";
 
 type JoinRoomProps = AnyObject;
+type JoinRoomLocalState = AnyObject;
 
-class JoinRoom extends Component<JoinRoomProps, AnyObject>
+class JoinRoom extends Component<JoinRoomProps, JoinRoomLocalState>
 {
 	constructor ( props )
 	{
