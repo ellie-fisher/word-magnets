@@ -1,6 +1,8 @@
 const path = require ("path");
 const webpack = require ("webpack");
 
+const TerserPlugin = require ("terser-webpack-plugin");
+
 
 const CLIENT_DIR = path.resolve (__dirname, "src/client");
 const COMMON_DIR = path.resolve (__dirname, "src/common");
@@ -11,11 +13,13 @@ module.exports = ( env, argv ) =>
 	const mode = argv.mode || "development";
 	const isDev = mode === "development";
 
+	console.log (`Running Webpack in '${mode}' mode`);
+
 	return {
 		mode,
 
 		entry: `${CLIENT_DIR}/main.tsx`,
-		devtool: "inline-source-map",
+		devtool: isDev ? "inline-source-map" : undefined,
 
 		module:
 		{
@@ -32,6 +36,22 @@ module.exports = ( env, argv ) =>
 		resolve:
 		{
 			extensions: [".ts", ".js", ".tsx", ".jsx"],
+		},
+
+		optimization:
+		{
+			minimize: !isDev,
+			minimizer:
+			[
+				new TerserPlugin (
+				{
+					terserOptions:
+					{
+						compress: true,
+						sourceMap: false,
+					},
+				}),
+			],
 		},
 
 		watchOptions:
