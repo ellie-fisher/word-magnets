@@ -9,7 +9,7 @@ _Word Magnets_ is a party game where players are given a random selection of wor
 1. Clone the repo to your local machine.
 2. Run `npm install` in the `word-magnets` folder. This will install the dependencies.
 3. Run `npm run build` in the `word-magnets` folder. This will build the Webpack bundle.
-4. Run `npm start` in the `word-magnets` folder. This will start a server on port `3000`. To change the port, edit `src/server/config/serverConfig.ts`.
+4. Run `npm start` in the `word-magnets` folder. This will start a server on port `3000` and a WebSocket server on port `8080`. To change the server port, edit `src/server/config/serverConfig.ts`. To change the WebSocket port, edit `src/common/config/socketConfig.ts`.
 5. Open `localhost:3000` (or whichever port you set it to) and play the game!
 
 ## Contributing

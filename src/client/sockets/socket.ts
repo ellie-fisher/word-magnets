@@ -11,7 +11,8 @@ import { APP_ID, APP_VER } from "../../common/config/appInfo";
 
 
 const socket = new WebSocket (
-	`${socketConfig.client.url}:${socketConfig.port}?appID=${APP_ID}&appVersion=${APP_VER}`
+	window.location.origin.indexOf ("https:") === 0 ? "wss://" : "ws://"
+	+ `${window.location.hostname}:${socketConfig.port}?appID=${APP_ID}&appVersion=${APP_VER}`
 );
 
 socket.onopen = function ()
