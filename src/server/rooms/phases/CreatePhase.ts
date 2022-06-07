@@ -63,7 +63,8 @@ class CreatePhase extends RoomPhase
 			return;
 		}
 
-		const sentence = applyFilter (validation[1] as string, slurFilter);
+		// FIXME: Slur filter temporarily disabled until I write new ones that don't hang the server.
+		const sentence = applyFilter (validation[1] as string, []/*slurFilter*/);
 
 		this._room.sentences.addSentence ({ value: sentence, votes: 0 }, client);
 		// FIXME: Remove `sentence` since it's just for debug purposes.
