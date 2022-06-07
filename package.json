@@ -9,7 +9,7 @@
     "watch": "webpack --watch"
   },
   "author": "Ellie Fisher",
-  "license": "MIT",
+  "license": "",
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/got": "^9.6.12",
