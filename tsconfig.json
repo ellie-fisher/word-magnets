@@ -1,0 +1,8 @@
+{
+	"references":
+	[
+		{ "path": "./src/client" },
+		{ "path": "./src/common" },
+		{ "path": "./src/server" }
+	]
+}

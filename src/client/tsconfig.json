@@ -1,0 +1,35 @@
+{
+	"compilerOptions":
+	{
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"rootDir": "./",
+
+		"declaration": true,
+		"declarationMap": true,
+		"declarationDir": "../../dist/client/types/",
+
+		"sourceMap": true,
+		"outDir": "../../dist/client",
+
+		"removeComments": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+
+		"strict": true,
+		"noImplicitAny": true,
+		"alwaysStrict": true,
+
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"skipLibCheck": true,
+
+		"composite": true
+	},
+
+	"include": ["./**/*.ts", "./**/*.json"],
+
+	"references": [{ "path": "../common" }]
+}
