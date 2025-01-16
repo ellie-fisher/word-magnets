@@ -5,3 +5,5 @@ export const isValidIndex = (array: any[], index: number) => Array.isArray(array
 	&& Number.isInteger(index)
 	&& index >= 0
 	&& index < array.length;
+
+export type AnyObject = { [key: string]: any };
