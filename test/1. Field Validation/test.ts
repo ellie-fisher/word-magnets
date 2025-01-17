@@ -30,19 +30,19 @@ describe("Field Validation", function()
 		it("should validate `maxRounds` field properly", function()
 		{
 			deepStrictEqual(RoomFields.validate({}), [FieldValidationResult.Success]); // Not required.
-			deepStrictEqual(RoomFields.validate({ maxRounds: "5" }), [FieldValidationResult.Type, "maxRounds"]);
+			deepStrictEqual(RoomFields.validate({ maxRounds: "8" }), [FieldValidationResult.Type, "maxRounds"]);
 			deepStrictEqual(RoomFields.validate({ maxRounds: 0 }), [FieldValidationResult.Min, "maxRounds"]);
 			deepStrictEqual(RoomFields.validate({ maxRounds: 11 }), [FieldValidationResult.Max, "maxRounds"]);
-			deepStrictEqual(RoomFields.validate({ maxRounds: 5 }), [FieldValidationResult.Success]);
+			deepStrictEqual(RoomFields.validate({ maxRounds: 8 }), [FieldValidationResult.Success]);
 		});
 
 		it("should validate `maxPlayers` field properly", function()
 		{
 			deepStrictEqual(RoomFields.validate({}), [FieldValidationResult.Success]); // Not required.
-			deepStrictEqual(RoomFields.validate({ maxPlayers: "8" }), [FieldValidationResult.Type, "maxPlayers"]);
+			deepStrictEqual(RoomFields.validate({ maxPlayers: "10" }), [FieldValidationResult.Type, "maxPlayers"]);
 			deepStrictEqual(RoomFields.validate({ maxPlayers: 1 }), [FieldValidationResult.Min, "maxPlayers"]);
 			deepStrictEqual(RoomFields.validate({ maxPlayers: 11 }), [FieldValidationResult.Max, "maxPlayers"]);
-			deepStrictEqual(RoomFields.validate({ maxPlayers: 8 }), [FieldValidationResult.Success]);
+			deepStrictEqual(RoomFields.validate({ maxPlayers: 10 }), [FieldValidationResult.Success]);
 		});
 
 		it("should handle default values properly", function()

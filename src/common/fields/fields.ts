@@ -1,6 +1,18 @@
 import { FieldSet } from "./FieldSet";
 import { NumberField, StringField } from "./Field";
 
+export interface ClientFieldsValues
+{
+	name: string;
+};
+
+export interface RoomFieldsValues
+{
+	timeLimit: number;
+	maxRounds: number;
+	maxPlayers: number;
+};
+
 export const ClientFields = new FieldSet(
 {
 	name: new StringField("Name", 1, 16),
