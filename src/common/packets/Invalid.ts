@@ -7,4 +7,11 @@ export class Invalid extends Packet
 	{
 		super(PacketType.Invalid);
 	}
+
+	public pack(): [PacketType]
+	{
+		return [super.pack()[0]];
+	}
+
+	public unpack(_: [PacketType, ...any]): void {}
 };
