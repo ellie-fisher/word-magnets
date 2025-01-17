@@ -1,6 +1,6 @@
 export enum PacketType
 {
-	/* [ ] */  Invalid,
+	/* [X] */  Invalid,
 
 	// Client => Server:
 	/* [ ] */  CreateRoom,
