@@ -12,12 +12,12 @@ export abstract class Packet
 
 	public get type(): PacketType { return this.#type; }
 
-	public pack(): [PacketType, ...any]
+	public toArray(): [PacketType, ...any]
 	{
 		return [this.#type];
 	}
 
-	public unpack(data: [PacketType, ...any]): void
+	public fromArray(data: [PacketType, ...any]): void
 	{
 		this.#type = getArrayValue(data, 0, PacketType.Invalid);
 	}

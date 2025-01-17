@@ -8,10 +8,10 @@ export class Invalid extends Packet
 		super(PacketType.Invalid);
 	}
 
-	public pack(): [PacketType]
+	public toArray(): [PacketType]
 	{
-		return [super.pack()[0]];
+		return [super.toArray()[0]];
 	}
 
-	public unpack(_: [PacketType, ...any]): void {}
+	public fromArray(_: [PacketType, ...any]): void {}
 };
