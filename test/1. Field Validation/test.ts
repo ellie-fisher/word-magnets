@@ -1,6 +1,6 @@
 import { deepStrictEqual } from "node:assert";
-import { ClientFields, RoomFields } from "../src/common/fields/fields";
-import { FieldValidationResult } from "../src/common/fields/Field";
+import { ClientFields, RoomFields } from "../../src/common/fields/fields";
+import { FieldValidationResult } from "../../src/common/fields/Field";
 
 describe("Field Validation", function()
 {

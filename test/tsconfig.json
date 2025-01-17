@@ -7,7 +7,7 @@
 		"esModuleInterop": true
 	},
 
-	"include": ["./**/*.ts", "./**/*.json"],
+	"include": ["./**/test.ts", "./**/*.json"],
 
-	"references": [{ "path": "../common" }]
+	"references": [{ "path": "../src/common" }]
 }

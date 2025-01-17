@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -b && cp ./src/client/index.html ./dist/client/index.html",
     "start": "npm run build && node ./dist/server/main.js",
-    "test": "ts-mocha test/**/*.ts"
+    "test": "ts-mocha test/**/test.ts"
   },
   "author": "Ellie Fisher",
   "license": "AGPL-3.0-or-later",
