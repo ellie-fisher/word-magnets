@@ -7,6 +7,8 @@ import { Invalid } from "./Invalid";
 import { ClientID } from "./ClientID";
 import { CreateRoom } from "./CreateRoom";
 import { JoinRoom } from "./JoinRoom";
+import { LeaveRoom } from "./LeaveRoom";
+import { DestroyRoom } from "./DestroyRoom";
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
@@ -14,6 +16,8 @@ const typeToField = new Map<PacketType, PacketConverter>(
 	[PacketType.ClientID, ClientID],
 	[PacketType.CreateRoom, CreateRoom],
 	[PacketType.JoinRoom, JoinRoom],
+	[PacketType.LeaveRoom, LeaveRoom],
+	[PacketType.DestroyRoom, DestroyRoom],
 ]);
 
 export const Packet =

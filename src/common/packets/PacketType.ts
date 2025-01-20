@@ -4,9 +4,9 @@ export enum PacketType
 
 	// Client => Server:
 	/* [X] */  CreateRoom,
-	/* [ ] */  JoinRoom,
-	/* [ ] */  LeaveRoom,
-	/* [ ] */  DestroyRoom,
+	/* [X] */  JoinRoom,
+	/* [X] */  LeaveRoom,
+	/* [X] */  DestroyRoom,
 	/* [ ] */  StartGame,
 	/* [ ] */  SubmitSentence,
 	/* [ ] */  SubmitVote,

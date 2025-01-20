@@ -33,4 +33,6 @@ describe("Packet Validation", function()
 	);
 
 	validate("JoinRoom", [PacketType.JoinRoom, "room-id", "client-name"], { id: "room-id", name: "client-name" });
+	validate("LeaveRoom", [PacketType.LeaveRoom], {});
+	validate("DestroyRoom", [PacketType.DestroyRoom], {});
 });
