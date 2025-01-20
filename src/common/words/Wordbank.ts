@@ -18,7 +18,7 @@ export class Wordbank
 	{
 		let validIndex = false;
 
-		if (this.has(index))
+		if (this.hasAt(index))
 		{
 			this.words[index] = word;
 			validIndex = true;
@@ -27,9 +27,14 @@ export class Wordbank
 		return validIndex;
 	}
 
-	public has(index: number): boolean
+	public hasAt(index: number): boolean
 	{
 		return isValidIndex(this.words, index);
+	}
+
+	public hasWord(word: string): boolean
+	{
+		return this.words.includes(word);
 	}
 
 	public toJSON(): string
@@ -38,62 +43,31 @@ export class Wordbank
 	}
 };
 
-/**
- * An entry in the `NameCache` class.
- */
-export interface NameCacheEntry
-{
-	clientID: string;
-	name: string;
-	index: number;
-};
-
-/**
- * A class to help with name wordbank implementation.
- */
 export class NameCache
 {
-	#cache: NameCacheEntry[] = [];
+	#cache = new Map<string, string>();
+
+	public addOrUpdate(id: string, name: string): boolean
+	{
+		const added = !this.#cache.has(id);
+
+		this.#cache.set(id, name);
+
+		return added;
+	}
+
+	public has(id: string): boolean
+	{
+		return this.#cache.has(id);
+	}
+
+	public get(id: string): string | null
+	{
+		return this.#cache.get(id) ?? null;
+	}
 
 	public clear(): void
 	{
-		this.#cache = [];
-	}
-
-	/**
-	 * Adds or updates a client name entry.
-	 *
-	 * @returns A tuple containing the entry and whether a new entry was created.
-	 */
-	public add(clientID: string, name: string): [NameCacheEntry, boolean]
-	{
-		let entry = this.find(clientID);
-		const created = entry === null;
-
-		if (created)
-		{
-			this.#cache.push(entry = { clientID, name, index: this.#cache.length });
-		}
-		else
-		{
-			(entry as NameCacheEntry).name = name;
-		}
-
-		return [entry as NameCacheEntry, created];
-	}
-
-	public get(index: number): NameCacheEntry | null
-	{
-		return isValidIndex(this.#cache, index) ? this.#cache[index] : null;
-	}
-
-	public find(clientID: string): NameCacheEntry | null
-	{
-		return this.#cache.find(test => test.clientID === clientID) || null;
-	}
-
-	public indexOf(clientID: string): number
-	{
-		return this.#cache.findIndex(test => test.clientID === clientID);
+		this.#cache.clear();
 	}
 };
