@@ -1,17 +1,16 @@
-import { Packet } from "./Packet";
 import { PacketType } from "./PacketType";
+import { RawPacket } from "./types";
+import { AnyObject } from "../util";
 
-export class Invalid extends Packet
+export const Invalid =
 {
-	constructor()
+	fromArray(_: RawPacket): AnyObject
 	{
-		super(PacketType.Invalid);
-	}
+		return {};
+	},
 
-	public toArray(): [PacketType]
+	toArray(_: AnyObject): RawPacket
 	{
-		return [super.toArray()[0]];
+		return [PacketType.Invalid];
 	}
-
-	public fromArray(_: [PacketType, ...any]): void {}
 };

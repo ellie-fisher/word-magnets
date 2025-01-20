@@ -17,3 +17,8 @@ export const getArrayValue = (array: any[], index: number, defaultValue: any): a
 
 	return typeof defaultValue === "function" ? defaultValue() : defaultValue;
 };
+
+export const getObjectValue = (object: AnyObject, key: string, defaultValue: any): any =>
+{
+	return Object.hasOwn(object, key) ? object[key] : defaultValue;
+};

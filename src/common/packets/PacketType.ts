@@ -3,7 +3,7 @@ export enum PacketType
 	/* [X] */  Invalid,
 
 	// Client => Server:
-	/* [ ] */  CreateRoom,
+	/* [X] */  CreateRoom,
 	/* [ ] */  JoinRoom,
 	/* [ ] */  LeaveRoom,
 	/* [ ] */  DestroyRoom,
@@ -13,7 +13,7 @@ export enum PacketType
 	/* [ ] */  RemoveClient,
 
 	// Server => Client:
-	/* [ ] */  ClientID,
+	/* [X] */  ClientID,
 	/* [ ] */  CreateRoomRejected,
 	/* [ ] */  JoinRoomRejected,
 	/* [ ] */  ClientJoin,

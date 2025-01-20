@@ -1,27 +1,16 @@
-import { Packet } from "./Packet";
 import { PacketType } from "./PacketType";
-import { getArrayValue } from "../util";
+import { RawPacket } from "./types";
+import { AnyObject, getArrayValue, getObjectValue } from "../util";
 
-export class ClientID extends Packet
+export const ClientID =
 {
-	#id: string = "";
-
-	constructor()
+	fromArray(packet: RawPacket): AnyObject
 	{
-		super(PacketType.ClientID);
-	}
+		return { id: getArrayValue(packet, 1, "") };
+	},
 
-	public get id(): string { return this.#id; }
-
-	public toArray(): [PacketType, string]
+	toArray(object: AnyObject): RawPacket
 	{
-		return [this.type, this.#id];
-	}
-
-	public fromArray(data: [PacketType, ...any]): void
-	{
-		super.fromArray(data);
-
-		this.#id = getArrayValue(data, 1, "");
-	}
+		return [PacketType.ClientID, getObjectValue(object, "id", "")];
+	},
 };

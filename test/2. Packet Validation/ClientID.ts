@@ -1,16 +1,16 @@
 import { deepStrictEqual } from "node:assert";
 import { v4 as uuid } from "uuid";
-import { ClientID } from "../../src/common/packets/ClientID";
+import { Packet } from "../../src/common/packets/Packet";
 import { PacketType } from "../../src/common/packets/PacketType";
+import { RawPacket } from "../../src/common/packets/types";
 
 export function ClientIDTest()
 {
-	const packet = new ClientID();
 	const id = uuid();
+	const raw = [PacketType.ClientID, id] as RawPacket;
+	const packet = Packet.fromArray(raw);
 
-	packet.fromArray([PacketType.ClientID, id]);
-
-	deepStrictEqual(packet.toArray(), [PacketType.ClientID, id]);
-	deepStrictEqual(packet.type, PacketType.ClientID);
+	deepStrictEqual(raw, [PacketType.ClientID, id]);
+	deepStrictEqual(Packet.toArray(PacketType.ClientID, packet), [PacketType.ClientID, id]);
 	deepStrictEqual(packet.id, id);
 };

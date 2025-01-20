@@ -1,12 +1,14 @@
 import { deepStrictEqual } from "node:assert";
-import { Invalid } from "../../src/common/packets/Invalid";
+
+import { Packet } from "../../src/common/packets/Packet";
 import { PacketType } from "../../src/common/packets/PacketType";
+import { RawPacket } from "../../src/common/packets/types";
 
 export function InvalidTest()
 {
-	const packet = new Invalid();
-	const packed = packet.toArray();
+	const raw = [PacketType.Invalid] as RawPacket;
+	const packet = Packet.fromArray(raw);
 
-	deepStrictEqual(packed, [PacketType.Invalid]);
-	deepStrictEqual(packet.type, PacketType.Invalid);
+	deepStrictEqual(raw, [PacketType.Invalid]);
+	deepStrictEqual(Packet.toArray(PacketType.Invalid, packet), [PacketType.Invalid]);
 };

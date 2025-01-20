@@ -1,24 +1,28 @@
 import { PacketType } from "./PacketType";
-import { getArrayValue } from "../util";
 
-export abstract class Packet
+import { AnyObject } from "./../util";
+import { PacketConverter, RawPacket } from "./types";
+
+import { Invalid } from "./Invalid";
+import { ClientID } from "./ClientID";
+import { CreateRoom } from "./CreateRoom";
+
+const typeToField = new Map<PacketType, PacketConverter>(
+[
+	[PacketType.Invalid, Invalid],
+	[PacketType.ClientID, ClientID],
+	[PacketType.CreateRoom, CreateRoom],
+]);
+
+export const Packet =
 {
-	#type: PacketType = PacketType.Invalid;
-
-	constructor(type: PacketType)
+	fromArray(packet: RawPacket): AnyObject | null
 	{
-		this.#type = type;
-	}
+		return packet.length > 0 ? typeToField.get(packet[0])?.fromArray(packet) ?? null : null;
+	},
 
-	public get type(): PacketType { return this.#type; }
-
-	public toArray(): [PacketType, ...any]
+	toArray(type: PacketType, object: AnyObject): RawPacket | null
 	{
-		return [this.#type];
-	}
-
-	public fromArray(data: [PacketType, ...any]): void
-	{
-		this.#type = getArrayValue(data, 0, PacketType.Invalid);
-	}
+		return typeToField.get(type)?.toArray(object) ?? null;
+	},
 };
