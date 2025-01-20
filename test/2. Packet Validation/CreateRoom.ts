@@ -1,7 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 
 import { Packet } from "../../src/common/packets/Packet";
-import { CreateRoom } from "../../src/common/packets/CreateRoom";
 import { PacketType } from "../../src/common/packets/PacketType";
 import { RawPacket } from "../../src/common/packets/types";
 

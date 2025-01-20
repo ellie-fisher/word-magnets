@@ -1,5 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 import { v4 as uuid } from "uuid";
+
 import { Packet } from "../../src/common/packets/Packet";
 import { PacketType } from "../../src/common/packets/PacketType";
 import { RawPacket } from "../../src/common/packets/types";
