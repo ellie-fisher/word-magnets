@@ -6,12 +6,14 @@ import { PacketConverter, RawPacket } from "./types";
 import { Invalid } from "./Invalid";
 import { ClientID } from "./ClientID";
 import { CreateRoom } from "./CreateRoom";
+import { JoinRoom } from "./JoinRoom";
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
 	[PacketType.Invalid, Invalid],
 	[PacketType.ClientID, ClientID],
 	[PacketType.CreateRoom, CreateRoom],
+	[PacketType.JoinRoom, JoinRoom],
 ]);
 
 export const Packet =
