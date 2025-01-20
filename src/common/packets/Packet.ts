@@ -9,6 +9,7 @@ import { CreateRoom } from "./CreateRoom";
 import { JoinRoom } from "./JoinRoom";
 import { LeaveRoom } from "./LeaveRoom";
 import { DestroyRoom } from "./DestroyRoom";
+import { StartGame } from "./StartGame";
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
@@ -18,6 +19,7 @@ const typeToField = new Map<PacketType, PacketConverter>(
 	[PacketType.JoinRoom, JoinRoom],
 	[PacketType.LeaveRoom, LeaveRoom],
 	[PacketType.DestroyRoom, DestroyRoom],
+	[PacketType.StartGame, StartGame],
 ]);
 
 export const Packet =
