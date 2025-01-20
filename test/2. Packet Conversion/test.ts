@@ -1,15 +1,15 @@
 import { PacketType } from "../../src/common/packets/PacketType";
 import { RoomFields } from "../../src/common/fields/fields";
-import { validate } from "./validate";
+import { testConversion } from "./testConversion";
 
 const { fields: roomFields } = RoomFields;
 
-describe("Packet Validation", function()
+describe("Packet Conversion", function()
 {
-	validate("Invalid", [PacketType.Invalid], {});
-	validate("ClientID", [PacketType.ClientID, "test-id"], { id: "test-id" });
+	testConversion("Invalid", [PacketType.Invalid], {});
+	testConversion("ClientID", [PacketType.ClientID, "test-id"], { id: "test-id" });
 
-	validate(
+	testConversion(
 		"CreateRoom",
 		[PacketType.CreateRoom, "Room Creator", 90, 8, 10],
 		{
@@ -32,8 +32,8 @@ describe("Packet Validation", function()
 		},
 	);
 
-	validate("JoinRoom", [PacketType.JoinRoom, "room-id", "client-name"], { id: "room-id", name: "client-name" });
-	validate("LeaveRoom", [PacketType.LeaveRoom], {});
-	validate("DestroyRoom", [PacketType.DestroyRoom], {});
-	validate("StartGame", [PacketType.StartGame], {});
+	testConversion("JoinRoom", [PacketType.JoinRoom, "room-id", "client-name"], { id: "room-id", name: "client-name" });
+	testConversion("LeaveRoom", [PacketType.LeaveRoom], {});
+	testConversion("DestroyRoom", [PacketType.DestroyRoom], {});
+	testConversion("StartGame", [PacketType.StartGame], {});
 });

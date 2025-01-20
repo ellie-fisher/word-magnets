@@ -4,7 +4,7 @@ import { Packet } from "../../src/common/packets/Packet";
 import { RawPacket } from "../../src/common/packets/types";
 import { AnyObject } from "../../src/common/util";
 
-export function validate(type: string, raw: RawPacket, template: AnyObject, defaultValues: AnyObject | null = null)
+export function testConversion(type: string, raw: RawPacket, template: AnyObject, defaultValues: AnyObject | null = null)
 {
 	it(`should pack and unpack \`${type}\` packets properly`, function()
 	{
