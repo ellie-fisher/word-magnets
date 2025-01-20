@@ -22,5 +22,6 @@ export enum PacketType
 	/* [ ] */  RoomDestroyed,
 	/* [ ] */  RoomStateEnter,
 	/* [ ] */  RoomStateLeave,
+	/* [ ] */  RoomWords,
 	/* [ ] */  RoomSentences,
 };
