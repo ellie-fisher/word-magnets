@@ -12,5 +12,5 @@ export const LeaveRoom =
 	toArray(_: AnyObject): RawPacket
 	{
 		return [PacketType.LeaveRoom];
-	}
+	},
 };

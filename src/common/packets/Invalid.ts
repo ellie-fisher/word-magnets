@@ -12,5 +12,5 @@ export const Invalid =
 	toArray(_: AnyObject): RawPacket
 	{
 		return [PacketType.Invalid];
-	}
+	},
 };

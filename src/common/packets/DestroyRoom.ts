@@ -12,5 +12,5 @@ export const DestroyRoom =
 	toArray(_: AnyObject): RawPacket
 	{
 		return [PacketType.DestroyRoom];
-	}
+	},
 };

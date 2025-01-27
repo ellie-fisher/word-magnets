@@ -12,5 +12,5 @@ export const StartGame =
 	toArray(_: AnyObject): RawPacket
 	{
 		return [PacketType.StartGame];
-	}
+	},
 };
