@@ -8,7 +8,7 @@ export enum PacketType
 	/* [X] */  LeaveRoom,
 	/* [X] */  DestroyRoom,
 	/* [X] */  StartGame,
-	/* [ ] */  SubmitSentence,
+	/* [X] */  SubmitSentence,
 	/* [ ] */  SubmitVote,
 	/* [ ] */  RemoveClient,
 

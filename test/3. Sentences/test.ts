@@ -47,7 +47,7 @@ describe("Sentences", function()
 	const _ = [MISC, wordbanks[MISC].indexOf("-")];
 	const ANTI_ = [MISC, wordbanks[MISC].indexOf("anti-")];
 
-	describe("Sentence.toString()", function()
+	describe("`Sentence.toString()`", function()
 	{
 		it("should convert valid sentences to strings properly", function()
 		{
