@@ -58,4 +58,5 @@ describe("Packet Conversion", function()
 	);
 
 	testConversion("SubmitVote", [PacketType.SubmitVote, "vote-id"], { id: "vote-id" });
+	testConversion("RemoveClient", [PacketType.RemoveClient, "client-id"], { id: "client-id" });
 });

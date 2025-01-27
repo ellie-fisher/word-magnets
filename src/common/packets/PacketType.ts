@@ -10,7 +10,7 @@ export enum PacketType
 	/* [X] */  StartGame,
 	/* [X] */  SubmitSentence,
 	/* [X] */  SubmitVote,
-	/* [ ] */  RemoveClient,
+	/* [X] */  RemoveClient,
 
 	// Server => Client:
 	/* [X] */  ClientID,
