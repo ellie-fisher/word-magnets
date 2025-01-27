@@ -4,7 +4,7 @@ import { Packet } from "../../src/common/packets/Packet";
 import { RawPacket } from "../../src/common/packets/types";
 import { AnyObject } from "../../src/common/util";
 
-export function testConversion(type: string, raw: RawPacket, template: AnyObject, defaultValues: AnyObject | null = null)
+export function testConversion(type: string, raw: RawPacket, template: AnyObject, defaultValues: AnyObject | null = null, test = (...any) => {})
 {
 	it(`should pack and unpack \`${type}\` packets properly`, function()
 	{
@@ -24,5 +24,7 @@ export function testConversion(type: string, raw: RawPacket, template: AnyObject
 		{
 			deepStrictEqual(Packet.fromArray([raw[0]]), defaultValues);
 		}
+
+		test(type, raw, template, defaultValues);
 	});
 };
