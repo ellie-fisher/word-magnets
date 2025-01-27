@@ -36,4 +36,5 @@ describe("Packet Conversion", function()
 	testConversion("LeaveRoom", [PacketType.LeaveRoom], {});
 	testConversion("DestroyRoom", [PacketType.DestroyRoom], {});
 	testConversion("StartGame", [PacketType.StartGame], {});
+	testConversion("SubmitSentence", [PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3, 7], { words: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]] });
 });
