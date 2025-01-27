@@ -11,6 +11,7 @@ import { LeaveRoom } from "./LeaveRoom";
 import { DestroyRoom } from "./DestroyRoom";
 import { StartGame } from "./StartGame";
 import { SubmitSentence } from "./SubmitSentence";
+import { SubmitVote } from "./SubmitVote";
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
@@ -22,6 +23,7 @@ const typeToField = new Map<PacketType, PacketConverter>(
 	[PacketType.DestroyRoom, DestroyRoom],
 	[PacketType.StartGame, StartGame],
 	[PacketType.SubmitSentence, SubmitSentence],
+	[PacketType.SubmitVote, SubmitVote],
 ]);
 
 export const Packet =

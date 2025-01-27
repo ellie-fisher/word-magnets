@@ -1,7 +1,7 @@
 import { deepStrictEqual, equal } from "node:assert";
 
-import { PacketType } from "../../src/common/packets/PacketType";
 import { Packet } from "../../src/common/packets/Packet";
+import { PacketType } from "../../src/common/packets/PacketType";
 import { RoomFields } from "../../src/common/fields/fields";
 import { testConversion } from "./testConversion";
 
@@ -56,4 +56,6 @@ describe("Packet Conversion", function()
 			deepStrictEqual(packet, { words: [] });
 		},
 	);
+
+	testConversion("SubmitVote", [PacketType.SubmitVote, "vote-id"], { id: "vote-id" });
 });
