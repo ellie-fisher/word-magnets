@@ -16,12 +16,11 @@ export class Wordbank
 
 	public set(index: number, word: string): boolean
 	{
-		let validIndex = false;
+		const validIndex = this.hasAt(index);
 
-		if (this.hasAt(index))
+		if (validIndex)
 		{
 			this.words[index] = word;
-			validIndex = true;
 		}
 
 		return validIndex;
