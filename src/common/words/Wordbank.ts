@@ -1,4 +1,4 @@
-import { isValidIndex } from "../util.js";
+import { isValidIndex } from "../util";
 
 export class Wordbank
 {
@@ -35,6 +35,11 @@ export class Wordbank
 	public hasWord(word: string): boolean
 	{
 		return this.words.includes(word);
+	}
+
+	public indexOf(word: string): number
+	{
+		return this.words.indexOf(word);
 	}
 
 	public toJSON(): string
