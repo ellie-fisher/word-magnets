@@ -14,8 +14,8 @@ export enum PacketType
 
 	// Server => Client:
 	/* [X] */  ClientID,
-	/* [ ] */  CreateRoomRejected,
-	/* [ ] */  JoinRoomRejected,
+	/* [X] */  CreateRoomRejected,
+	/* [X] */  JoinRoomRejected,
 	/* [ ] */  ClientJoin,
 	/* [ ] */  ClientLeave,
 	/* [ ] */  RoomData,

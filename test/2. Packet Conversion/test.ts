@@ -67,4 +67,5 @@ describe("Packet Conversion", function()
 	testConversion("SubmitVote", { raw: [PacketType.SubmitVote, "vote-id"], template: { id: "vote-id" } });
 	testConversion("RemoveClient", { raw: [PacketType.RemoveClient, "client-id"], template: { id: "client-id" } });
 	testConversion("CreateRoomRejected", { raw: [PacketType.CreateRoomRejected, "Big error"], template: { message: "Big error" } });
+	testConversion("JoinRoomRejected", { raw: [PacketType.JoinRoomRejected, "Big error"], template: { message: "Big error" } });
 });
