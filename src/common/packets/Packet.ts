@@ -13,6 +13,7 @@ import { StartGame } from "./StartGame";
 import { SubmitSentence } from "./SubmitSentence";
 import { SubmitVote } from "./SubmitVote";
 import { RemoveClient } from "./RemoveClient";
+import { CreateRoomRejected } from "./CreateRoomRejected";
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
@@ -26,6 +27,7 @@ const typeToField = new Map<PacketType, PacketConverter>(
 	[PacketType.SubmitSentence, SubmitSentence],
 	[PacketType.SubmitVote, SubmitVote],
 	[PacketType.RemoveClient, RemoveClient],
+	[PacketType.CreateRoomRejected, CreateRoomRejected],
 ]);
 
 export const Packet =
