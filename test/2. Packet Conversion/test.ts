@@ -9,54 +9,61 @@ const { fields: roomFields } = RoomFields;
 
 describe("Packet Conversion", function()
 {
-	testConversion("Invalid", [PacketType.Invalid], {});
-	testConversion("ClientID", [PacketType.ClientID, "test-id"], { id: "test-id" });
+	testConversion("Invalid", { raw: [PacketType.Invalid], template: {} });
+	testConversion("ClientID", { raw: [PacketType.ClientID, "test-id"], template: { id: "test-id" } });
 
 	testConversion(
 		"CreateRoom",
-		[PacketType.CreateRoom, "Room Creator", 90, 8, 10],
 		{
-			clientData: { name: "Room Creator" },
-			roomData:
+			raw: [PacketType.CreateRoom, "Room Creator", 90, 8, 10],
+			template:
 			{
-				timeLimit: 90,
-				maxRounds: 8,
-				maxPlayers: 10,
+				clientData: { name: "Room Creator" },
+				roomData:
+				{
+					timeLimit: 90,
+					maxRounds: 8,
+					maxPlayers: 10,
+				},
 			},
-		},
-		{
-			clientData: { name: "" },
-			roomData:
+
+			defaultValues:
 			{
-				timeLimit: roomFields.timeLimit.default,
-				maxRounds: roomFields.maxRounds.default,
-				maxPlayers: roomFields.maxPlayers.default,
+				clientData: { name: "" },
+				roomData:
+				{
+					timeLimit: roomFields.timeLimit.default,
+					maxRounds: roomFields.maxRounds.default,
+					maxPlayers: roomFields.maxPlayers.default,
+				},
 			},
 		},
 	);
 
-	testConversion("JoinRoom", [PacketType.JoinRoom, "room-id", "client-name"], { id: "room-id", name: "client-name" });
-	testConversion("LeaveRoom", [PacketType.LeaveRoom], {});
-	testConversion("DestroyRoom", [PacketType.DestroyRoom], {});
-	testConversion("StartGame", [PacketType.StartGame], {});
+	testConversion("JoinRoom", { raw: [PacketType.JoinRoom, "room-id", "client-name"], template: { id: "room-id", name: "client-name" } });
+	testConversion("LeaveRoom", { raw: [PacketType.LeaveRoom], template: {} });
+	testConversion("DestroyRoom", { raw: [PacketType.DestroyRoom], template: {} });
+	testConversion("StartGame", { raw: [PacketType.StartGame], template: {} });
 
 	testConversion(
 		"SubmitSentence",
-		[PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3, 7],
-		{ words: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]] },
-		null,
-		function()
 		{
-			/* Check for invalid flattened sentence array. */
+			raw: [PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3, 7],
+			template: { words: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]] },
+			defaultValues: null,
+			test: function()
+			{
+				/* Check for invalid flattened sentence array. */
 
-			const packet = Packet.fromArray([PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3]);
+				const packet = Packet.fromArray([PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3]);
 
-			equal(Object.hasOwn(packet, "words"), true);
-			equal(Array.isArray(packet.words), true);
-			deepStrictEqual(packet, { words: [] });
+				equal(Object.hasOwn(packet, "words"), true);
+				equal(Array.isArray(packet.words), true);
+				deepStrictEqual(packet, { words: [] });
+			},
 		},
 	);
 
-	testConversion("SubmitVote", [PacketType.SubmitVote, "vote-id"], { id: "vote-id" });
-	testConversion("RemoveClient", [PacketType.RemoveClient, "client-id"], { id: "client-id" });
+	testConversion("SubmitVote", { raw: [PacketType.SubmitVote, "vote-id"], template: { id: "vote-id" } });
+	testConversion("RemoveClient", { raw: [PacketType.RemoveClient, "client-id"], template: { id: "client-id" } });
 });
