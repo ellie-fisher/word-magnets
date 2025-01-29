@@ -3,28 +3,30 @@ import { PacketType } from "./PacketType";
 import { AnyObject } from "./../util";
 import { PacketConverter, RawPacket } from "./types";
 
-import { Invalid } from "./Invalid";
 import { ClientID } from "./ClientID";
 import { CreateRoom } from "./CreateRoom";
 import { JoinRoom } from "./JoinRoom";
-import { LeaveRoom } from "./LeaveRoom";
-import { DestroyRoom } from "./DestroyRoom";
-import { StartGame } from "./StartGame";
 import { SubmitSentence } from "./SubmitSentence";
 import { SubmitVote } from "./SubmitVote";
 import { RemoveClient } from "./RemoveClient";
 import { CreateRoomRejected } from "./CreateRoomRejected";
 import { JoinRoomRejected } from "./JoinRoomRejected";
 
+const SimplePacket = (type: PacketType) =>
+({
+	fromArray: (_: RawPacket): AnyObject => ({}),
+	toArray: (_: AnyObject): RawPacket => [type],
+});
+
 const typeToField = new Map<PacketType, PacketConverter>(
 [
-	[PacketType.Invalid, Invalid],
+	[PacketType.Invalid, SimplePacket(PacketType.Invalid)],
 	[PacketType.ClientID, ClientID],
 	[PacketType.CreateRoom, CreateRoom],
 	[PacketType.JoinRoom, JoinRoom],
-	[PacketType.LeaveRoom, LeaveRoom],
-	[PacketType.DestroyRoom, DestroyRoom],
-	[PacketType.StartGame, StartGame],
+	[PacketType.LeaveRoom, SimplePacket(PacketType.LeaveRoom)],
+	[PacketType.DestroyRoom, SimplePacket(PacketType.DestroyRoom)],
+	[PacketType.StartGame, SimplePacket(PacketType.StartGame)],
 	[PacketType.SubmitSentence, SubmitSentence],
 	[PacketType.SubmitVote, SubmitVote],
 	[PacketType.RemoveClient, RemoveClient],
