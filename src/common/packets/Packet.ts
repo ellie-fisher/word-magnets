@@ -58,16 +58,19 @@ const typeToField = new Map<PacketType, PacketConverter>(
 [
 	SimplePacket(PacketType.Invalid),
 	SimplePacket(PacketType.ClientID, ["id", ""]),
-	AdvancedPacket(PacketType.CreateRoom, CreateRoom),
 	SimplePacket(PacketType.JoinRoom, ["id", ""], ["name", ""]),
 	SimplePacket(PacketType.LeaveRoom),
 	SimplePacket(PacketType.DestroyRoom),
 	SimplePacket(PacketType.StartGame),
-	AdvancedPacket(PacketType.SubmitSentence, SubmitSentence),
 	SimplePacket(PacketType.SubmitVote, ["id", ""]),
 	SimplePacket(PacketType.RemoveClient, ["id", ""]),
 	SimplePacket(PacketType.CreateRoomRejected, ["message", DEFAULT_CREATE_ROOM_ERROR]),
 	SimplePacket(PacketType.JoinRoomRejected, ["message", DEFAULT_JOIN_ROOM_ERROR]),
+	SimplePacket(PacketType.ClientJoin, ["id", ""]),
+	SimplePacket(PacketType.ClientLeave, ["id", ""]),
+
+	AdvancedPacket(PacketType.CreateRoom, CreateRoom),
+	AdvancedPacket(PacketType.SubmitSentence, SubmitSentence),
 ]);
 
 export const Packet =
