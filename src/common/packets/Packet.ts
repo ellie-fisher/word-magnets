@@ -51,7 +51,7 @@ const SimplePacket = (type: PacketType, ...keyDefaultValuePairs: [string, any][]
 	];
 };
 
-// Simple wrapper function just to have consistency.
+// Wrapper function just to have consistency.
 const AdvancedPacket = (type: PacketType, converter: PacketConverter): [PacketType, PacketConverter] => [type, converter];
 
 const typeToField = new Map<PacketType, PacketConverter>(
