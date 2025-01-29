@@ -68,6 +68,7 @@ const typeToField = new Map<PacketType, PacketConverter>(
 	SimplePacket(PacketType.JoinRoomRejected, ["message", DEFAULT_JOIN_ROOM_ERROR]),
 	SimplePacket(PacketType.ClientJoin, ["id", ""]),
 	SimplePacket(PacketType.ClientLeave, ["id", ""]),
+	SimplePacket(PacketType.RoomDestroyed),
 
 	AdvancedPacket(PacketType.CreateRoom, CreateRoom),
 	AdvancedPacket(PacketType.SubmitSentence, SubmitSentence),

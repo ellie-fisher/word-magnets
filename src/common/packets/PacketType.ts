@@ -19,7 +19,7 @@ export enum PacketType
 	/* [X] */  ClientJoin,
 	/* [X] */  ClientLeave,
 	/* [ ] */  RoomData,
-	/* [ ] */  RoomDestroyed,
+	/* [X] */  RoomDestroyed,
 	/* [ ] */  RoomStateEnter,
 	/* [ ] */  RoomStateLeave,
 	/* [ ] */  RoomWords,

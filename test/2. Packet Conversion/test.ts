@@ -70,4 +70,5 @@ describe("Packet Conversion", function()
 	testConversion("JoinRoomRejected", { raw: [PacketType.JoinRoomRejected, "Big error"], template: { message: "Big error" } });
 	testConversion("ClientJoin", { raw: [PacketType.ClientJoin, "client-id"], template: { id: "client-id" } });
 	testConversion("ClientLeave", { raw: [PacketType.ClientLeave, "client-id"], template: { id: "client-id" } });
+	testConversion("RoomDestroyed", { raw: [PacketType.RoomDestroyed], template: {} });
 });
