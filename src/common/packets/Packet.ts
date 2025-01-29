@@ -1,37 +1,73 @@
 import { PacketType } from "./PacketType";
 
-import { AnyObject } from "./../util";
+import { AnyObject, getArrayValue, getObjectValue } from "./../util";
 import { PacketConverter, RawPacket } from "./types";
 
-import { ClientID } from "./ClientID";
 import { CreateRoom } from "./CreateRoom";
-import { JoinRoom } from "./JoinRoom";
 import { SubmitSentence } from "./SubmitSentence";
-import { SubmitVote } from "./SubmitVote";
-import { RemoveClient } from "./RemoveClient";
-import { CreateRoomRejected } from "./CreateRoomRejected";
-import { JoinRoomRejected } from "./JoinRoomRejected";
 
-const SimplePacket = (type: PacketType) =>
-({
-	fromArray: (_: RawPacket): AnyObject => ({}),
-	toArray: (_: AnyObject): RawPacket => [type],
-});
+export const DEFAULT_CREATE_ROOM_ERROR = "Could not create room.";
+export const DEFAULT_JOIN_ROOM_ERROR = "Could not join room.";
+
+/**
+ * Overengineered function for creating packet converters that have simple structures.
+ */
+const SimplePacket = (type: PacketType, ...keyDefaultValuePairs: [string, any][]): [PacketType, PacketConverter] =>
+{
+	const { length } = keyDefaultValuePairs;
+
+	return [
+		type,
+		length <= 0
+			? {
+				fromArray: (_: RawPacket): AnyObject => ({}),
+				toArray: (_: AnyObject): RawPacket => [type],
+			}
+			: {
+				fromArray: (raw: RawPacket): AnyObject =>
+				{
+					const packet: AnyObject = {};
+
+					for (let i = 0; i < length; i++)
+					{
+						packet[keyDefaultValuePairs[i][0]] = getArrayValue(raw, i + 1, keyDefaultValuePairs[i][1]);
+					}
+
+					return packet;
+				},
+
+				toArray: (packet: AnyObject): RawPacket =>
+				{
+					const raw: RawPacket = [type];
+
+					for (let i = 0; i < length; i++)
+					{
+						raw.push(getObjectValue(packet, keyDefaultValuePairs[i][0], keyDefaultValuePairs[i][1]));
+					}
+
+					return raw;
+				},
+			},
+	];
+};
+
+// Simple wrapper function just to have consistency.
+const AdvancedPacket = (type: PacketType, converter: PacketConverter): [PacketType, PacketConverter] => [type, converter];
 
 const typeToField = new Map<PacketType, PacketConverter>(
 [
-	[PacketType.Invalid, SimplePacket(PacketType.Invalid)],
-	[PacketType.ClientID, ClientID],
-	[PacketType.CreateRoom, CreateRoom],
-	[PacketType.JoinRoom, JoinRoom],
-	[PacketType.LeaveRoom, SimplePacket(PacketType.LeaveRoom)],
-	[PacketType.DestroyRoom, SimplePacket(PacketType.DestroyRoom)],
-	[PacketType.StartGame, SimplePacket(PacketType.StartGame)],
-	[PacketType.SubmitSentence, SubmitSentence],
-	[PacketType.SubmitVote, SubmitVote],
-	[PacketType.RemoveClient, RemoveClient],
-	[PacketType.CreateRoomRejected, CreateRoomRejected],
-	[PacketType.JoinRoomRejected, JoinRoomRejected],
+	SimplePacket(PacketType.Invalid),
+	SimplePacket(PacketType.ClientID, ["id", ""]),
+	AdvancedPacket(PacketType.CreateRoom, CreateRoom),
+	SimplePacket(PacketType.JoinRoom, ["id", ""], ["name", ""]),
+	SimplePacket(PacketType.LeaveRoom),
+	SimplePacket(PacketType.DestroyRoom),
+	SimplePacket(PacketType.StartGame),
+	AdvancedPacket(PacketType.SubmitSentence, SubmitSentence),
+	SimplePacket(PacketType.SubmitVote, ["id", ""]),
+	SimplePacket(PacketType.RemoveClient, ["id", ""]),
+	SimplePacket(PacketType.CreateRoomRejected, ["message", DEFAULT_CREATE_ROOM_ERROR]),
+	SimplePacket(PacketType.JoinRoomRejected, ["message", DEFAULT_JOIN_ROOM_ERROR]),
 ]);
 
 export const Packet =
