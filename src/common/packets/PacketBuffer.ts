@@ -49,16 +49,16 @@ export class PacketBuffer
 		}
 	}
 
-	#array: Uint8Array;
+	#array: Uint8ClampedArray;
 	#index: number;
 
 	constructor(size: number)
 	{
-		this.#array = new Uint8Array(size);
+		this.#array = new Uint8ClampedArray(size);
 		this.#index = 0;
 	}
 
-	public get array(): Uint8Array { return this.#array; }
+	public get array(): Uint8ClampedArray { return this.#array; }
 	public get buffer(): ArrayBuffer { return this.#array.buffer as ArrayBuffer; }
 	public get index(): number { return this.#index; }
 	public get length(): number { return this.#array.length; }
