@@ -1,4 +1,3 @@
 {
-	"include": ["./**/test.ts", "./**/*.json"],
-	"references": [{ "path": "../src/common" }]
+	"include": ["./**/test.ts", "./**/*.json", "../src/common/**/*.ts"]
 }
