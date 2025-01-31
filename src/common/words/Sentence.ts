@@ -1,44 +1,46 @@
 import { isValidIndex } from "../util";
 import { Wordbank } from "./Wordbank";
 
-export const Sentence =
+export const Sentence = Object.freeze(
 {
-	toString(words: [number, number][], wordbanks: Wordbank[], maxLength: number): string
+	MAX_LENGTH: 100,
+
+	toString(words: [number, number][], wordbanks: Wordbank[]): string
 	{
 		let str = "";
 
 		const { length } = words;
 
-		let prevWord = "";
-
-		for (let i = 0; i < length; i++)
+		if (length <= Sentence.MAX_LENGTH)
 		{
-			const [bankIndex, wordIndex] = words[i];
+			let prevWord = "";
 
-			if (!isValidIndex(wordbanks, bankIndex) || !wordbanks[bankIndex].hasAt(wordIndex))
+			for (let i = 0; i < length; i++)
 			{
-				return "";
+				const [bankIndex, wordIndex] = words[i];
+
+				if (!isValidIndex(wordbanks, bankIndex) || !wordbanks[bankIndex].hasAt(wordIndex))
+				{
+					return "";
+				}
+
+				const word = wordbanks[bankIndex].words[wordIndex];
+				const startsWithHyphen = word.at(0) === "-";
+				const skipSpace = prevWord.at(-1) === "-" || startsWithHyphen;
+				const sliced = word.slice(Number(startsWithHyphen), word.length - Number(word.at(-1) === "-"));
+
+				if (!skipSpace && word !== " ")
+				{
+					str += " ";
+				}
+
+				str += sliced;
+				prevWord = word;
 			}
-
-			const word = wordbanks[bankIndex].words[wordIndex];
-			const startsWithHyphen = word.at(0) === "-";
-			const skipSpace = prevWord.at(-1) === "-" || startsWithHyphen;
-			const sliced = word.slice(Number(startsWithHyphen), word.length - Number(word.at(-1) === "-"));
-
-			if (!skipSpace && word !== " ")
-			{
-				str += " ";
-			}
-
-			if (str.length + sliced.length > maxLength)
-			{
-				return "";
-			}
-
-			str += sliced;
-			prevWord = word;
 		}
 
-		return str.trim();
+		str = str.trim();
+
+		return str.length <= Sentence.MAX_LENGTH ? str : "";
 	},
-};
+});
