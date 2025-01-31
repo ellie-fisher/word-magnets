@@ -5,16 +5,7 @@
 		"module": "esnext",
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"rootDir": "./",
 
-		"declaration": true,
-		"declarationMap": true,
-		"declarationDir": "../../dist/common/types/",
-
-		"sourceMap": true,
-		"outDir": "../../dist/common",
-
-		"removeComments": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 
@@ -24,12 +15,8 @@
 
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"skipLibCheck": true,
-
-		"composite": true
+		"skipLibCheck": true
 	},
 
-	"include": ["./**/*.ts", "./**/*.json"],
-
-	"references": []
+	"include": ["./**/*.ts", "./**/*.json"]
 }
