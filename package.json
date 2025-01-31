@@ -5,6 +5,7 @@
   "scripts": {
     "build": "rm -rf ./dist && npx tsc -b && cp ./src/client/index.html ./dist/client/index.html",
     "start": "npm run build && node ./dist/server/main.js",
+    "server": "npx tsc --project ./src/server/tsconfig.json && tsx ./src/server/main.ts",
     "test": "ts-mocha -p ./test/tsconfig.json test/**/test.ts"
   },
   "author": "Ellie Fisher",
@@ -22,6 +23,7 @@
     "@types/node": "^22.10.5",
     "@types/ws": "^8.5.13",
     "ts-mocha": "^10.0.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }
