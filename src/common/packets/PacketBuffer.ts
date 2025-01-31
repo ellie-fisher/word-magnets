@@ -58,6 +58,7 @@ export class PacketBuffer
 		this.#index = 0;
 	}
 
+	public get array(): Uint8Array { return this.#array; }
 	public get buffer(): ArrayBuffer { return this.#array.buffer as ArrayBuffer; }
 	public get index(): number { return this.#index; }
 	public get length(): number { return this.#array.length; }
