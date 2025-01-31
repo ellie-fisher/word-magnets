@@ -18,7 +18,7 @@ export enum PacketType
 	/* [X] */  JoinRoomRejected,
 	/* [X] */  ClientJoin,
 	/* [X] */  ClientLeave,
-	/* [ ] */  RoomData,
+	/* [X] */  RoomData,
 	/* [X] */  RoomDestroyed,
 	/* [ ] */  RoomStateEnter,
 	/* [ ] */  RoomStateLeave,

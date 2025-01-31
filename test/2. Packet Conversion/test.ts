@@ -62,4 +62,27 @@ describe("Packet Conversion", function()
 	testConversion("ClientJoin", { raw: [PacketType.ClientJoin, "client-id"], template: { id: "client-id" } });
 	testConversion("ClientLeave", { raw: [PacketType.ClientLeave, "client-id"], template: { id: "client-id" } });
 	testConversion("RoomDestroyed", { raw: [PacketType.RoomDestroyed], template: {} });
+
+	testConversion(
+		"RoomData",
+		{
+			raw: [PacketType.RoomData, 32, 90, 2, 6, 8],
+			template:
+			{
+				timeLeft: 32,
+				timeLimit: 90,
+				currentRound: 2,
+				maxRounds: 6,
+				maxPlayers: 8,
+			},
+			defaultValues:
+			[
+				roomFields.timeLimit.default,
+				roomFields.timeLimit.default,
+				1,
+				roomFields.maxRounds.default,
+				roomFields.maxPlayers.default,
+			],
+		},
+	);
 });

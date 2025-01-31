@@ -4,9 +4,12 @@ import { AnyObject, getObjectValue } from "../util";
 import { PacketBuffer, PacketField } from "./PacketBuffer";
 import { CreateRoom } from "./CreateRoom";
 import { SubmitSentence } from "./SubmitSentence";
+import { RoomFields } from "../fields/fields";
 
 export const DEFAULT_CREATE_ROOM_ERROR = "Could not create room.";
 export const DEFAULT_JOIN_ROOM_ERROR = "Could not join room.";
+
+const { fields: roomFields } = RoomFields;
 
 /**
  * Overengineered function for creating packet converters that have simple structures.
@@ -61,6 +64,14 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 	SimpleConverter(PacketType.ClientJoin, ["string", "id", ""]),
 	SimpleConverter(PacketType.ClientLeave, ["string", "id", ""]),
 	SimpleConverter(PacketType.RoomDestroyed),
+	SimpleConverter(
+		PacketType.RoomData,
+		["number", "timeLeft", roomFields.timeLimit.default as number],
+		["number", "timeLimit", roomFields.timeLimit.default as number],
+		["number", "currentRound", 1],
+		["number", "maxRounds", roomFields.maxRounds.default as number],
+		["number", "maxPlayers", roomFields.maxPlayers.default as number],
+	),
 
 	AdvancedConverter(PacketType.CreateRoom, CreateRoom),
 	AdvancedConverter(PacketType.SubmitSentence, SubmitSentence),
