@@ -22,3 +22,8 @@ export const getObjectValue = (object: AnyObject, key: string, defaultValue: any
 {
 	return Object.hasOwn(object, key) ? object[key] : defaultValue;
 };
+
+/**
+ * It baffles me that this *still* isn't in the standard ES lib.
+ */
+export const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);

@@ -1,6 +1,7 @@
 import { deepStrictEqual, equal } from "node:assert";
 
 import { Packet } from "../../src/common/packets/Packet";
+import { PacketBuffer } from "../../src/common/packets/PacketBuffer";
 import { PacketType } from "../../src/common/packets/PacketType";
 import { RoomFields } from "../../src/common/fields/fields";
 import { testConversion } from "./testConversion";
@@ -27,16 +28,7 @@ describe("Packet Conversion", function()
 				},
 			},
 
-			defaultValues:
-			{
-				clientData: { name: "" },
-				roomData:
-				{
-					timeLimit: roomFields.timeLimit.default,
-					maxRounds: roomFields.maxRounds.default,
-					maxPlayers: roomFields.maxPlayers.default,
-				},
-			},
+			defaultValues: ["", roomFields.timeLimit.default, roomFields.maxRounds.default, roomFields.maxPlayers.default]
 		},
 	);
 
@@ -50,12 +42,11 @@ describe("Packet Conversion", function()
 		{
 			raw: [PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3, 7],
 			template: { words: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]] },
-			defaultValues: null,
 			test: function()
 			{
 				/* Check for invalid flattened sentence array. */
 
-				const packet = Packet.fromArray([PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3]);
+				const packet = Packet.unpack(PacketBuffer.from(PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3));
 
 				equal(Object.hasOwn(packet, "words"), true);
 				equal(Array.isArray(packet.words), true);

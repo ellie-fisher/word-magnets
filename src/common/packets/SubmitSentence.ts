@@ -1,30 +1,27 @@
+import { PacketBuffer } from "./PacketBuffer";
 import { PacketType } from "./PacketType";
-import { RawPacket } from "./types";
+import { Sentence } from "../words/Sentence";
 import { AnyObject, getObjectValue } from "../util";
 
 export const SubmitSentence =
 {
-	fromArray(packet: RawPacket): AnyObject
+	pack(object: AnyObject): PacketBuffer
+	{
+		return PacketBuffer.from(PacketType.SubmitSentence, ...(getObjectValue(object, "words", []) as any[]).flat(Infinity));
+	},
+
+	unpack(buffer: PacketBuffer): AnyObject
 	{
 		const words: [number, number][] = [];
-		const { length } = packet;
 
-		if (length % 2 === 1)
+		if (buffer.length % 2 === 1)
 		{
-			for (let i = 1; i < length; i += 2)
+			for (let i = 0; i < Sentence.MAX_LENGTH && !buffer.isAtEnd; i++)
 			{
-				words.push([packet[i], packet[i + 1]]);
+				words.push([buffer.readU8(), buffer.readU8()]);
 			}
 		}
 
 		return { words };
-	},
-
-	toArray(object: AnyObject): RawPacket
-	{
-		return [
-			PacketType.SubmitSentence,
-			...(getObjectValue(object, "words", []) as any[]).flat(Infinity),
-		];
 	},
 };

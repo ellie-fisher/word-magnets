@@ -1,14 +1,15 @@
-import { deepStrictEqual, notEqual } from "node:assert";
+import { deepStrictEqual } from "node:assert";
 
 import { Packet } from "../../src/common/packets/Packet";
-import { RawPacket } from "../../src/common/packets/types";
 import { AnyObject } from "../../src/common/util";
+import { PacketBuffer, PacketField } from "../../src/common/packets/PacketBuffer";
+import { PacketType } from "../../src/common/packets/PacketType";
 
 export interface TestConversionArg
 {
-	raw: RawPacket;
+	raw: [PacketType, ...PacketField[]];
 	template: AnyObject;
-	defaultValues?: AnyObject | null;
+	defaultValues?: PacketField[];
 	test?: (..._) => void;
 };
 
@@ -16,26 +17,29 @@ export function testConversion(type: string, ...args: TestConversionArg[])
 {
 	it(`should pack and unpack \`${type}\` packets properly`, function()
 	{
-		args.forEach(({ raw, template, defaultValues = null, test = () => {} }) =>
+		args.forEach(({ raw, template, defaultValues = [], test = () => {} }) =>
 		{
-			const backup = [...raw];
-			const packet = Packet.fromArray(raw);
+			const buffer = PacketBuffer.from(...raw);
+			const unpacked = Packet.unpack(buffer);
 
-			deepStrictEqual(Packet.toArray(raw[0], packet), raw);
+			buffer.rewind();
 
-			/* Make sure `raw` isn't modified. */
-			deepStrictEqual(backup, raw);
-			notEqual(Packet.toArray(raw[0], packet), raw);
+			raw.forEach(value => deepStrictEqual(buffer.read(typeof(value)), value));
 
 			// Test field values against `template`.
-			deepStrictEqual(packet, template);
+			deepStrictEqual(unpacked, template);
 
-			if (defaultValues !== null)
+			if (defaultValues.length > 0)
 			{
-				deepStrictEqual(Packet.fromArray([raw[0]]), defaultValues);
+				const defaultBuffer = Packet.pack(raw[0], {});
+
+				deepStrictEqual(defaultBuffer.readU8(), raw[0]);
+				deepStrictEqual(defaultBuffer.length, defaultValues.length + 1);
+
+				defaultValues.forEach(value => deepStrictEqual(defaultBuffer.read(typeof(value)), value));
 			}
 
-			test(type, raw, template, defaultValues);
+			test(type, raw, template);
 		})
 	});
 };
