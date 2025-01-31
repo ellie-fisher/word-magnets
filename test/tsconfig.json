@@ -1,13 +1,4 @@
 {
-	"compilerOptions":
-	{
-		"target": "esnext",
-		"module": "esnext",
-		"moduleResolution": "node",
-		"esModuleInterop": true
-	},
-
 	"include": ["./**/test.ts", "./**/*.json"],
-
 	"references": [{ "path": "../src/common" }]
 }
