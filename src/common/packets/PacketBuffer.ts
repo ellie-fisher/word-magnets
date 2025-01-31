@@ -49,19 +49,19 @@ export class PacketBuffer
 		}
 	}
 
-	#buffer: Uint8Array;
+	#array: Uint8Array;
 	#index: number;
 
 	constructor(size: number)
 	{
-		this.#buffer = new Uint8Array(size);
+		this.#array = new Uint8Array(size);
 		this.#index = 0;
 	}
 
-	public get buffer(): Uint8Array { return this.#buffer; }
+	public get buffer(): ArrayBuffer { return this.#array.buffer as ArrayBuffer; }
 	public get index(): number { return this.#index; }
-	public get length(): number { return this.#buffer.length; }
-	public get isAtEnd(): boolean { return this.#index >= this.#buffer.length; }
+	public get length(): number { return this.#array.length; }
+	public get isAtEnd(): boolean { return this.#index >= this.#array.length; }
 
 	public rewind(): void
 	{
@@ -74,7 +74,7 @@ export class PacketBuffer
 
 		if (success)
 		{
-			this.#buffer[this.#index++] = value;
+			this.#array[this.#index++] = value;
 		}
 
 		return success;
@@ -88,7 +88,7 @@ export class PacketBuffer
 	public writeString(str: string): boolean
 	{
 		const length = clampU8(str.length);
-		let success = this.#index + length < this.#buffer.length && this.writeU8(length);
+		let success = this.#index + length < this.#array.length && this.writeU8(length);
 
 		for (let i = 0; i < length && success; i++)
 		{
@@ -111,7 +111,7 @@ export class PacketBuffer
 
 	public readU8(): number
 	{
-		return this.isAtEnd ? 0x00 : this.#buffer[this.#index++];
+		return this.isAtEnd ? 0x00 : this.#array[this.#index++];
 	}
 
 	public readBoolean(): boolean
