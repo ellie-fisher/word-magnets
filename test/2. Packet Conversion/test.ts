@@ -41,16 +41,15 @@ describe("Packet Conversion", function()
 		"SubmitSentence",
 		{
 			raw: [PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3, 7],
-			template: { words: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]] },
+			template: [[0, 1], [1, 6], [3, 16], [2, 14], [3, 7]],
 			test: function()
 			{
 				/* Check for invalid flattened sentence array. */
 
 				const packet = Packet.unpack(PacketBuffer.from(PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3));
 
-				equal(Object.hasOwn(packet, "words"), true);
-				equal(Array.isArray(packet.words), true);
-				deepStrictEqual(packet, { words: [] });
+				equal(Array.isArray(packet), true);
+				deepStrictEqual(packet, []);
 			},
 		},
 	);
