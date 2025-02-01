@@ -6,6 +6,7 @@ import { RoomFields } from "../fields/fields";
 
 import { CreateRoom } from "./CreateRoom";
 import { SubmitSentence } from "./SubmitSentence";
+import { RoomWords } from "./RoomWords";
 import { RoomSentences } from "./RoomSentences";
 
 export const DEFAULT_CREATE_ROOM_ERROR = "Could not create room.";
@@ -77,6 +78,7 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 
 	AdvancedConverter(PacketType.CreateRoom, CreateRoom),
 	AdvancedConverter(PacketType.SubmitSentence, SubmitSentence),
+	AdvancedConverter(PacketType.RoomWords, RoomWords),
 	AdvancedConverter(PacketType.RoomSentences, RoomSentences),
 ]);
 

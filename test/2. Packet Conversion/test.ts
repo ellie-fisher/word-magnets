@@ -86,6 +86,34 @@ describe("Packet Conversion", function()
 	);
 
 	testConversion(
+		"RoomWords",
+		{
+			raw:
+			[
+				PacketType.RoomWords,
+				3,
+				"word-1-1",
+				"word-1-2",
+				"word-1-3",
+				5,
+				"word-2-1",
+				"word-2-2",
+				"word-2-3",
+				"word-2-4",
+				"word-2-5",
+				1,
+				"word-3-1",
+			],
+			template:
+			[
+				["word-1-1", "word-1-2", "word-1-3"],
+				["word-2-1", "word-2-2", "word-2-3", "word-2-4", "word-2-5"],
+				["word-3-1"],
+			],
+		},
+	);
+
+	testConversion(
 		"RoomSentences",
 		{
 			raw:
