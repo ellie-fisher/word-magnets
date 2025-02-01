@@ -1,10 +1,10 @@
 import path from "node:path";
 import express from "express";
 
-import { IncomingMessage } from "node:http";
 import { WebSocketServer } from "ws";
 
 import config from "./config.json" with { type: "json" };
+import { onSocketConnection } from "./socket";
 
 const webServer = express();
 
@@ -13,7 +13,4 @@ webServer.listen(config.webServer.port, () => console.log(`Listening on port ${c
 
 const socketServer = new WebSocketServer({ port: config.webSocketServer.port });
 
-socketServer.on("connection", (_, request: IncomingMessage) =>
-{
-	console.log(`New connection: ${request.socket.remoteAddress}`);
-});
+socketServer.on("connection", onSocketConnection);
