@@ -1,11 +1,10 @@
 import { isValidIndex } from "../util";
-import { Wordbank } from "./Wordbank";
 
 export const Sentence = Object.freeze(
 {
 	MAX_LENGTH: 100,
 
-	toString(words: [number, number][], wordbanks: Wordbank[]): string
+	toString(words: [number, number][], wordbanks: string[][]): string
 	{
 		let str = "";
 
@@ -19,12 +18,12 @@ export const Sentence = Object.freeze(
 			{
 				const [bankIndex, wordIndex] = words[i];
 
-				if (!isValidIndex(wordbanks, bankIndex) || !wordbanks[bankIndex].hasAt(wordIndex))
+				if (!isValidIndex(wordbanks, bankIndex) || !isValidIndex(wordbanks[bankIndex], wordIndex))
 				{
 					return "";
 				}
 
-				const word = wordbanks[bankIndex].words[wordIndex];
+				const word = wordbanks[bankIndex][wordIndex];
 				const startsWithHyphen = word.at(0) === "-";
 				const skipSpace = prevWord.at(-1) === "-" || startsWithHyphen;
 				const sliced = word.slice(Number(startsWithHyphen), word.length - Number(word.at(-1) === "-"));

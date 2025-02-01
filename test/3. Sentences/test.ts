@@ -1,16 +1,15 @@
 import { deepStrictEqual } from "node:assert";
 
 import { Sentence } from "../../src/common/words/Sentence";
-import { Wordbank } from "../../src/common/words/Wordbank";
 
 describe("Sentences", function()
 {
 	const wordbanks =
 	[
-		new Wordbank(["green", "purple", "pretty", "ugly", "good", "bad", "nice", "mean", "cute"]),
-		new Wordbank(["cat", "dog", "frog", "person", "house", "music"]),
-		new Wordbank(["walk", "talk", "say", "move", "see", "listen", "fall", "love"]),
-		new Wordbank(["be", "is", "are", "were", "am", "will", "I", "she", "he", "they", "it", "do", "the", "a", "an", "to", "yes", "no", " ", "anti-", "-e", "-d", "-r", "-s", "-t", "-y", "-", "-'", "-.", "-,", "-!"]),
+		["green", "purple", "pretty", "ugly", "good", "bad", "nice", "mean", "cute"],
+		["cat", "dog", "frog", "person", "house", "music"],
+		["walk", "talk", "say", "move", "see", "listen", "fall", "love"],
+		["be", "is", "are", "were", "am", "will", "I", "she", "he", "they", "it", "do", "the", "a", "an", "to", "yes", "no", " ", "anti-", "-e", "-d", "-r", "-s", "-t", "-y", "-", "-'", "-.", "-,", "-!"],
 	];
 
 	// Banks
@@ -65,7 +64,7 @@ describe("Sentences", function()
 			deepStrictEqual(Sentence.toString([CAT, _S, ARE, [-1, 3]] as any, wordbanks), "");
 			deepStrictEqual(Sentence.toString([CAT, _S, ARE, [ADJ, -1]] as any, wordbanks), "");
 			deepStrictEqual(Sentence.toString([I, AM, [wordbanks.length, 0]] as any, wordbanks), "");
-			deepStrictEqual(Sentence.toString([I, AM, [MISC, wordbanks[MISC].words.length]] as any, wordbanks), "");
+			deepStrictEqual(Sentence.toString([I, AM, [MISC, wordbanks[MISC].length]] as any, wordbanks), "");
 			deepStrictEqual(Sentence.toString([I, AM, [0, 0]] as any, wordbanks), "I am green");
 		});
 
