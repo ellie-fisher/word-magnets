@@ -1,10 +1,14 @@
 import path from "node:path";
 import express from "express";
+
 import { WebSocketServer } from "ws";
 
-import config from "./config.json" with { type: "json" };
+import defaultConfig from "./default.config.json" with { type: "json" };
+import customConfig from "./config.json" with { type: "json" };
 
 import { onSocketConnection } from "./socket";
+
+const config = { ...defaultConfig, ...customConfig };
 
 const webServer = express();
 
