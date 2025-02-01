@@ -85,4 +85,23 @@ describe("Packet Conversion", function()
 			],
 		},
 	);
+
+	testConversion(
+		"RoomSentences",
+		{
+			raw:
+			[
+				PacketType.RoomSentences,
+				"client-id-1", "This is a sentence.",
+				"client-id-2", "This is also a sentence.",
+				"client-id-3", "This is yet another sentence.",
+			],
+			template:
+			{
+				"client-id-1": "This is a sentence.",
+				"client-id-2": "This is also a sentence.",
+				"client-id-3": "This is yet another sentence.",
+			},
+		},
+	);
 });

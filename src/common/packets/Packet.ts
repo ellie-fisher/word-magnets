@@ -2,9 +2,11 @@ import { PacketType } from "./PacketType";
 import { PacketConverter } from "./types";
 import { AnyObject, getObjectValue } from "../util";
 import { PacketBuffer, PacketField } from "./PacketBuffer";
+import { RoomFields } from "../fields/fields";
+
 import { CreateRoom } from "./CreateRoom";
 import { SubmitSentence } from "./SubmitSentence";
-import { RoomFields } from "../fields/fields";
+import { RoomSentences } from "./RoomSentences";
 
 export const DEFAULT_CREATE_ROOM_ERROR = "Could not create room.";
 export const DEFAULT_JOIN_ROOM_ERROR = "Could not join room.";
@@ -75,6 +77,7 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 
 	AdvancedConverter(PacketType.CreateRoom, CreateRoom),
 	AdvancedConverter(PacketType.SubmitSentence, SubmitSentence),
+	AdvancedConverter(PacketType.RoomSentences, RoomSentences),
 ]);
 
 export const Packet =
