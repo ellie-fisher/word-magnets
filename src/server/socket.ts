@@ -31,5 +31,6 @@ export function onSocketConnection(socket: WebSocket, request: IncomingMessage)
 	socket.on("message", onMessage.bind(socket));
 	socket.on("close", onClose.bind(socket));
 
+	// Send client their ID because client-side behavior can be different if it's the client's own ID.
 	ServerPacket.send(client, { type: PacketType.ClientID, data: { id: client.id }});
 };
