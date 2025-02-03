@@ -1,18 +1,18 @@
 import { PacketBuffer, PacketField } from "./PacketBuffer";
 import { PacketType } from "./PacketType";
-import { AnyObject } from "../util";
+import { UnpackedPacket } from "./types";
 
 export const RoomWords =
 {
-	pack(object: AnyObject): PacketBuffer
+	pack(unpacked: UnpackedPacket): PacketBuffer
 	{
 		const values: PacketField[] = [];
 
-		if (Array.isArray(object))
+		if (Array.isArray(unpacked.data))
 		{
-			for (let i = 0; i < object.length; i++)
+			for (let i = 0; i < unpacked.data.length; i++)
 			{
-				const words = object[i];
+				const words = unpacked.data[i];
 
 				values.push(words.length);
 
@@ -26,9 +26,10 @@ export const RoomWords =
 		return PacketBuffer.from(PacketType.RoomWords, ...values);
 	},
 
-	unpack(buffer: PacketBuffer): AnyObject
+	unpack(buffer: PacketBuffer): UnpackedPacket
 	{
 		const wordbanks: string[][] = [];
+		const unpacked = { type: buffer.readU8(), data: wordbanks };
 
 		while (!buffer.isAtEnd)
 		{
@@ -43,6 +44,6 @@ export const RoomWords =
 			wordbanks.push(words);
 		}
 
-		return wordbanks;
+		return unpacked;
 	},
 };

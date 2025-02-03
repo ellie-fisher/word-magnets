@@ -1,5 +1,5 @@
 import { PacketType } from "./PacketType";
-import { PacketConverter } from "./types";
+import { PacketConverter, UnpackedPacket } from "./types";
 import { AnyObject, getObjectValue } from "../util";
 import { PacketBuffer, PacketField } from "./PacketBuffer";
 import { RoomFields } from "../fields/fields";
@@ -17,30 +17,30 @@ const { fields: roomFields } = RoomFields;
 /**
  * Overengineered function for creating packet converters that have simple structures.
  */
-const SimpleConverter = (packetType: PacketType, ...fields: [string, string, PacketField][]): [PacketType, PacketConverter] =>
+const SimpleConverter = (type: PacketType, ...fields: [string, string, PacketField][]): [PacketType, PacketConverter] =>
 {
 	const { length } = fields;
 
 	return [
-		packetType,
+		type,
 		length <= 0
 			? {
-				pack(): PacketBuffer { return PacketBuffer.from(packetType); },
-				unpack(): AnyObject { return {}; },
+				pack(): PacketBuffer { return PacketBuffer.from(type); },
+				unpack(): UnpackedPacket { return { type }; },
 			}
 			: {
-				pack(object: AnyObject): PacketBuffer
+				pack(unpacked: UnpackedPacket): PacketBuffer
 				{
-					return PacketBuffer.from(packetType, ...fields.map(([, key, defaultValue]) => getObjectValue(object, key, defaultValue)));
+					return PacketBuffer.from(type, ...fields.map(([, key, defaultValue]) => getObjectValue(unpacked.data ?? {}, key, defaultValue)));
 				},
 
-				unpack(buffer: PacketBuffer): AnyObject
+				unpack(buffer: PacketBuffer): UnpackedPacket
 				{
-					const unpacked: AnyObject = {};
+					const unpacked: UnpackedPacket = { type: buffer.readU8(), data: {} };
 
 					for (let i = 0; i < length; i++)
 					{
-						unpacked[fields[i][1]] = buffer.read(fields[i][0]);
+						(unpacked.data as AnyObject)[fields[i][1]] = buffer.read(fields[i][0]);
 					}
 
 					return unpacked;
@@ -84,14 +84,14 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 
 export const Packet =
 {
-	pack(type: PacketType, object: AnyObject): PacketBuffer | null
+	pack(unpacked: UnpackedPacket): PacketBuffer | null
 	{
-		return typeToConverter.get(type)?.pack(object) ?? null;
+		return typeToConverter.get(unpacked.type)?.pack(unpacked) ?? null;
 	},
 
-	unpack(buffer: PacketBuffer): AnyObject | null
+	unpack(buffer: PacketBuffer): UnpackedPacket | null
 	{
-		const unpacked = buffer.length > 0 ? typeToConverter.get(buffer.readU8())?.unpack(buffer) ?? null : null;
+		const unpacked = buffer.length > 0 ? typeToConverter.get(buffer.peekU8())?.unpack(buffer) ?? null : null;
 
 		buffer.rewind();
 

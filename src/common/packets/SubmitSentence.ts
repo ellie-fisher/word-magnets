@@ -1,24 +1,25 @@
 import { PacketBuffer } from "./PacketBuffer";
 import { PacketType } from "./PacketType";
 import { Sentence } from "../words/Sentence";
-import { AnyObject } from "../util";
+import { UnpackedPacket } from "./types";
 
 export const SubmitSentence =
 {
-	pack(object: AnyObject): PacketBuffer
+	pack(unpacked: UnpackedPacket): PacketBuffer
 	{
-		return PacketBuffer.from(PacketType.SubmitSentence, ...(Array.isArray(object) ? object : []).flat(Infinity));
+		return PacketBuffer.from(PacketType.SubmitSentence, ...(Array.isArray(unpacked.data) ? unpacked.data : []).flat(Infinity));
 	},
 
-	unpack(buffer: PacketBuffer): AnyObject
+	unpack(buffer: PacketBuffer): UnpackedPacket
 	{
-		const unpacked: [number, number][] = [];
+		const sentence: [number, number][] = [];
+		const unpacked = { type: buffer.readU8(), data: sentence };
 
 		if (buffer.length % 2 === 1)
 		{
 			for (let i = 0; i < Sentence.MAX_LENGTH && !buffer.isAtEnd; i++)
 			{
-				unpacked.push([buffer.readU8(), buffer.readU8()]);
+				sentence.push([buffer.readU8(), buffer.readU8()]);
 			}
 		}
 

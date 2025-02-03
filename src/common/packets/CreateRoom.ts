@@ -1,15 +1,16 @@
 import { PacketBuffer } from "./PacketBuffer";
 import { PacketType } from "./PacketType";
 import { RoomFields } from "../fields/fields";
-import { AnyObject, getObjectValue } from "../util";
+import { UnpackedPacket } from "./types";
+import { getObjectValue } from "../util";
 
 const { fields: roomFields } = RoomFields;
 
 export const CreateRoom =
 {
-	pack(object: AnyObject): PacketBuffer
+	pack(unpacked: UnpackedPacket): PacketBuffer
 	{
-		const { clientData = {}, roomData = {} } = object;
+		const { clientData = {}, roomData = {} } = unpacked.data ?? {};
 
 		return PacketBuffer.from(
 			PacketType.CreateRoom,
@@ -20,19 +21,23 @@ export const CreateRoom =
 		);
 	},
 
-	unpack(buffer: PacketBuffer): AnyObject
+	unpack(buffer: PacketBuffer): UnpackedPacket
 	{
 		return {
-			clientData:
+			type: buffer.readU8(),
+			data:
 			{
-				name: buffer.readString(),
-			},
+				clientData:
+				{
+					name: buffer.readString(),
+				},
 
-			roomData:
-			{
-				timeLimit: buffer.readU8(),
-				maxRounds: buffer.readU8(),
-				maxPlayers: buffer.readU8(),
+				roomData:
+				{
+					timeLimit: buffer.readU8(),
+					maxRounds: buffer.readU8(),
+					maxPlayers: buffer.readU8(),
+				},
 			},
 		};
 	},

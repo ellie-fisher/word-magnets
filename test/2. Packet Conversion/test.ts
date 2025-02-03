@@ -10,7 +10,7 @@ const { fields: roomFields } = RoomFields;
 
 describe("Packet Conversion", function()
 {
-	testConversion("Invalid", { raw: [PacketType.Invalid], template: {} });
+	testConversion("Invalid", { raw: [PacketType.Invalid] });
 	testConversion("ClientID", { raw: [PacketType.ClientID, "test-id"], template: { id: "test-id" } });
 
 	testConversion(
@@ -33,9 +33,9 @@ describe("Packet Conversion", function()
 	);
 
 	testConversion("JoinRoom", { raw: [PacketType.JoinRoom, "room-id", "client-name"], template: { id: "room-id", name: "client-name" } });
-	testConversion("LeaveRoom", { raw: [PacketType.LeaveRoom], template: {} });
-	testConversion("DestroyRoom", { raw: [PacketType.DestroyRoom], template: {} });
-	testConversion("StartGame", { raw: [PacketType.StartGame], template: {} });
+	testConversion("LeaveRoom", { raw: [PacketType.LeaveRoom] });
+	testConversion("DestroyRoom", { raw: [PacketType.DestroyRoom] });
+	testConversion("StartGame", { raw: [PacketType.StartGame] });
 
 	testConversion(
 		"SubmitSentence",
@@ -48,8 +48,8 @@ describe("Packet Conversion", function()
 
 				const packet = Packet.unpack(PacketBuffer.from(PacketType.SubmitSentence, 0, 1, 1, 6, 3, 16, 2, 14, 3));
 
-				equal(Array.isArray(packet), true);
-				deepStrictEqual(packet, []);
+				equal(Array.isArray(packet.data), true);
+				deepStrictEqual(packet.data, []);
 			},
 		},
 	);
@@ -60,7 +60,7 @@ describe("Packet Conversion", function()
 	testConversion("JoinRoomRejected", { raw: [PacketType.JoinRoomRejected, "Big error"], template: { message: "Big error" } });
 	testConversion("ClientJoin", { raw: [PacketType.ClientJoin, "client-id"], template: { id: "client-id" } });
 	testConversion("ClientLeave", { raw: [PacketType.ClientLeave, "client-id"], template: { id: "client-id" } });
-	testConversion("RoomDestroyed", { raw: [PacketType.RoomDestroyed], template: {} });
+	testConversion("RoomDestroyed", { raw: [PacketType.RoomDestroyed] });
 
 	testConversion(
 		"RoomData",

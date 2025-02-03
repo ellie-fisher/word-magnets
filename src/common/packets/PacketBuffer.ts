@@ -1,3 +1,4 @@
+import { isValidIndex } from './../util';
 import { clamp } from "../util";
 
 export const MIN_U8_VALUE = 0;
@@ -64,6 +65,13 @@ export class PacketBuffer
 	public get length(): number { return this.#array.length; }
 	public get isAtEnd(): boolean { return this.#index >= this.#array.length; }
 
+	#isValidOffset(offset: number): boolean
+	{
+		const index = this.#index + offset;
+
+		return Math.round(index) === index && index >= 0 && index < this.#array.length;
+	}
+
 	public rewind(): void
 	{
 		this.#index = 0;
@@ -89,7 +97,7 @@ export class PacketBuffer
 	public writeString(str: string): boolean
 	{
 		const length = clampU8(str.length);
-		let success = this.#index + length < this.#array.length && this.writeU8(length);
+		let success = this.#isValidOffset(length) && this.writeU8(length);
 
 		for (let i = 0; i < length && success; i++)
 		{
@@ -143,5 +151,10 @@ export class PacketBuffer
 			case "number": return this.readU8();
 			default: return null;
 		}
+	}
+
+	public peekU8(offset: number = 0): number
+	{
+		return this.#isValidOffset(offset) ? this.#array[this.#index] : 0x00;
 	}
 };
