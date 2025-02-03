@@ -52,9 +52,9 @@ export class PacketBuffer
 	#array: Uint8ClampedArray;
 	#index: number;
 
-	constructor(size: number)
+	constructor(sizeOrBuffer: number | ArrayBuffer)
 	{
-		this.#array = new Uint8ClampedArray(size);
+		this.#array = new Uint8ClampedArray(sizeOrBuffer as any);
 		this.#index = 0;
 	}
 

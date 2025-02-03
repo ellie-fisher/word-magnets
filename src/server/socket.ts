@@ -1,14 +1,26 @@
 import { IncomingMessage } from "node:http";
-import { WebSocket } from "ws";
+import { WebSocket, RawData } from "ws";
 
 import { Client } from "./Client";
-import { AnyObject } from "../common/util";
 import { ServerPacket } from "./packets/ServerPacket";
 import { PacketType } from "../common/packets/PacketType";
+import { PacketBuffer } from "../common/packets/PacketBuffer";
 
-function onMessage(this: WebSocket, message: AnyObject)
+function onMessage(this: WebSocket, data: RawData, isBinary: boolean)
 {
-	console.log("message:", message);
+	if (!isBinary || !(data instanceof ArrayBuffer))
+	{
+		return;
+	}
+
+	const unpacked = ServerPacket.unpack(new PacketBuffer(data));
+
+	if (unpacked === null)
+	{
+		return;
+	}
+
+	console.log("RECEIVED:", unpacked);
 };
 
 function onClose(this: WebSocket)
