@@ -1,4 +1,3 @@
-import { isValidIndex } from './../util';
 import { clamp } from "../util";
 
 export const MIN_U8_VALUE = 0;

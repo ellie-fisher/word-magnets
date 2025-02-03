@@ -21,11 +21,8 @@ export class Client
 	public get id(): string { return this.#id; }
 	public get socket(): WebSocket { return this.#socket; }
 
-	public send(buffer: PacketBuffer | null): void
+	public send(buffer: PacketBuffer): void
 	{
-		if (buffer !== null)
-		{
-			this.#socket.send(buffer.buffer);
-		}
+		this.#socket.send(buffer.buffer);
 	}
 };

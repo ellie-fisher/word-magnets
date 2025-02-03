@@ -3,6 +3,8 @@ import { WebSocket } from "ws";
 
 import { Client } from "./Client";
 import { AnyObject } from "../common/util";
+import { ServerPacket } from "./packets/ServerPacket";
+import { PacketType } from "../common/packets/PacketType";
 
 function onMessage(this: WebSocket, message: AnyObject)
 {
@@ -28,4 +30,6 @@ export function onSocketConnection(socket: WebSocket, request: IncomingMessage)
 
 	socket.on("message", onMessage.bind(socket));
 	socket.on("close", onClose.bind(socket));
+
+	ServerPacket.send(client, { type: PacketType.ClientID, data: { id: client.id }});
 };
