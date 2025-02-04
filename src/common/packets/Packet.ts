@@ -84,9 +84,9 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 
 export const Packet =
 {
-	pack(unpacked: UnpackedPacket): PacketBuffer | null
+	pack(unpacked: UnpackedPacket): PacketBuffer
 	{
-		return typeToConverter.get(unpacked.type)?.pack(unpacked) ?? null;
+		return typeToConverter.get(unpacked.type)?.pack(unpacked) ?? new PacketBuffer(0);
 	},
 
 	unpack(buffer: PacketBuffer): UnpackedPacket | null
