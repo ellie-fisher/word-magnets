@@ -5,6 +5,8 @@ import { Packet } from "../common/packets/Packet";
 import { PacketBuffer } from "../common/packets/PacketBuffer";
 import { Client } from "./Client";
 import { ClientIDPacket } from "./packets/ClientID";
+import { PacketType } from "../common/packets/PacketType";
+import { RoomManager } from "./rooms/RoomManager";
 
 function onMessage(this: WebSocket, data: RawData, isBinary: boolean)
 {
@@ -24,12 +26,22 @@ function onMessage(this: WebSocket, data: RawData, isBinary: boolean)
 
 	const unpacked = Packet.unpack(new PacketBuffer(data));
 
-	if (unpacked === null)
+	switch (unpacked?.type)
 	{
-		return;
-	}
+		case PacketType.CreateRoom:
+		case PacketType.DestroyRoom:
+		case PacketType.JoinRoom:
+		case PacketType.LeaveRoom:
+		case PacketType.StartGame:
+		case PacketType.SubmitSentence:
+		case PacketType.SubmitVote:
+		case PacketType.RemoveClient:
+			RoomManager.receivePacket((this as any)._wmClient, unpacked);
+			break;
 
-	console.log("RECEIVED:", unpacked);
+		default:
+			break;
+	}
 };
 
 function onClose(this: WebSocket)

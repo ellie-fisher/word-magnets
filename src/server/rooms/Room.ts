@@ -5,12 +5,13 @@ import { ClientJoinPacket } from "../packets/ClientJoin";
 import { ClientLeavePacket } from "../packets/ClientLeave";
 import { RoomDataPacket } from "../packets/RoomData";
 import { RoomDestroyedPacket } from "../packets/RoomDestroyed";
+import { UnpackedPacket } from "../../common/packets/types";
 
 export class Room
 {
 	#id: string;
 	#owner: Client;
-	#clients: Set<Client>;
+	#clients: Map<string, Client>;
 
 	public data: RoomData;
 	public words: string[][];
@@ -19,7 +20,7 @@ export class Room
 	{
 		this.#id = id;
 		this.#owner = owner;
-		this.#clients = new Set();
+		this.#clients = new Map();
 		this.data = { ...data };
 		this.words = [];
 
@@ -35,7 +36,7 @@ export class Room
 
 	public addClient(client: Client): void
 	{
-		this.#clients.add(client);
+		this.#clients.set(client.id, client);
 
 		client.roomID = this.#id;
 
@@ -48,14 +49,19 @@ export class Room
 		client.roomID = "";
 
 		this.send(ClientLeavePacket.pack(client));
-		this.#clients.delete(client);
+		this.#clients.delete(client.id);
+	}
+
+	public getClient(id: string): Client | null
+	{
+		return this.#clients.get(id) ?? null;
 	}
 
 	public destroy(): void
 	{
 		this.send(RoomDestroyedPacket.pack());
 
-		for (const client of this.#clients)
+		for (const [, client] of this.#clients)
 		{
 			client.roomID = "";
 		}
@@ -65,9 +71,14 @@ export class Room
 
 	public send(buffer: PacketBuffer): void
 	{
-		for (const client of this.#clients)
+		for (const [, client] of this.#clients)
 		{
 			client.send(buffer);
 		}
+	}
+
+	public receivePacket(client: Client, packet: UnpackedPacket): void
+	{
+		// TODO: Implement
 	}
 };

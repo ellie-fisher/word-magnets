@@ -1,9 +1,8 @@
-import { CreateRoom } from './../../common/packets/CreateRoom';
-import { UnpackedPacket } from "../../common/packets/types";
 import { Client } from "../Client";
 import { Room } from "./Room";
 import { RoomData } from "./RoomData";
 import { PacketType } from "../../common/packets/PacketType";
+import { UnpackedPacket } from "../../common/packets/types";
 import { RoomFields } from "../../common/fields/fields";
 import { FieldValidationResult } from "../../common/fields/Field";
 import { CreateRoomRejectedPacket } from "../packets/CreateRoomRejected";
@@ -47,17 +46,11 @@ export const RoomManager =
 			if (!rooms.has(id))
 			{
 				room = new Room(id, owner, data);
+				rooms.set(room.id, room);
 			}
 		}
 
-		const success = room !== null;
-
-		if (success)
-		{
-			rooms.set((room as Room).id, (room as Room));
-		}
-
-		return success;
+		return room !== null;
 	},
 
 	destroy(client: Client): void
@@ -98,6 +91,99 @@ export const RoomManager =
 			else
 			{
 				room.removeClient(client);
+			}
+		}
+	},
+
+	receivePacket(client: Client, packet: UnpackedPacket): void
+	{
+		switch (packet.type)
+		{
+			case PacketType.CreateRoom:
+			{
+				const { data = {} } = packet;
+				const result = RoomFields.validate(data);
+
+				let error = "";
+
+				if (result[0] === FieldValidationResult.Success)
+				{
+					if (!RoomManager.create(client, data as RoomData))
+					{
+						error = "Could not generate a unique room code.";
+					}
+				}
+				else
+				{
+					error = "Room configuration is invalid.";
+				}
+
+				if (error !== "")
+				{
+					client.send(CreateRoomRejectedPacket.pack(error));
+				}
+
+				break;
+			}
+
+			case PacketType.DestroyRoom:
+			{
+				const room = rooms.get(client.roomID) ?? null;
+
+				if (room?.owner === client)
+				{
+					RoomManager.destroy(client);
+				}
+
+				break;
+			}
+
+			case PacketType.JoinRoom:
+			{
+				const room = rooms.get(packet.data?.id) ?? null;
+
+				if (room !== null)
+				{
+					if (room.isFull)
+					{
+						client.send(JoinRoomRejectedPacket.pack("The room is full."));
+					}
+					else
+					{
+						RoomManager.addClient(client, room.id);
+					}
+				}
+
+				break;
+			}
+
+			case PacketType.LeaveRoom:
+			{
+				RoomManager.removeClient(client);
+				break;
+			}
+
+			case PacketType.RemoveClient:
+			{
+				const room = rooms.get(client.roomID) ?? null;
+
+				if (room !== null && room.owner === client)
+				{
+					const target = room.getClient(packet.data?.id) ?? null;
+
+					if (target !== null)
+					{
+						RoomManager.removeClient(target);
+					}
+				}
+
+				break;
+			}
+
+			default:
+			{
+				rooms.get(client.roomID)?.receivePacket(client, packet);
+				break;
 			}
 		}
 	},
