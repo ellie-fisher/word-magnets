@@ -1,19 +1,28 @@
 import { IncomingMessage } from "node:http";
 import { WebSocket, RawData } from "ws";
 
-import { Client } from "./Client";
-import { ServerPacket } from "./packets/ServerPacket";
-import { PacketType } from "../common/packets/PacketType";
+import { Packet } from "../common/packets/Packet";
 import { PacketBuffer } from "../common/packets/PacketBuffer";
+import { Client } from "./Client";
+import { ClientIDPacket } from "./packets/ClientID";
 
 function onMessage(this: WebSocket, data: RawData, isBinary: boolean)
 {
-	if (!isBinary || !(data instanceof ArrayBuffer))
+	if (!isBinary)
 	{
 		return;
 	}
 
-	const unpacked = ServerPacket.unpack(new PacketBuffer(data));
+	if (data instanceof Buffer)
+	{
+		data = data.buffer.slice(data.byteOffset) as ArrayBuffer;
+	}
+	else if (!(data instanceof ArrayBuffer))
+	{
+		return;
+	}
+
+	const unpacked = Packet.unpack(new PacketBuffer(data));
 
 	if (unpacked === null)
 	{
@@ -44,5 +53,5 @@ export function onSocketConnection(socket: WebSocket, request: IncomingMessage)
 	socket.on("close", onClose.bind(socket));
 
 	// Send client their ID because client-side behavior can be different if it's the client's own ID.
-	ServerPacket.send(client, { type: PacketType.ClientID, data: { id: client.id }});
+	client.send(ClientIDPacket.pack(client));
 };
