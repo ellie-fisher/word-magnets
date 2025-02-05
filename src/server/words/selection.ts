@@ -14257,6 +14257,7 @@ export const nouns =
 	"pertussis",
 	"peruke",
 	"perusal",
+	"perv",
 	"pervasiveness",
 	"perverseness",
 	"perversion",
@@ -37839,7 +37840,7 @@ export const miscellaneous =
 	"and", "but", "or",
 	"yes", "no",
 	"ex-", "re-",
-	"-r", "-s", "-t", "-e", "-d", "-ing",
+	"-r", "-s", "-t", "-e", "-d", "-y", "-ly", "-ing",
 	"-.", "-?", "-!", "-,", "-'", "-\"",
 	" ",
 ];
