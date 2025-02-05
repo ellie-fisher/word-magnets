@@ -8,6 +8,13 @@ export enum SentenceConversionError
 	TooLong,
 };
 
+export interface ClientSentence
+{
+	id: string;
+	sentence: string;
+	votes: number;
+};
+
 export const Sentence = Object.freeze(
 {
 	MAX_LENGTH: 100,

@@ -3,12 +3,21 @@ import { PacketType } from "./PacketType";
 import { UnpackedPacket } from "./types";
 import { RoomFields } from "../fields/fields";
 import { AnyObject } from "../util";
+import { ClientSentence } from "../words/Sentence";
+
+export interface UnpackedRoomSentences extends UnpackedPacket
+{
+	data: ClientSentence[];
+};
 
 export const RoomSentences =
 {
-	pack(unpacked: UnpackedPacket): PacketBuffer
+	pack(unpacked: UnpackedRoomSentences): PacketBuffer
 	{
-		return PacketBuffer.from(PacketType.RoomSentences, ...Object.keys(unpacked).flatMap(id => [id, (unpacked.data ?? {})[id]]));
+		return PacketBuffer.from(
+			PacketType.RoomSentences,
+			...(unpacked.data ?? []).flatMap(sentence => [sentence.id, sentence.sentence, sentence.votes]),
+		);
 	},
 
 	unpack(buffer: PacketBuffer): UnpackedPacket
