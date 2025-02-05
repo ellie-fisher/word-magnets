@@ -48,15 +48,15 @@ describe("Sentences", function()
 	{
 		it("should convert valid sentences to strings properly", function()
 		{
-			deepStrictEqual(Sentence.convertToString([THE, CAT, WALK, _E, _D, TO, HE, _R, HOUSE] as any, wordbanks), [SentenceConversionError.None, "the cat walked to her house"]);
-			deepStrictEqual(Sentence.convertToString([THE, CAT, WALK, _E, _D, TO, HE, _SPC_, _R, HOUSE] as any, wordbanks), [SentenceConversionError.None, "the cat walked to he r house"]);
-			deepStrictEqual(Sentence.convertToString([THE, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "the  cat"]);
-			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "the   cat"]);
-			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "the    cat"]);
-			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "the    cat"]);
+			deepStrictEqual(Sentence.convertToString([THE, CAT, WALK, _E, _D, TO, HE, _R, HOUSE] as any, wordbanks), [SentenceConversionError.None, "The cat walked to her house"]);
+			deepStrictEqual(Sentence.convertToString([THE, CAT, WALK, _E, _D, TO, HE, _SPC_, _R, HOUSE] as any, wordbanks), [SentenceConversionError.None, "The cat walked to he r house"]);
+			deepStrictEqual(Sentence.convertToString([THE, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "The  cat"]);
+			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "The   cat"]);
+			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "The    cat"]);
+			deepStrictEqual(Sentence.convertToString([THE, _SPC_, _SPC_, _SPC_, CAT] as any, wordbanks), [SentenceConversionError.None, "The    cat"]);
 			deepStrictEqual(Sentence.convertToString([I, LOVE, CAT, _S, _DOT, _DOT, _DOT, THEY, ARE, CUTE, _EXCLAIM] as any, wordbanks), [SentenceConversionError.None, "I love cats... they are cute!"]);
 			deepStrictEqual(Sentence.convertToString([I, AM, NO, _T, ANTI_, DOG, _EXCLAIM] as any, wordbanks), [SentenceConversionError.None, "I am not antidog!"]);
-			deepStrictEqual(Sentence.convertToString([CAT, _, DOG] as any, wordbanks), [SentenceConversionError.None, "catdog"]);
+			deepStrictEqual(Sentence.convertToString([CAT, _, DOG] as any, wordbanks), [SentenceConversionError.None, "Catdog"]);
 		});
 
 		it("should return a blank string if there are any invalid indices", function()
@@ -95,9 +95,9 @@ describe("Sentences", function()
 				eeee.push(_E);
 			}
 
-			deepStrictEqual(Sentence.convertToString(eeee as any, wordbanks), [SentenceConversionError.None, "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"]);
+			deepStrictEqual(Sentence.convertToString(eeee as any, wordbanks), [SentenceConversionError.None, "Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"]);
 			eeee.push(_E);
-			deepStrictEqual(Sentence.convertToString(eeee as any, wordbanks), [SentenceConversionError.TooLong, "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"]);
+			deepStrictEqual(Sentence.convertToString(eeee as any, wordbanks), [SentenceConversionError.TooLong, "Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"]);
 		});
 
 		it("should trim sentences with extra space at the beginning and end", function()
@@ -105,8 +105,8 @@ describe("Sentences", function()
 			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.TooShort, ""]);
 			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _, _, _, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.TooShort, ""]);
 			deepStrictEqual(Sentence.convertToString([_, _, _, _,] as any, wordbanks), [SentenceConversionError.TooShort, ""]);
-			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.None, "cat"]);
-			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.None, "cat    cat    cat"]);
+			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.None, "Cat"]);
+			deepStrictEqual(Sentence.convertToString([_SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_, CAT, _SPC_, _SPC_, _SPC_] as any, wordbanks), [SentenceConversionError.None, "Cat    cat    cat"]);
 		});
 	});
 });

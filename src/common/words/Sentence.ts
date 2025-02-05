@@ -45,6 +45,7 @@ export const Sentence = Object.freeze(
 		}
 
 		str = str.trim();
+		str = `${str.at(0)?.toUpperCase() ?? ""}${str.slice(1)}`;
 
 		if (str.length <= 0)
 		{
