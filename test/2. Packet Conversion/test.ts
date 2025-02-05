@@ -119,15 +119,15 @@ describe("Packet Conversion", function()
 			raw:
 			[
 				PacketType.RoomSentences,
-				"client-id-1", "This is a sentence.",
-				"client-id-2", "This is also a sentence.",
-				"client-id-3", "This is yet another sentence.",
+				"client-id-1", "This is a sentence.", 0,
+				"client-id-2", "This is also a sentence.", 3,
+				"client-id-3", "This is yet another sentence.", 6,
 			],
 			template:
 			{
-				"client-id-1": "This is a sentence.",
-				"client-id-2": "This is also a sentence.",
-				"client-id-3": "This is yet another sentence.",
+				"client-id-1": { sentence: "This is a sentence.", votes: 0 },
+				"client-id-2": { sentence: "This is also a sentence.", votes: 3 },
+				"client-id-3": { sentence: "This is yet another sentence.", votes: 6 },
 			},
 		},
 	);

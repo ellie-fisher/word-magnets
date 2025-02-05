@@ -18,7 +18,11 @@ export const RoomSentences =
 
 		for (let i = 0; i < max && !buffer.isAtEnd; i++)
 		{
-			(unpacked.data as AnyObject)[buffer.readString()] = buffer.readString();
+			(unpacked.data as AnyObject)[buffer.readString()] =
+			{
+				sentence: buffer.readString(),
+				votes: buffer.readU8(),
+			};
 		}
 
 		return unpacked;
