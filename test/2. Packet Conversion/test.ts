@@ -131,4 +131,23 @@ describe("Packet Conversion", function()
 			},
 		},
 	);
+
+	testConversion(
+		"RoomScores",
+		{
+			raw:
+			[
+				PacketType.RoomScores,
+				"client-id-1", 2,
+				"client-id-2", 12,
+				"client-id-3", 8,
+			],
+			template:
+			{
+				"client-id-1": 2,
+				"client-id-2": 12,
+				"client-id-3": 8,
+			},
+		},
+	);
 });

@@ -8,6 +8,7 @@ import { CreateRoom } from "./CreateRoom";
 import { SubmitSentence } from "./SubmitSentence";
 import { RoomWords } from "./RoomWords";
 import { RoomSentences } from "./RoomSentences";
+import { RoomScores } from "./RoomScores";
 
 export const DEFAULT_CREATE_ROOM_ERROR = "Could not create room.";
 export const DEFAULT_JOIN_ROOM_ERROR = "Could not join room.";
@@ -80,6 +81,7 @@ const typeToConverter = new Map<PacketType, PacketConverter>(
 	AdvancedConverter(PacketType.SubmitSentence, SubmitSentence),
 	AdvancedConverter(PacketType.RoomWords, RoomWords),
 	AdvancedConverter(PacketType.RoomSentences, RoomSentences),
+	AdvancedConverter(PacketType.RoomScores, RoomScores),
 ]);
 
 export const Packet =
