@@ -8,7 +8,11 @@
 
 package rooms
 
-import "word-magnets/util"
+import (
+	"word-magnets/clients"
+	"word-magnets/util"
+	"word-magnets/words"
+)
 
 type PacketType uint8
 
@@ -39,57 +43,22 @@ const (
  * TODO: Client-to-server packets
  */
 
-type ClientPacket interface {
-	Unpack(reader *util.ByteReader)
-}
-
 /**
  * Server-to-client packets
  */
 
-type ServerPacket interface {
-	Pack(writer *util.ByteWriter)
-}
-
-type RoomResponsePacket struct {
-	Success bool
-	Reason  string
-}
-
-type RoomDestroyedPacket struct {
-	Reason string
-}
-
-type RoomDataPacket struct {
-	Room *Room
-}
-
-type RoomClientsPacket struct {
-	Room *Room
-}
-
-type RoomWordsPacket struct {
-	Room *Room
-}
-
-type RoomSentencesPacket struct {
-	Room *Room
-}
-
-func (packet *RoomResponsePacket) Pack(writer *util.ByteWriter) {
+func WriteRoomResponse(writer *util.ByteWriter, success bool, reason string) {
 	writer.WriteU8(uint8(RoomResponse))
-	writer.WriteBool(packet.Success)
-	writer.WriteString(packet.Reason)
+	writer.WriteBool(success)
+	writer.WriteString(reason)
 }
 
-func (packet *RoomDestroyedPacket) Pack(writer *util.ByteWriter) {
+func WriteRoomDestroyed(writer *util.ByteWriter, reason string) {
 	writer.WriteU8(uint8(RoomDestroyed))
-	writer.WriteString(packet.Reason)
+	writer.WriteString(reason)
 }
 
-func (packet *RoomDataPacket) Pack(writer *util.ByteWriter) {
-	room := packet.Room
-
+func WriteRoomData(writer *util.ByteWriter, room *Room) {
 	writer.WriteU8(uint8(RoomData))
 	writer.WriteU8(uint8(room.State.State()))
 	writer.WriteU16(room.TimeLeft)
@@ -99,9 +68,7 @@ func (packet *RoomDataPacket) Pack(writer *util.ByteWriter) {
 	writer.WriteU8(room.RoundLimit)
 }
 
-func (packet *RoomClientsPacket) Pack(writer *util.ByteWriter) {
-	clients := packet.Room.Clients
-
+func WriteRoomClients(writer *util.ByteWriter, clients []*clients.Client) {
 	writer.WriteU8(uint8(RoomClients))
 	writer.WriteU8(uint8(len(clients)))
 
@@ -111,9 +78,7 @@ func (packet *RoomClientsPacket) Pack(writer *util.ByteWriter) {
 	}
 }
 
-func (packet *RoomWordsPacket) Pack(writer *util.ByteWriter) {
-	wordbanks := packet.Room.Wordbanks
-
+func WriteRoomWords(writer *util.ByteWriter, wordbanks []words.Wordbank) {
 	writer.WriteU8(uint8(RoomWords))
 	writer.WriteU8(uint8(len(wordbanks)))
 
@@ -126,9 +91,7 @@ func (packet *RoomWordsPacket) Pack(writer *util.ByteWriter) {
 	}
 }
 
-func (packet *RoomSentencesPacket) Pack(writer *util.ByteWriter) {
-	sentences := packet.Room.Sentences
-
+func WriteRoomSentences(writer *util.ByteWriter, sentences []words.Sentence) {
 	writer.WriteU8(uint8(RoomSentences))
 	writer.WriteU8(uint8(len(sentences)))
 
