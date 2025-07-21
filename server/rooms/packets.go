@@ -40,8 +40,37 @@ const (
 )
 
 /**
- * TODO: Client-to-server packets
+ * Client-to-server packets
  */
+
+func ReadCreateRoom(reader *util.ByteReader) (timeLimit uint16, clientLimit uint8, roundLimit uint8) {
+	return reader.ReadU16(), reader.ReadU8(), reader.ReadU8()
+}
+
+func ReadJoinRoom(reader *util.ByteReader) (id string) {
+	return reader.ReadString()
+}
+
+func ReadLeaveRoom(reader *util.ByteReader) {}
+
+func ReadRemoveClient(reader *util.ByteReader) (id string) {
+	return reader.ReadString()
+}
+
+func ReadSubmitSentence(reader *util.ByteReader) words.Sentence {
+	var sentence words.Sentence
+	length := reader.ReadU8()
+
+	for range length {
+		sentence.Words = append(sentence.Words, &words.WordEntry{int(reader.ReadU8()), int(reader.ReadU8())})
+	}
+
+	return sentence
+}
+
+func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
+	return reader.ReadU8()
+}
 
 /**
  * Server-to-client packets
