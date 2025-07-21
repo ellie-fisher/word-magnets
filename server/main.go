@@ -8,8 +8,41 @@
 
 package main
 
-import "log"
+import (
+	"log"
+	"net"
+	"net/http"
+	"sync"
+)
+
+const httpPort = "3000"
+const socketPort = "4000"
+
+// listen starts a server on the hostname and port specified.
+func listen(hostPort string, handler http.HandlerFunc, waitGroup *sync.WaitGroup) {
+	defer waitGroup.Done()
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handler)
+
+	if listener, err := net.Listen("tcp", hostPort); err != nil {
+		log.Fatalf("Failed to start HTTP server: %s", err)
+	} else {
+		log.Printf("HTTP server started on %s", hostPort)
+
+		if err := http.Serve(listener, mux); err != nil {
+			log.Fatalf("HTTP server error: %s", err)
+		}
+	}
+}
 
 func main() {
-	log.Printf("It works!")
+	var waitGroup sync.WaitGroup
+
+	waitGroup.Add(2)
+
+	go listen("localhost:"+httpPort, httpHandler, &waitGroup)
+	go listen("localhost:"+socketPort, socketHandler, &waitGroup)
+
+	waitGroup.Wait()
 }
