@@ -36,10 +36,6 @@ func (reader *ByteReader) ReadU8() uint8 {
 	return value
 }
 
-func (reader *ByteReader) ReadU16() uint16 {
-	return uint16(reader.ReadU8()) + (uint16(reader.ReadU8()) << 8)
-}
-
 func (reader *ByteReader) ReadBool() bool {
 	return reader.ReadU8() != 0
 }
@@ -82,11 +78,6 @@ func (writer *ByteWriter) WriteU8(value uint8) {
 	writer.index++
 }
 
-func (writer *ByteWriter) WriteU16(value uint16) {
-	writer.WriteU8(uint8(value & 0xFF))
-	writer.WriteU8(uint8(value >> 8))
-}
-
 func (writer *ByteWriter) WriteBool(value bool) {
 	if value {
 		writer.WriteU8(1)
@@ -105,6 +96,29 @@ func (writer *ByteWriter) WriteString(value string) bool {
 	writer.index += len(value)
 
 	return truncated
+}
+
+func (writer *ByteWriter) Write(values ...any) bool {
+	success := true
+
+	for _, value := range values {
+		switch cast := value.(type) {
+		case uint8:
+			writer.WriteU8(cast)
+		case bool:
+			writer.WriteBool(cast)
+		case string:
+			writer.WriteString(cast)
+		case int:
+			writer.WriteU8(uint8(cast))
+		case uint:
+			writer.WriteU8(uint8(cast))
+		default:
+			success = false
+		}
+	}
+
+	return success
 }
 
 func NewByteWriter(size int) *ByteWriter {

@@ -22,9 +22,9 @@ type Room struct {
 	Wordbanks []words.Wordbank // TODO: Wordbanks
 	Sentences []words.Sentence // TODO: Sentences
 
-	TimeLeft    uint16
-	TimeLimit   uint16
-	ClientLimit uint8
+	TimeLeft    uint8
+	TimeLimit   uint8
 	Round       uint8
 	RoundLimit  uint8
+	ClientLimit uint8
 }

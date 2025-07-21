@@ -9,6 +9,8 @@
 package rooms
 
 import (
+	"github.com/gorilla/websocket"
+
 	"word-magnets/clients"
 	"word-magnets/util"
 	"word-magnets/words"
@@ -39,12 +41,17 @@ const (
 	RoomSentences
 )
 
+// SendPacket sends a packet to a WebSocket connection.
+func SendPacket(conn *websocket.Conn, writer *util.ByteWriter) error {
+	return conn.WriteMessage(websocket.BinaryMessage, writer.Bytes())
+}
+
 /**
  * Client-to-server packets
  */
 
-func ReadCreateRoom(reader *util.ByteReader) (timeLimit uint16, clientLimit uint8, roundLimit uint8) {
-	return reader.ReadU16(), reader.ReadU8(), reader.ReadU8()
+func ReadCreateRoom(reader *util.ByteReader) (timeLimit uint8, roundLimit uint8, clientLimit uint8) {
+	return reader.ReadU8(), reader.ReadU8(), reader.ReadU8()
 }
 
 func ReadJoinRoom(reader *util.ByteReader) (id string) {
@@ -76,40 +83,76 @@ func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
  * Server-to-client packets
  */
 
-func WriteRoomResponse(writer *util.ByteWriter, success bool, reason string) {
-	writer.WriteU8(uint8(RoomResponse))
-	writer.WriteBool(success)
-	writer.WriteString(reason)
+const (
+	defaultRoomResponseSize  = 4
+	defaultRoomDestroyedSize = 3
+	defaultRoomDataSize      = 7
+	defaultRoomClientsSize   = 2
+	defaultRoomWordsSize     = 2
+	defaultRoomSentencesSize = 2
+)
+
+func WriteRoomResponse(success bool, reason string) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomResponseSize)
+
+	writer.Write(
+		uint8(RoomDestroyed),
+		success,
+		reason,
+	)
+
+	return writer
 }
 
-func WriteRoomDestroyed(writer *util.ByteWriter, reason string) {
-	writer.WriteU8(uint8(RoomDestroyed))
-	writer.WriteString(reason)
+func WriteRoomDestroyed(reason string) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomDestroyedSize)
+
+	writer.Write(
+		uint8(RoomDestroyed),
+		reason,
+	)
+
+	return writer
 }
 
-func WriteRoomData(writer *util.ByteWriter, room *Room) {
-	writer.WriteU8(uint8(RoomData))
-	writer.WriteU8(uint8(room.State.State()))
-	writer.WriteU16(room.TimeLeft)
-	writer.WriteU16(room.TimeLimit)
-	writer.WriteU8(room.ClientLimit)
-	writer.WriteU8(room.Round)
-	writer.WriteU8(room.RoundLimit)
+func WriteRoomData(room *Room) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomDataSize)
+
+	writer.Write(
+		uint8(RoomData),
+		uint8(room.State.State()),
+		room.TimeLeft,
+		room.TimeLimit,
+		room.ClientLimit,
+		room.Round,
+		room.RoundLimit,
+	)
+
+	return writer
 }
 
-func WriteRoomClients(writer *util.ByteWriter, clients []*clients.Client) {
-	writer.WriteU8(uint8(RoomClients))
-	writer.WriteU8(uint8(len(clients)))
+func WriteRoomClients(clients []*clients.Client) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomClientsSize)
+
+	writer.Write(
+		uint8(RoomClients),
+		uint8(len(clients)),
+	)
 
 	for _, client := range clients {
-		writer.WriteString(client.ID)
-		writer.WriteString(client.Name)
+		writer.Write(client.ID, client.Name)
 	}
+
+	return writer
 }
 
-func WriteRoomWords(writer *util.ByteWriter, wordbanks []words.Wordbank) {
-	writer.WriteU8(uint8(RoomWords))
-	writer.WriteU8(uint8(len(wordbanks)))
+func WriteRoomWords(wordbanks []words.Wordbank) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomWordsSize)
+
+	writer.Write(
+		uint8(RoomWords),
+		uint8(len(wordbanks)),
+	)
 
 	for _, bank := range wordbanks {
 		writer.WriteU8(uint8(len(bank)))
@@ -118,18 +161,28 @@ func WriteRoomWords(writer *util.ByteWriter, wordbanks []words.Wordbank) {
 			writer.WriteString(word)
 		}
 	}
+
+	return writer
 }
 
-func WriteRoomSentences(writer *util.ByteWriter, sentences []words.Sentence) {
-	writer.WriteU8(uint8(RoomSentences))
-	writer.WriteU8(uint8(len(sentences)))
+func WriteRoomSentences(sentences []words.Sentence) *util.ByteWriter {
+	writer := util.NewByteWriter(defaultRoomSentencesSize)
+
+	writer.Write(
+		uint8(RoomSentences),
+		uint8(len(sentences)),
+	)
 
 	for _, sentence := range sentences {
 		writer.WriteU8(uint8(len(sentence.Words)))
 
 		for _, entry := range sentence.Words {
-			writer.WriteU8(uint8(entry.BankIndex))
-			writer.WriteU8(uint8(entry.WordIndex))
+			writer.Write(
+				uint8(entry.BankIndex),
+				uint8(entry.WordIndex),
+			)
 		}
 	}
+
+	return writer
 }
