@@ -67,7 +67,7 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		} else if room := rooms.NewRoom(client, data); room == nil {
 			rooms.SendCreateJoinRoomError(client, rooms.NewRoomErrorMessage)
 		} else {
-			rooms.AddClient(room, client)
+			rooms.AddClient(room, client, data.OwnerName)
 		}
 
 	case rooms.JoinRoomPacket:
@@ -80,7 +80,7 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		} else if len(room.Clients) >= int(room.ClientLimit) {
 			rooms.SendCreateJoinRoomError(client, "Room is full.")
 		} else {
-			rooms.AddClient(room, client)
+			rooms.AddClient(room, client, name)
 		}
 
 	case rooms.LeaveRoomPacket:
@@ -107,6 +107,16 @@ func handlePacket(client *clients.Client, bytes []byte) {
 	}
 }
 
+func closeHandler(client *clients.Client, _ int, _ string) error {
+	if room := rooms.GetRoom(client.RoomID); room != nil {
+		rooms.RemoveClient(room, client)
+	}
+
+	log.Printf("Disconnected: %s", client.Socket.RemoteAddr())
+
+	return nil
+}
+
 // socketHandler is a basic handler for socket connections.
 func socketHandler(writer http.ResponseWriter, req *http.Request) {
 	if conn, err := upgrader.Upgrade(writer, req, nil); err != nil {
@@ -118,6 +128,8 @@ func socketHandler(writer http.ResponseWriter, req *http.Request) {
 			log.Printf("[Error] Failed to create client for socket: %s", err)
 			conn.Close()
 		} else {
+			conn.SetCloseHandler(func(code int, text string) error { return closeHandler(client, code, text) })
+
 			for {
 				if msgType, message, err := conn.ReadMessage(); err != nil {
 					if websocket.IsUnexpectedCloseError(err) {

@@ -102,7 +102,6 @@ func NewRoom(owner *clients.Client, data *CreateRoomData) *Room {
 		id := generateID()
 
 		if _, has := rooms[id]; !has {
-			owner.Name = data.OwnerName
 			room = &Room{
 				ID:          id,
 				Owner:       owner,
@@ -141,7 +140,10 @@ func GetRoom(id string) *Room {
 
 // AddClient adds client to room, then retransmits the client list to all clients, room data, words (if applicable),
 // and sentences (if applicable).
-func AddClient(room *Room, client *clients.Client) {
+func AddClient(room *Room, client *clients.Client, name string) {
+	client.RoomID = room.ID
+	client.Name = name
+
 	room.Clients = append(room.Clients, client)
 	SendRoomClients(room, room.Clients)
 

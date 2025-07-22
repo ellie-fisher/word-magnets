@@ -123,9 +123,9 @@ func SendRoomData(trans Transmitter, room *Room) error {
 		room.State.State(),
 		room.TimeLeft,
 		room.TimeLimit,
-		room.ClientLimit,
 		room.Round,
 		room.RoundLimit,
+		room.ClientLimit,
 	)
 
 	if err != nil {
