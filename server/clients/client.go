@@ -15,7 +15,7 @@ import (
 
 type Client struct {
 	ID     string
-	Socket *websocket.Conn // TODO: Sockets
+	Socket *websocket.Conn
 	RoomID string
 	Name   string
 	Vote   string

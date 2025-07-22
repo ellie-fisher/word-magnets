@@ -10,6 +10,9 @@ package rooms
 
 import (
 	"log"
+	"math/rand"
+	"slices"
+	"strconv"
 	"word-magnets/clients"
 	"word-magnets/words"
 )
@@ -39,4 +42,94 @@ func (room *Room) Send(bytes []byte) error {
 	}
 
 	return nil
+}
+
+// Rooms are stored by ID=>Room
+var rooms = make(map[string]*Room)
+
+const newRoomAttempts = 20
+const roomIDLength = 10
+
+// Only letters and numbers that can't be mistaken for each other.
+const roomIDChars = "ACDEFGHJKLMNPQRTVWXY379"
+
+var NewRoomErrorMessage = ""
+
+func init() {
+	NewRoomErrorMessage = "Failed to create a room with a unique code after " + strconv.Itoa(newRoomAttempts) + " attempt"
+
+	if newRoomAttempts != 1 {
+		NewRoomErrorMessage += "s"
+	}
+}
+
+func generateID() string {
+	id := ""
+	charsLen := len(roomIDChars)
+
+	for range roomIDLength {
+		id += string(roomIDChars[rand.Intn(charsLen)])
+	}
+
+	return id
+}
+
+// NewRoom attempts to create a new room, returning nil if it can't generate a unique ID.
+func NewRoom(owner *clients.Client, data *CreateRoomData) *Room {
+	var room *Room
+
+	for range newRoomAttempts {
+		id := generateID()
+
+		if _, has := rooms[id]; !has {
+			owner.Name = data.OwnerName
+			room = &Room{
+				ID:          id,
+				Owner:       owner,
+				Clients:     []*clients.Client{},
+				TimeLimit:   data.TimeLimit,
+				RoundLimit:  data.RoundLimit,
+				ClientLimit: data.ClientLimit,
+			}
+
+			rooms[id] = room
+		}
+	}
+
+	return room
+}
+
+// DestroyRoom sends a packet to all clients that the room was destroyed and deletes the room.
+func DestroyRoom(room *Room) {
+	SendRoomDestroyed(room, "The room was shut down.")
+	delete(rooms, room.ID)
+
+	for _, client := range room.Clients {
+		client.RoomID = ""
+	}
+}
+
+func AddClient(room *Room, client *clients.Client) {
+	room.Clients = append(room.Clients, client)
+	SendRoomClients(room, room.Clients)
+
+	SendRoomData(client, room)
+	SendRoomWords(client, room.Wordbanks)
+	SendRoomSentences(client, room.Sentences)
+}
+
+func RemoveClient(room *Room, client *clients.Client) {
+	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
+		return check.ID == client.ID
+	})
+
+	if index >= 0 {
+		if client.ID == room.Owner.ID {
+			DestroyRoom(room)
+		} else {
+			room.Clients = slices.Delete(room.Clients, index, index+1)
+			client.RoomID = ""
+			SendRoomClients(room, room.Clients)
+		}
+	}
 }

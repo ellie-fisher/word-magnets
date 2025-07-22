@@ -21,22 +21,22 @@ const (
 
 	/* Client=>Server */
 
-	CreateRoom
-	JoinRoom
-	LeaveRoom
-	RemoveClient
-	SubmitSentence
-	SubmitVote
+	CreateRoomPacket
+	JoinRoomPacket
+	LeaveRoomPacket
+	RemoveClientPacket
+	SubmitSentencePacket
+	SubmitVotePacket
 
 	/* Server=>Client */
 
-	RoomResponse // Response to attempting to create or join a room.
-	RoomDestroyed
+	CreateJoinRoomErrorPacket
+	RoomDestroyedPacket
 
-	RoomData
-	RoomClients
-	RoomWords
-	RoomSentences
+	RoomDataPacket
+	RoomClientsPacket
+	RoomWordsPacket
+	RoomSentencesPacket
 )
 
 // Transmitter is any struct that can send binary packets.
@@ -64,8 +64,8 @@ func ReadCreateRoom(reader *util.ByteReader) *CreateRoomData {
 	}
 }
 
-func ReadJoinRoom(reader *util.ByteReader) (id string) {
-	return reader.ReadString()
+func ReadJoinRoom(reader *util.ByteReader) (id string, clientName string) {
+	return reader.ReadString(), reader.ReadString()
 }
 
 func ReadLeaveRoom(reader *util.ByteReader) {}
@@ -94,24 +94,18 @@ func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
  */
 
 const (
-	defaultRoomResponseSize  = 4
-	defaultRoomDestroyedSize = 3
-	defaultRoomDataSize      = 7
-	defaultRoomClientsSize   = 2
-	defaultRoomWordsSize     = 2
-	defaultRoomSentencesSize = 2
+	defaultCreateJoinRoomErrorSize = 4
+	defaultRoomDestroyedSize       = 3
+	defaultRoomDataSize            = 7
+	defaultRoomClientsSize         = 2
+	defaultRoomWordsSize           = 2
+	defaultRoomSentencesSize       = 2
 )
 
-func SendRoomResponse(trans Transmitter, success bool, message string) error {
-	writer := util.NewByteWriter(defaultRoomResponseSize)
+func SendCreateJoinRoomError(trans Transmitter, message string) error {
+	writer := util.NewByteWriter(defaultCreateJoinRoomErrorSize)
 
-	err := writer.Write(
-		RoomDestroyed,
-		success,
-		message,
-	)
-
-	if err != nil {
+	if err := writer.Write(CreateJoinRoomErrorPacket, message); err != nil {
 		return err
 	}
 
@@ -121,7 +115,7 @@ func SendRoomResponse(trans Transmitter, success bool, message string) error {
 func SendRoomDestroyed(trans Transmitter, reason string) error {
 	writer := util.NewByteWriter(defaultRoomDestroyedSize)
 
-	if err := writer.Write(RoomDestroyed, reason); err != nil {
+	if err := writer.Write(RoomDestroyedPacket, reason); err != nil {
 		return err
 	}
 
@@ -132,7 +126,7 @@ func SendRoomData(trans Transmitter, room *Room) error {
 	writer := util.NewByteWriter(defaultRoomDataSize)
 
 	err := writer.Write(
-		RoomData,
+		RoomDataPacket,
 		room.State.State(),
 		room.TimeLeft,
 		room.TimeLimit,
@@ -152,7 +146,7 @@ func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
 	writer := util.NewByteWriter(defaultRoomClientsSize)
 
 	err := writer.Write(
-		RoomClients,
+		RoomClientsPacket,
 		uint8(len(clients)),
 	)
 
@@ -174,7 +168,7 @@ func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
 func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
 	writer := util.NewByteWriter(defaultRoomWordsSize)
 
-	if err := writer.Write(RoomWords, uint8(len(wordbanks))); err != nil {
+	if err := writer.Write(RoomWordsPacket, uint8(len(wordbanks))); err != nil {
 		return err
 	}
 
@@ -193,7 +187,7 @@ func SendRoomSentences(trans Transmitter, sentences []words.Sentence) error {
 	writer := util.NewByteWriter(defaultRoomSentencesSize)
 
 	err := writer.Write(
-		RoomSentences,
+		RoomSentencesPacket,
 		uint8(len(sentences)),
 	)
 

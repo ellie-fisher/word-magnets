@@ -16,6 +16,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
+	"word-magnets/clients"
+	"word-magnets/rooms"
 	"word-magnets/util"
 )
 
@@ -49,6 +51,34 @@ func checkOrigin(req *http.Request) bool {
 	return util.EqualFold(reqHostname, originURL.Hostname()) && originURL.Port() == httpPort && reqPort == socketPort
 }
 
+func handlePacket(client *clients.Client, bytes []byte) {
+	if len(bytes) <= 0 {
+		return
+	}
+
+	reader := util.NewByteReader(bytes)
+
+	switch rooms.PacketType(reader.ReadU8()) {
+	case rooms.CreateRoomPacket:
+		data := rooms.ReadCreateRoom(reader)
+
+		if success, message := rooms.ValidateRoomData(data); !success {
+			rooms.SendCreateJoinRoomError(client, message)
+		} else if room := rooms.NewRoom(client, data); room != nil {
+			rooms.SendCreateJoinRoomError(client, rooms.NewRoomErrorMessage)
+		} else {
+			rooms.AddClient(room, client)
+		}
+
+	// TODO:
+	case rooms.JoinRoomPacket:
+	case rooms.LeaveRoomPacket:
+	case rooms.RemoveClientPacket:
+	case rooms.SubmitSentencePacket:
+	case rooms.SubmitVotePacket:
+	}
+}
+
 // socketHandler is a basic handler for socket connections.
 func socketHandler(writer http.ResponseWriter, req *http.Request) {
 	if conn, err := upgrader.Upgrade(writer, req, nil); err != nil {
@@ -56,21 +86,20 @@ func socketHandler(writer http.ResponseWriter, req *http.Request) {
 	} else {
 		log.Printf("New connection: %s", conn.RemoteAddr())
 
-		for {
-			msgType, message, err := conn.ReadMessage()
+		if client, err := clients.NewClient(conn); err != nil {
+			log.Printf("[Error] Failed to create client for socket: %s", err)
+			conn.Close()
+		} else {
+			for {
+				if msgType, message, err := conn.ReadMessage(); err != nil {
+					if websocket.IsUnexpectedCloseError(err) {
+						log.Printf("[Error] Socket error: %s", err)
+					}
 
-			if err != nil {
-				if websocket.IsUnexpectedCloseError(err) {
-					log.Printf("[Error] Socket error: %s", err)
+					break
+				} else if msgType == websocket.BinaryMessage {
+					handlePacket(client, message)
 				}
-
-				break
-			}
-
-			if msgType == websocket.BinaryMessage {
-				log.Printf("Message received (%d): %X", msgType, message)
-			} else {
-				log.Printf("Message received (%d): %s", msgType, message)
 			}
 		}
 	}
