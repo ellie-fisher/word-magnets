@@ -16,7 +16,7 @@ import (
 	"word-magnets/words"
 )
 
-type PacketType uint8
+type PacketType = uint8
 
 const (
 	Invalid PacketType = iota
@@ -92,35 +92,38 @@ const (
 	defaultRoomSentencesSize = 2
 )
 
-func WriteRoomResponse(success bool, reason string) *util.ByteWriter {
+func SendRoomResponse(conn *websocket.Conn, success bool, message string) error {
 	writer := util.NewByteWriter(defaultRoomResponseSize)
 
-	writer.Write(
-		uint8(RoomDestroyed),
+	err := writer.Write(
+		RoomDestroyed,
 		success,
-		reason,
+		message,
 	)
 
-	return writer
+	if err != nil {
+		return err
+	}
+
+	return SendPacket(conn, writer)
 }
 
-func WriteRoomDestroyed(reason string) *util.ByteWriter {
+func SendRoomDestroyed(conn *websocket.Conn, reason string) error {
 	writer := util.NewByteWriter(defaultRoomDestroyedSize)
 
-	writer.Write(
-		uint8(RoomDestroyed),
-		reason,
-	)
+	if err := writer.Write(RoomDestroyed, reason); err != nil {
+		return err
+	}
 
-	return writer
+	return SendPacket(conn, writer)
 }
 
-func WriteRoomData(room *Room) *util.ByteWriter {
+func SendRoomData(conn *websocket.Conn, room *Room) error {
 	writer := util.NewByteWriter(defaultRoomDataSize)
 
-	writer.Write(
-		uint8(RoomData),
-		uint8(room.State.State()),
+	err := writer.Write(
+		RoomData,
+		room.State.State(),
 		room.TimeLeft,
 		room.TimeLimit,
 		room.ClientLimit,
@@ -128,31 +131,42 @@ func WriteRoomData(room *Room) *util.ByteWriter {
 		room.RoundLimit,
 	)
 
-	return writer
+	if err != nil {
+		return err
+	}
+
+	return SendPacket(conn, writer)
 }
 
-func WriteRoomClients(clients []*clients.Client) *util.ByteWriter {
+func SendRoomClients(conn *websocket.Conn, clients []*clients.Client) error {
 	writer := util.NewByteWriter(defaultRoomClientsSize)
 
-	writer.Write(
-		uint8(RoomClients),
+	err := writer.Write(
+		RoomClients,
 		uint8(len(clients)),
 	)
 
-	for _, client := range clients {
-		writer.Write(client.ID, client.Name)
+	if err == nil {
+		for _, client := range clients {
+			if err = writer.Write(client.ID, client.Name); err != nil {
+				break
+			}
+		}
 	}
 
-	return writer
+	if err != nil {
+		return err
+	}
+
+	return SendPacket(conn, writer)
 }
 
-func WriteRoomWords(wordbanks []words.Wordbank) *util.ByteWriter {
+func SendRoomWords(conn *websocket.Conn, wordbanks []words.Wordbank) error {
 	writer := util.NewByteWriter(defaultRoomWordsSize)
 
-	writer.Write(
-		uint8(RoomWords),
-		uint8(len(wordbanks)),
-	)
+	if err := writer.Write(RoomWords, uint8(len(wordbanks))); err != nil {
+		return err
+	}
 
 	for _, bank := range wordbanks {
 		writer.WriteU8(uint8(len(bank)))
@@ -162,27 +176,32 @@ func WriteRoomWords(wordbanks []words.Wordbank) *util.ByteWriter {
 		}
 	}
 
-	return writer
+	return SendPacket(conn, writer)
 }
 
-func WriteRoomSentences(sentences []words.Sentence) *util.ByteWriter {
+func SendRoomSentences(conn *websocket.Conn, sentences []words.Sentence) error {
 	writer := util.NewByteWriter(defaultRoomSentencesSize)
 
-	writer.Write(
-		uint8(RoomSentences),
+	err := writer.Write(
+		RoomSentences,
 		uint8(len(sentences)),
 	)
 
-	for _, sentence := range sentences {
-		writer.WriteU8(uint8(len(sentence.Words)))
+	if err == nil {
+		for _, sentence := range sentences {
+			writer.WriteU8(uint8(len(sentence.Words)))
 
-		for _, entry := range sentence.Words {
-			writer.Write(
-				uint8(entry.BankIndex),
-				uint8(entry.WordIndex),
-			)
+			for _, entry := range sentence.Words {
+				if err = writer.Write(uint8(entry.BankIndex), uint8(entry.WordIndex)); err != nil {
+					break
+				}
+			}
 		}
 	}
 
-	return writer
+	if err != nil {
+		return err
+	}
+
+	return SendPacket(conn, writer)
 }

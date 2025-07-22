@@ -9,8 +9,8 @@
 package words
 
 type WordEntry struct {
-	BankIndex int
-	WordIndex int
+	BankIndex uint8
+	WordIndex uint8
 }
 
 type Sentence struct {

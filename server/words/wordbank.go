@@ -9,4 +9,12 @@
 package words
 
 type Wordbank []string
-type WordType uint8
+type WordType = uint8
+
+const (
+	Noun WordType = iota
+	Adjective
+	Verb
+	Pronoun
+	Miscellaneous
+)

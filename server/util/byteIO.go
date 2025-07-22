@@ -59,6 +59,12 @@ func NewByteReader(bytes []byte) *ByteReader {
  * ByteWriter
  */
 
+type ByteWriterErr struct{}
+
+func (err *ByteWriterErr) Error() string {
+	return "Failed to write one or more value(s)"
+}
+
 type ByteWriter struct {
 	index int
 	bytes []byte
@@ -98,9 +104,7 @@ func (writer *ByteWriter) WriteString(value string) bool {
 	return truncated
 }
 
-func (writer *ByteWriter) Write(values ...any) bool {
-	success := true
-
+func (writer *ByteWriter) Write(values ...any) error {
 	for _, value := range values {
 		switch cast := value.(type) {
 		case uint8:
@@ -109,16 +113,12 @@ func (writer *ByteWriter) Write(values ...any) bool {
 			writer.WriteBool(cast)
 		case string:
 			writer.WriteString(cast)
-		case int:
-			writer.WriteU8(uint8(cast))
-		case uint:
-			writer.WriteU8(uint8(cast))
 		default:
-			success = false
+			return &ByteWriterErr{}
 		}
 	}
 
-	return success
+	return nil
 }
 
 func NewByteWriter(size int) *ByteWriter {

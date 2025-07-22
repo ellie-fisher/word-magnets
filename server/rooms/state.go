@@ -8,7 +8,7 @@
 
 package rooms
 
-type StateTag uint8
+type StateTag = uint8
 
 const (
 	LobbyTag StateTag = iota
