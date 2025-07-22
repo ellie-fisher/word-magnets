@@ -22,8 +22,16 @@ var clientLimitValidator = util.FieldValidator{Min: 2, Max: 10}
 func init() {
 	/* Cache error messages so we're not calculating them every single time. */
 
-	timeLimitValidator.MinError = "Time limit must be at least " + strconv.Itoa(int(timeLimitValidator.Min))
-	timeLimitValidator.MaxError = "Time limit cannot be more than " + strconv.Itoa(int(timeLimitValidator.Max))
+	timeLimitValidator.MinError = "Time limit must be at least " + strconv.Itoa(int(timeLimitValidator.Min)) + " second"
+	timeLimitValidator.MaxError = "Time limit cannot be more than " + strconv.Itoa(int(timeLimitValidator.Max)) + " second"
+
+	if timeLimitValidator.Min != 1 {
+		timeLimitValidator.MinError += "s"
+	}
+
+	if timeLimitValidator.Max != 1 {
+		timeLimitValidator.MaxError += "s"
+	}
 
 	roundLimitValidator.MinError = "Round limit must be at least " + strconv.Itoa(int(roundLimitValidator.Min))
 	roundLimitValidator.MaxError = "Round limit cannot be more than " + strconv.Itoa(int(roundLimitValidator.Max))
