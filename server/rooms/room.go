@@ -44,6 +44,22 @@ func (room *Room) Send(bytes []byte) error {
 	return nil
 }
 
+// GetClient attempts to get the client with the ID of id, returning nil if not found.
+func (room *Room) GetClient(id string) *clients.Client {
+	for _, client := range room.Clients {
+		if client.ID == id {
+			return client
+		}
+	}
+
+	return nil
+}
+
+// IsOwner checks if id is the room owner's ID.
+func (room *Room) IsOwner(id string) bool {
+	return room.Owner.ID == id
+}
+
 // Rooms are stored by ID=>Room
 var rooms = make(map[string]*Room)
 
