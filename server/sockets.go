@@ -64,7 +64,7 @@ func handlePacket(client *clients.Client, bytes []byte) {
 
 		if success, message := rooms.ValidateRoomData(data); !success {
 			rooms.SendCreateJoinRoomError(client, message)
-		} else if room := rooms.NewRoom(client, data); room != nil {
+		} else if room := rooms.NewRoom(client, data); room == nil {
 			rooms.SendCreateJoinRoomError(client, rooms.NewRoomErrorMessage)
 		} else {
 			rooms.AddClient(room, client)
