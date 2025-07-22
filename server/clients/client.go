@@ -9,16 +9,9 @@
 package clients
 
 import (
-	"strconv"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
-
-const minNameLen = uint8(1)
-const maxNameLen = uint8(16)
-
-var nameLengthError = ""
 
 type Client struct {
 	ID     string
@@ -29,28 +22,16 @@ type Client struct {
 	Score  uint8
 }
 
-func init() {
-	// Cache error message so we're not calculating it every single time.
-	nameLengthError = "Name must be " + strconv.Itoa(int(minNameLen)) + "-" + strconv.Itoa(int(maxNameLen)) + " character(s) long"
-}
-
 // Send transmits a binary packet to the client.
 func (client *Client) Send(bytes []byte) error {
 	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
 }
 
+// NewClient attempts to generate a UUID and then create a Client object, returning nil if it fails.
 func NewClient(conn *websocket.Conn) (*Client, error) {
 	if uuid, err := uuid.NewRandom(); err != nil {
 		return nil, err
 	} else {
 		return &Client{ID: uuid.String(), Socket: conn}, nil
 	}
-}
-
-func ValidateName(name string) (bool, string) {
-	if len(name) < int(minNameLen) || len(name) > int(maxNameLen) {
-		return false, nameLengthError
-	}
-
-	return true, ""
 }

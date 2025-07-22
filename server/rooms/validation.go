@@ -10,27 +10,26 @@ package rooms
 
 import (
 	"strconv"
+
 	"word-magnets/clients"
+	"word-magnets/util"
 )
 
-const minTimeLimit = uint8(30)
-const minRoundLimit = uint8(1)
-const minClientLimit = uint8(2)
-
-const maxTimeLimit = uint8(120)
-const maxRoundLimit = uint8(12)
-const maxClientLimit = uint8(12)
-
-var timeLimitError = ""
-var roundLimitError = ""
-var clientLimitError = ""
+var timeLimitValidator = util.FieldValidator{Min: 30, Max: 120}
+var roundLimitValidator = util.FieldValidator{Min: 1, Max: 12}
+var clientLimitValidator = util.FieldValidator{Min: 2, Max: 10}
 
 func init() {
 	/* Cache error messages so we're not calculating them every single time. */
 
-	timeLimitError = "Time limit must be in range " + strconv.Itoa(int(minTimeLimit)) + "-" + strconv.Itoa(int(maxTimeLimit))
-	roundLimitError = "Round limit must be in range " + strconv.Itoa(int(minRoundLimit)) + "-" + strconv.Itoa(int(maxRoundLimit))
-	clientLimitError = "Client limit must be in range " + strconv.Itoa(int(minClientLimit)) + "-" + strconv.Itoa(int(maxClientLimit))
+	timeLimitValidator.MinError = "Time limit must be at least " + strconv.Itoa(int(timeLimitValidator.Min))
+	timeLimitValidator.MaxError = "Time limit cannot be more than " + strconv.Itoa(int(timeLimitValidator.Max))
+
+	roundLimitValidator.MinError = "Round limit must be at least " + strconv.Itoa(int(roundLimitValidator.Min))
+	roundLimitValidator.MaxError = "Round limit cannot be more than " + strconv.Itoa(int(roundLimitValidator.Max))
+
+	clientLimitValidator.MinError = "Client limit must be at least " + strconv.Itoa(int(clientLimitValidator.Min))
+	clientLimitValidator.MaxError = "Client limit cannot be more than " + strconv.Itoa(int(clientLimitValidator.Max))
 }
 
 func ValidateRoomData(data *CreateRoomData) (success bool, message string) {
@@ -38,16 +37,16 @@ func ValidateRoomData(data *CreateRoomData) (success bool, message string) {
 		return success, message
 	}
 
-	if data.TimeLimit < minTimeLimit || data.TimeLimit > maxTimeLimit {
-		return false, timeLimitError
+	if success, message := timeLimitValidator.ValidateU8(data.TimeLimit); !success {
+		return success, message
 	}
 
-	if data.RoundLimit < minRoundLimit || data.RoundLimit > maxRoundLimit {
-		return false, roundLimitError
+	if success, message := roundLimitValidator.ValidateU8(data.RoundLimit); !success {
+		return success, message
 	}
 
-	if data.ClientLimit < minClientLimit || data.ClientLimit > maxClientLimit {
-		return false, clientLimitError
+	if success, message := clientLimitValidator.ValidateU8(data.ClientLimit); !success {
+		return success, message
 	}
 
 	return true, ""

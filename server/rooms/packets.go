@@ -9,6 +9,7 @@
 package rooms
 
 import (
+	"strings"
 	"word-magnets/clients"
 	"word-magnets/util"
 	"word-magnets/words"
@@ -17,7 +18,7 @@ import (
 type PacketType = uint8
 
 const (
-	Invalid PacketType = iota
+	InvalidPacket PacketType = iota
 
 	/* Client=>Server */
 
@@ -57,7 +58,7 @@ type CreateRoomData struct {
 
 func ReadCreateRoom(reader *util.ByteReader) *CreateRoomData {
 	return &CreateRoomData{
-		OwnerName:   reader.ReadString(),
+		OwnerName:   strings.TrimSpace(reader.ReadString()),
 		TimeLimit:   reader.ReadU8(),
 		RoundLimit:  reader.ReadU8(),
 		ClientLimit: reader.ReadU8(),
@@ -65,7 +66,7 @@ func ReadCreateRoom(reader *util.ByteReader) *CreateRoomData {
 }
 
 func ReadJoinRoom(reader *util.ByteReader) (id string, clientName string) {
-	return reader.ReadString(), reader.ReadString()
+	return reader.ReadString(), strings.TrimSpace(reader.ReadString())
 }
 
 func ReadLeaveRoom(reader *util.ByteReader) {}
