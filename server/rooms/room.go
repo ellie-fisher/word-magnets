@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"slices"
 	"strconv"
+
 	"word-magnets/clients"
 	"word-magnets/words"
 )
@@ -72,6 +73,8 @@ const roomIDChars = "ACDEFGHJKLMNPQRTVWXY379"
 var NewRoomErrorMessage = ""
 
 func init() {
+	/* Cache error message so we're not calculating it every single time. */
+
 	NewRoomErrorMessage = "Failed to create a room with a unique code after " + strconv.Itoa(newRoomAttempts) + " attempt"
 
 	if newRoomAttempts != 1 {
@@ -79,6 +82,7 @@ func init() {
 	}
 }
 
+// generateID generates a random room ID based on roomIDChars.
 func generateID() string {
 	id := ""
 	charsLen := len(roomIDChars)
@@ -125,6 +129,7 @@ func DestroyRoom(room *Room) {
 	}
 }
 
+// GetRoom attempts to get room from id, returning nil otherwise.
 func GetRoom(id string) *Room {
 	if room, has := rooms[id]; has {
 		return room
@@ -133,6 +138,7 @@ func GetRoom(id string) *Room {
 	}
 }
 
+// AddClient adds client to room, then transmits the client list, room data, words (if applicable), and sentences (if applicable).
 func AddClient(room *Room, client *clients.Client) {
 	room.Clients = append(room.Clients, client)
 	SendRoomClients(room, room.Clients)
@@ -142,6 +148,7 @@ func AddClient(room *Room, client *clients.Client) {
 	SendRoomSentences(client, room.Sentences)
 }
 
+// RemoveClient removes client from room, destroying room if client is the owner.
 func RemoveClient(room *Room, client *clients.Client) {
 	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
 		return check.ID == client.ID
