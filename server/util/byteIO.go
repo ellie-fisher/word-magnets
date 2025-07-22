@@ -8,7 +8,9 @@
 
 package util
 
-import "slices"
+import (
+	"slices"
+)
 
 const MaxStringLength = 255
 
@@ -93,16 +95,17 @@ func (writer *ByteWriter) WriteBool(value bool) {
 }
 
 func (writer *ByteWriter) WriteString(value string) bool {
-	truncated := len(value) > MaxStringLength
+	bytes := []byte(value)
+	truncated := len(bytes) > MaxStringLength
 
 	if truncated {
-		value = value[:MaxStringLength+1]
+		bytes = bytes[:MaxStringLength+1]
 	}
 
-	writer.WriteU8(uint8(len(value)))
+	writer.WriteU8(uint8(len(bytes)))
 
-	writer.bytes = slices.Concat(writer.bytes, []byte(value))
-	writer.index += len(value)
+	writer.bytes = slices.Concat(writer.bytes, bytes)
+	writer.index += len(bytes)
 
 	return truncated
 }

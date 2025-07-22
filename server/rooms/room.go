@@ -113,6 +113,7 @@ func NewRoom(owner *clients.Client, data *CreateRoomData) *Room {
 			}
 
 			rooms[id] = room
+			break
 		}
 	}
 
@@ -138,7 +139,8 @@ func GetRoom(id string) *Room {
 	}
 }
 
-// AddClient adds client to room, then transmits the client list, room data, words (if applicable), and sentences (if applicable).
+// AddClient adds client to room, then retransmits the client list to all clients, room data, words (if applicable),
+// and sentences (if applicable).
 func AddClient(room *Room, client *clients.Client) {
 	room.Clients = append(room.Clients, client)
 	SendRoomClients(room, room.Clients)

@@ -76,7 +76,7 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		if success, message := clients.ValidateName(name); !success {
 			rooms.SendCreateJoinRoomError(client, message)
 		} else if room := rooms.GetRoom(id); room == nil {
-			rooms.SendCreateJoinRoomError(client, "Room does not exist.")
+			rooms.SendCreateJoinRoomError(client, "Room not found.")
 		} else if len(room.Clients) >= int(room.ClientLimit) {
 			rooms.SendCreateJoinRoomError(client, "Room is full.")
 		} else {

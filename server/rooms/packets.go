@@ -94,17 +94,8 @@ func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
  * Server-to-client packets
  */
 
-const (
-	defaultCreateJoinRoomErrorSize = 4
-	defaultRoomDestroyedSize       = 3
-	defaultRoomDataSize            = 7
-	defaultRoomClientsSize         = 2
-	defaultRoomWordsSize           = 2
-	defaultRoomSentencesSize       = 2
-)
-
 func SendCreateJoinRoomError(trans Transmitter, message string) error {
-	writer := util.NewByteWriter(defaultCreateJoinRoomErrorSize)
+	writer := util.NewByteWriter(0)
 
 	if err := writer.Write(CreateJoinRoomErrorPacket, message); err != nil {
 		return err
@@ -114,7 +105,7 @@ func SendCreateJoinRoomError(trans Transmitter, message string) error {
 }
 
 func SendRoomDestroyed(trans Transmitter, reason string) error {
-	writer := util.NewByteWriter(defaultRoomDestroyedSize)
+	writer := util.NewByteWriter(0)
 
 	if err := writer.Write(RoomDestroyedPacket, reason); err != nil {
 		return err
@@ -124,10 +115,11 @@ func SendRoomDestroyed(trans Transmitter, reason string) error {
 }
 
 func SendRoomData(trans Transmitter, room *Room) error {
-	writer := util.NewByteWriter(defaultRoomDataSize)
+	writer := util.NewByteWriter(0)
 
 	err := writer.Write(
 		RoomDataPacket,
+		room.ID,
 		room.State.State(),
 		room.TimeLeft,
 		room.TimeLimit,
@@ -144,7 +136,7 @@ func SendRoomData(trans Transmitter, room *Room) error {
 }
 
 func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
-	writer := util.NewByteWriter(defaultRoomClientsSize)
+	writer := util.NewByteWriter(0)
 
 	err := writer.Write(
 		RoomClientsPacket,
@@ -167,7 +159,7 @@ func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
 }
 
 func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
-	writer := util.NewByteWriter(defaultRoomWordsSize)
+	writer := util.NewByteWriter(0)
 
 	if err := writer.Write(RoomWordsPacket, uint8(len(wordbanks))); err != nil {
 		return err
@@ -185,7 +177,7 @@ func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
 }
 
 func SendRoomSentences(trans Transmitter, sentences []words.Sentence) error {
-	writer := util.NewByteWriter(defaultRoomSentencesSize)
+	writer := util.NewByteWriter(0)
 
 	err := writer.Write(
 		RoomSentencesPacket,
