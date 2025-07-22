@@ -9,8 +9,6 @@
 package rooms
 
 import (
-	"github.com/gorilla/websocket"
-
 	"word-magnets/clients"
 	"word-magnets/util"
 	"word-magnets/words"
@@ -41,17 +39,29 @@ const (
 	RoomSentences
 )
 
-// SendPacket sends a packet to a WebSocket connection.
-func SendPacket(conn *websocket.Conn, writer *util.ByteWriter) error {
-	return conn.WriteMessage(websocket.BinaryMessage, writer.Bytes())
+// Transmitter is any struct that can send binary packets.
+type Transmitter interface {
+	Send(bytes []byte) error
 }
 
 /**
  * Client-to-server packets
  */
 
-func ReadCreateRoom(reader *util.ByteReader) (timeLimit uint8, roundLimit uint8, clientLimit uint8) {
-	return reader.ReadU8(), reader.ReadU8(), reader.ReadU8()
+type CreateRoomData struct {
+	OwnerName   string
+	TimeLimit   uint8
+	RoundLimit  uint8
+	ClientLimit uint8
+}
+
+func ReadCreateRoom(reader *util.ByteReader) *CreateRoomData {
+	return &CreateRoomData{
+		OwnerName:   reader.ReadString(),
+		TimeLimit:   reader.ReadU8(),
+		RoundLimit:  reader.ReadU8(),
+		ClientLimit: reader.ReadU8(),
+	}
 }
 
 func ReadJoinRoom(reader *util.ByteReader) (id string) {
@@ -69,7 +79,7 @@ func ReadSubmitSentence(reader *util.ByteReader) words.Sentence {
 	length := reader.ReadU8()
 
 	for range length {
-		sentence.Words = append(sentence.Words, &words.WordEntry{int(reader.ReadU8()), int(reader.ReadU8())})
+		sentence.Words = append(sentence.Words, &words.WordEntry{reader.ReadU8(), reader.ReadU8()})
 	}
 
 	return sentence
@@ -92,7 +102,7 @@ const (
 	defaultRoomSentencesSize = 2
 )
 
-func SendRoomResponse(conn *websocket.Conn, success bool, message string) error {
+func SendRoomResponse(trans Transmitter, success bool, message string) error {
 	writer := util.NewByteWriter(defaultRoomResponseSize)
 
 	err := writer.Write(
@@ -105,20 +115,20 @@ func SendRoomResponse(conn *websocket.Conn, success bool, message string) error 
 		return err
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }
 
-func SendRoomDestroyed(conn *websocket.Conn, reason string) error {
+func SendRoomDestroyed(trans Transmitter, reason string) error {
 	writer := util.NewByteWriter(defaultRoomDestroyedSize)
 
 	if err := writer.Write(RoomDestroyed, reason); err != nil {
 		return err
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }
 
-func SendRoomData(conn *websocket.Conn, room *Room) error {
+func SendRoomData(trans Transmitter, room *Room) error {
 	writer := util.NewByteWriter(defaultRoomDataSize)
 
 	err := writer.Write(
@@ -135,10 +145,10 @@ func SendRoomData(conn *websocket.Conn, room *Room) error {
 		return err
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }
 
-func SendRoomClients(conn *websocket.Conn, clients []*clients.Client) error {
+func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
 	writer := util.NewByteWriter(defaultRoomClientsSize)
 
 	err := writer.Write(
@@ -158,10 +168,10 @@ func SendRoomClients(conn *websocket.Conn, clients []*clients.Client) error {
 		return err
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }
 
-func SendRoomWords(conn *websocket.Conn, wordbanks []words.Wordbank) error {
+func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
 	writer := util.NewByteWriter(defaultRoomWordsSize)
 
 	if err := writer.Write(RoomWords, uint8(len(wordbanks))); err != nil {
@@ -176,10 +186,10 @@ func SendRoomWords(conn *websocket.Conn, wordbanks []words.Wordbank) error {
 		}
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }
 
-func SendRoomSentences(conn *websocket.Conn, sentences []words.Sentence) error {
+func SendRoomSentences(trans Transmitter, sentences []words.Sentence) error {
 	writer := util.NewByteWriter(defaultRoomSentencesSize)
 
 	err := writer.Write(
@@ -203,5 +213,5 @@ func SendRoomSentences(conn *websocket.Conn, sentences []words.Sentence) error {
 		return err
 	}
 
-	return SendPacket(conn, writer)
+	return trans.Send(writer.Bytes())
 }

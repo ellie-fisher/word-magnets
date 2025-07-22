@@ -8,7 +8,10 @@
 
 package clients
 
-import "github.com/gorilla/websocket"
+import (
+	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
+)
 
 type Client struct {
 	ID     string
@@ -17,4 +20,17 @@ type Client struct {
 	Name   string
 	Vote   string
 	Score  uint8
+}
+
+// Send transmits a binary packet to the client.
+func (client *Client) Send(bytes []byte) error {
+	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
+}
+
+func NewClient(conn *websocket.Conn) (*Client, error) {
+	if uuid, err := uuid.NewRandom(); err != nil {
+		return nil, err
+	} else {
+		return &Client{ID: uuid.String(), Socket: conn}, nil
+	}
 }

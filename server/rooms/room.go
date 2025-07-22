@@ -9,6 +9,7 @@
 package rooms
 
 import (
+	"log"
 	"word-magnets/clients"
 	"word-magnets/words"
 )
@@ -27,4 +28,15 @@ type Room struct {
 	Round       uint8
 	RoundLimit  uint8
 	ClientLimit uint8
+}
+
+// Send transmits a binary packet to all clients in the room.
+func (room *Room) Send(bytes []byte) error {
+	for _, client := range room.Clients {
+		if err := client.Send(bytes); err != nil {
+			log.Printf("[Error] Failed to send packet to client: %s", err)
+		}
+	}
+
+	return nil
 }
