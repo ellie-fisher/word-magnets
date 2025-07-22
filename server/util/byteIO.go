@@ -94,7 +94,10 @@ func (writer *ByteWriter) WriteBool(value bool) {
 
 func (writer *ByteWriter) WriteString(value string) bool {
 	truncated := len(value) > MaxStringLength
-	value = value[:MaxStringLength+1]
+
+	if truncated {
+		value = value[:MaxStringLength+1]
+	}
 
 	writer.WriteU8(uint8(len(value)))
 
