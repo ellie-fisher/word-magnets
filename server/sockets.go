@@ -70,8 +70,20 @@ func handlePacket(client *clients.Client, bytes []byte) {
 			rooms.AddClient(room, client)
 		}
 
-	// TODO:
 	case rooms.JoinRoomPacket:
+		id, name := rooms.ReadJoinRoom(reader)
+
+		if success, message := clients.ValidateName(name); !success {
+			rooms.SendCreateJoinRoomError(client, message)
+		} else if room := rooms.GetRoom(id); room == nil {
+			rooms.SendCreateJoinRoomError(client, "Room does not exist.")
+		} else if len(room.Clients) >= int(room.ClientLimit) {
+			rooms.SendCreateJoinRoomError(client, "Room is full.")
+		} else {
+			rooms.AddClient(room, client)
+		}
+
+	// TODO:
 	case rooms.LeaveRoomPacket:
 	case rooms.RemoveClientPacket:
 	case rooms.SubmitSentencePacket:

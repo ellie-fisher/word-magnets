@@ -8,19 +8,19 @@
 
 package rooms
 
-import "strconv"
+import (
+	"strconv"
+	"word-magnets/clients"
+)
 
-const minOwnerName = uint8(1)
 const minTimeLimit = uint8(30)
 const minRoundLimit = uint8(1)
 const minClientLimit = uint8(2)
 
-const maxOwnerName = uint8(16)
 const maxTimeLimit = uint8(120)
 const maxRoundLimit = uint8(12)
 const maxClientLimit = uint8(12)
 
-var ownerNameError = ""
 var timeLimitError = ""
 var roundLimitError = ""
 var clientLimitError = ""
@@ -28,15 +28,14 @@ var clientLimitError = ""
 func init() {
 	/* Cache error messages so we're not calculating them every single time. */
 
-	ownerNameError = "Name must be " + strconv.Itoa(int(minOwnerName)) + "-" + strconv.Itoa(int(maxOwnerName)) + " character(s) long"
 	timeLimitError = "Time limit must be in range " + strconv.Itoa(int(minTimeLimit)) + "-" + strconv.Itoa(int(maxTimeLimit))
 	roundLimitError = "Round limit must be in range " + strconv.Itoa(int(minRoundLimit)) + "-" + strconv.Itoa(int(maxRoundLimit))
 	clientLimitError = "Client limit must be in range " + strconv.Itoa(int(minClientLimit)) + "-" + strconv.Itoa(int(maxClientLimit))
 }
 
 func ValidateRoomData(data *CreateRoomData) (success bool, message string) {
-	if len(data.OwnerName) < int(minOwnerName) || len(data.OwnerName) > int(maxOwnerName) {
-		return false, ownerNameError
+	if success, message := clients.ValidateName(data.OwnerName); !success {
+		return success, message
 	}
 
 	if data.TimeLimit < minTimeLimit || data.TimeLimit > maxTimeLimit {

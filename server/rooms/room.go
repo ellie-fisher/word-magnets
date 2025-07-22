@@ -109,6 +109,14 @@ func DestroyRoom(room *Room) {
 	}
 }
 
+func GetRoom(id string) *Room {
+	if room, has := rooms[id]; has {
+		return room
+	} else {
+		return nil
+	}
+}
+
 func AddClient(room *Room, client *clients.Client) {
 	room.Clients = append(room.Clients, client)
 	SendRoomClients(room, room.Clients)

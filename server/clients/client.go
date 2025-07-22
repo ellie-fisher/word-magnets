@@ -9,9 +9,16 @@
 package clients
 
 import (
+	"strconv"
+
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
+
+const minNameLen = uint8(1)
+const maxNameLen = uint8(16)
+
+var nameLengthError = ""
 
 type Client struct {
 	ID     string
@@ -20,6 +27,11 @@ type Client struct {
 	Name   string
 	Vote   string
 	Score  uint8
+}
+
+func init() {
+	// Cache error message so we're not calculating it every single time.
+	nameLengthError = "Name must be " + strconv.Itoa(int(minNameLen)) + "-" + strconv.Itoa(int(maxNameLen)) + " character(s) long"
 }
 
 // Send transmits a binary packet to the client.
@@ -33,4 +45,12 @@ func NewClient(conn *websocket.Conn) (*Client, error) {
 	} else {
 		return &Client{ID: uuid.String(), Socket: conn}, nil
 	}
+}
+
+func ValidateName(name string) (bool, string) {
+	if len(name) < int(minNameLen) || len(name) > int(maxNameLen) {
+		return false, nameLengthError
+	}
+
+	return true, ""
 }
