@@ -83,8 +83,14 @@ func handlePacket(client *clients.Client, bytes []byte) {
 			rooms.AddClient(room, client)
 		}
 
-	// TODO:
 	case rooms.LeaveRoomPacket:
+		rooms.ReadLeaveRoom(reader) // Not necessary at the moment -- just here for posterity.
+
+		if room := rooms.GetRoom(client.RoomID); room != nil {
+			rooms.RemoveClient(room, client)
+		}
+
+	// TODO:
 	case rooms.RemoveClientPacket:
 	case rooms.SubmitSentencePacket:
 	case rooms.SubmitVotePacket:
