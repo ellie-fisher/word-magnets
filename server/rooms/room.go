@@ -65,7 +65,7 @@ func (room *Room) IsOwner(id string) bool {
 var rooms = make(map[string]*Room)
 
 const newRoomAttempts = 20
-const roomIDLength = 10
+const roomIDLength = 8
 
 // Only letters and numbers that can't be mistaken for each other.
 const roomIDChars = "ACDEFGHJKLMNPQRTVWXY379"
