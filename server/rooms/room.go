@@ -122,11 +122,15 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 // DestroyRoom sends a packet to all clients that the room was destroyed and deletes the room.
 func DestroyRoom(room *Room) {
 	SendRoomDestroyed(room, "The room was shut down.")
-	delete(rooms, room.ID)
 
 	for _, client := range room.Clients {
 		client.RoomID = ""
 	}
+
+	delete(rooms, room.ID)
+
+	room.ID = ""
+	room.Owner = nil
 }
 
 // GetRoom attempts to get room from id, returning nil otherwise.
