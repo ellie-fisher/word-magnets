@@ -61,6 +61,19 @@ func (room *Room) IsOwner(id string) bool {
 	return room.Owner.ID == id
 }
 
+// SelectWords randomly selects from wordbanks (except for fixed ones) and transmits them to all clients.
+func (room *Room) SelectWords() {
+	room.Wordbanks = []words.Wordbank{
+		words.NewWordbank(words.Noun),
+		words.NewWordbank(words.Adjective),
+		words.NewWordbank(words.Verb),
+		words.NewWordbank(words.Pronoun),
+		words.NewWordbank(words.Miscellaneous),
+	}
+
+	SendRoomWords(room, room.Wordbanks)
+}
+
 // Rooms are stored by ID=>Room
 var rooms = make(map[string]*Room)
 
