@@ -95,7 +95,7 @@ func generateID() string {
 }
 
 // NewRoom attempts to create a new room, returning nil if it can't generate a unique ID.
-func NewRoom(owner *clients.Client, data *CreateRoomData) *Room {
+func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 	var room *Room
 
 	for range newRoomAttempts {

@@ -49,15 +49,15 @@ type Transmitter interface {
  * Client-to-server packets
  */
 
-type CreateRoomData struct {
+type UserRoomData struct {
 	OwnerName   string
 	TimeLimit   uint8
 	RoundLimit  uint8
 	ClientLimit uint8
 }
 
-func ReadCreateRoom(reader *util.ByteReader) *CreateRoomData {
-	return &CreateRoomData{
+func ReadCreateRoom(reader *util.ByteReader) *UserRoomData {
+	return &UserRoomData{
 		OwnerName:   strings.TrimSpace(reader.ReadString()),
 		TimeLimit:   reader.ReadU8(),
 		RoundLimit:  reader.ReadU8(),

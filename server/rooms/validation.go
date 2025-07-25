@@ -40,7 +40,7 @@ func init() {
 	clientLimitValidator.MaxError = "Client limit cannot be more than " + strconv.Itoa(int(clientLimitValidator.Max))
 }
 
-func ValidateRoomData(data *CreateRoomData) (success bool, message string) {
+func ValidateRoomData(data *UserRoomData) (success bool, message string) {
 	if success, message := clients.ValidateName(data.OwnerName); !success {
 		return success, message
 	}
