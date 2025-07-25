@@ -26,6 +26,7 @@ const (
 	JoinRoomPacket
 	LeaveRoomPacket
 	RemoveClientPacket
+	StartGamePacket
 	SubmitSentencePacket
 	SubmitVotePacket
 
@@ -74,6 +75,8 @@ func ReadLeaveRoom(reader *util.ByteReader) {}
 func ReadRemoveClient(reader *util.ByteReader) (id string) {
 	return reader.ReadString()
 }
+
+func ReadStartGame(reader *util.ByteReader) {}
 
 func ReadSubmitSentence(reader *util.ByteReader) words.Sentence {
 	var sentence words.Sentence
