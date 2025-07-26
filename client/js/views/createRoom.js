@@ -10,23 +10,21 @@ const CreateRoomView = (data = {}) => {
 	const { onFieldChange = () => {} } = data;
 
 	const fields = [
-		{ id: "ownerName",   type: "string", label: "Name",         min: 1,  max: 16,  default: "" },
-		{ id: "timeLimit",   type: "int",    label: "Time Limit",   min: 30, max: 120, default: 60, increments: 10 },
-		{ id: "roundLimit",  type: "int",    label: "Rounds",       min: 1,  max: 12,  default: 8 },
-		{ id: "clientLimit", type: "int",    label: "Player Limit", min: 2,  max: 10,  default: 6 },
+		{ id: "timeLimit",   type: "int",    label: "Time Limit (seconds)",  min: 30, max: 120, default: 60, increments: 10 },
+		{ id: "roundLimit",  type: "int",    label: "Rounds",                min: 1,  max: 12,  default: 8 },
+		{ id: "clientLimit", type: "int",    label: "Player Limit",          min: 2,  max: 10,  default: 6 },
+		{ id: "ownerName",   type: "string", label: "Your Name",             min: 1,  max: 16,  default: "" },
 	];
 
-	const button = createElement("input", { type: "button", value: "Create Room", disabled: true });
+	const button = createElement("input", { type: "button", className: "primary", value: "Create Room", disabled: true });
 
-	return combineElements("div",
+	return combineElements("section",
 		RoomFieldsFragment({
 			fields,
 			onFieldChange(field, oldValue) {
 				button.disabled = !fields.every(validateField);
 				onFieldChange(field, oldValue);
 			},
-		}),
-
-		button,
+		}, button),
 	);
 };

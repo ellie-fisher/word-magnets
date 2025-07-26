@@ -15,11 +15,11 @@ const CreateJoinView = (data = {}) => {
 	};
 
 	const createView = CreateRoomView();
-	const createButton = createElement("input", { type: "button", value: "Create", onclick() { updateTabs(true); }});
+	const createButton = createElement("input", { type: "button", className: "tab", value: "Create", onclick() { updateTabs(true); }});
 	const joinView = JoinRoomView();
-	const joinButton = createElement("input", { type: "button", value: "Join", onclick() { updateTabs(false); }})
+	const joinButton = createElement("input", { type: "button", className: "tab", value: "Join", onclick() { updateTabs(false); }})
 
 	updateTabs(true);
 
-	return combineElements("section", createButton, joinButton, createElement("hr"), createView, joinView);
+	return combineElements("article", createButton, joinButton, createView, joinView);
 };

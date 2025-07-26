@@ -20,4 +20,4 @@
  *   - Disconnected from room
  */
 
-getElement("main").appendChild(CreateJoinView());
+getElement("main").append(combineElements("div", createElement("h1", "Word Magnets"), CreateJoinView()));

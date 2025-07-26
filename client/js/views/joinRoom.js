@@ -11,20 +11,18 @@ const JoinRoomView = (data = {}) => {
 
 	const fields = [
 		{ id: "roomID", type: "string", label: "Room Code", min: 8, max: 8 },
-		{ id: "name",   type: "string", label: "Name", min: 1, max: 16 },
+		{ id: "name",   type: "string", label: "Your Name", min: 1, max: 16 },
 	];
 
-	const button = createElement("input", { type: "button", value: "Join Room", disabled: true });
+	const button = createElement("input", { type: "button", className: "primary", value: "Join Room", disabled: true });
 
-	return combineElements("div",
+	return combineElements("section",
 		RoomFieldsFragment({
 			fields,
 			onFieldChange(field, oldValue) {
 				button.disabled = !fields.every(validateField);
 				onFieldChange(field, oldValue);
 			},
-		}),
-
-		button,
+		}, button),
 	);
 };

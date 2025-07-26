@@ -6,7 +6,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const RoomFieldsFragment = (data = {}) => {
+const RoomFieldsFragment = (data = {}, ...children) => {
 	const { fields = [], onFieldChange = (field, value) => {} } = data;
 	const fieldElements = [];
 
@@ -59,5 +59,9 @@ const RoomFieldsFragment = (data = {}) => {
 		);
 	});
 
-	return combineElements("div", ...fieldElements);
+	const section = createElement("section", { className: "room-fields" });
+
+	section.append(...fieldElements, ...children);
+
+	return section;
 }
