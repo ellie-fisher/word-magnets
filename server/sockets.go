@@ -57,8 +57,9 @@ func handlePacket(client *clients.Client, bytes []byte) {
 	}
 
 	reader := util.NewByteReader(bytes)
+	packetType := rooms.PacketType(reader.ReadU8())
 
-	switch rooms.PacketType(reader.ReadU8()) {
+	switch packetType {
 	case rooms.CreateRoomPacket:
 		data := rooms.ReadCreateRoom(reader)
 
@@ -94,16 +95,23 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		targetID := rooms.ReadRemoveClient(reader)
 
 		if room := rooms.GetRoom(client.RoomID); room != nil {
-			if room.IsOwner(client.ID) && !room.IsOwner(targetID) {
+			if room.IsOwner(client.ID()) && !room.IsOwner(targetID) {
 				if target := room.GetClient(targetID); target != nil {
 					rooms.RemoveClient(room, target)
 				}
 			}
 		}
 
-	// TODO:
+	case rooms.StartGamePacket:
+		fallthrough
 	case rooms.SubmitSentencePacket:
+		fallthrough
 	case rooms.SubmitVotePacket:
+		fallthrough
+	default:
+		if room := rooms.GetRoom(client.RoomID); room != nil {
+			room.State.ReceivePacket(client, reader, packetType)
+		}
 	}
 }
 

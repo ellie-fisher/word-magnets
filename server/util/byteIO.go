@@ -8,9 +8,7 @@
 
 package util
 
-import (
-	"slices"
-)
+import "slices"
 
 const MaxStringLength = 255
 

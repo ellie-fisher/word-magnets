@@ -8,6 +8,13 @@
 
 package util
 
+import "math/rand"
+
+// RandIntn is a wrapper for rand.Intn with min and max parameters.
+func RandIntn(min int, max int) int {
+	return rand.Intn(max-min) + min
+}
+
 // EqualFold is [strings.EqualFold], ASCII only. It reports whether s and t are equal, ASCII-case-insensitively.
 // (Taken from the "net" module.)
 func EqualFold(s, t string) bool {

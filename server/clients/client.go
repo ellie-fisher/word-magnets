@@ -14,7 +14,7 @@ import (
 )
 
 type Client struct {
-	ID     string
+	id     string
 	Socket *websocket.Conn
 	RoomID string
 	Name   string
@@ -27,11 +27,15 @@ func (client *Client) Send(bytes []byte) error {
 	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
 }
 
+func (client *Client) ID() string {
+	return client.id
+}
+
 // NewClient attempts to generate a UUID and then create a Client object, returning nil if it fails.
 func NewClient(conn *websocket.Conn) (*Client, error) {
 	if uuid, err := uuid.NewRandom(); err != nil {
 		return nil, err
 	} else {
-		return &Client{ID: uuid.String(), Socket: conn}, nil
+		return &Client{id: uuid.String(), Socket: conn}, nil
 	}
 }

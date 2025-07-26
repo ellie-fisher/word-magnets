@@ -48,7 +48,7 @@ func (room *Room) Send(bytes []byte) error {
 // GetClient attempts to get the client with the ID of id, returning nil if not found.
 func (room *Room) GetClient(id string) *clients.Client {
 	for _, client := range room.Clients {
-		if client.ID == id {
+		if client.ID() == id {
 			return client
 		}
 	}
@@ -58,11 +58,13 @@ func (room *Room) GetClient(id string) *clients.Client {
 
 // IsOwner checks if id is the room owner's ID.
 func (room *Room) IsOwner(id string) bool {
-	return room.Owner.ID == id
+	return room.Owner.ID() == id
 }
 
-// SelectWords randomly selects from wordbanks (except for fixed ones) and transmits them to all clients.
+// SelectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones), and
+// transmits them to all clients.
 func (room *Room) SelectWords() {
+	room.Sentences = []words.Sentence{}
 	room.Wordbanks = []words.Wordbank{
 		words.NewWordbank(words.Noun),
 		words.NewWordbank(words.Adjective),
@@ -81,7 +83,7 @@ const newRoomAttempts = 20
 const roomIDLength = 8
 
 // Only letters and numbers that can't be mistaken for each other.
-const roomIDChars = "ACDEFGHJKLMNPQRTVWXY379"
+const roomIDChars = "ACDEHJKLMNPQRTVWXY379"
 
 var NewRoomErrorMessage = ""
 
@@ -119,12 +121,16 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 				ID:          id,
 				Owner:       owner,
 				Clients:     []*clients.Client{},
+				Wordbanks:   []words.Wordbank{},
+				Sentences:   []words.Sentence{},
 				TimeLimit:   data.TimeLimit,
 				RoundLimit:  data.RoundLimit,
 				ClientLimit: data.ClientLimit,
 			}
 
+			room.State = *NewStateMachine(room)
 			rooms[id] = room
+
 			break
 		}
 	}
@@ -172,11 +178,11 @@ func AddClient(room *Room, client *clients.Client, name string) {
 // RemoveClient removes client from room, destroying room if client is the owner.
 func RemoveClient(room *Room, client *clients.Client) {
 	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
-		return check.ID == client.ID
+		return check.ID() == client.ID()
 	})
 
 	if index >= 0 {
-		if client.ID == room.Owner.ID {
+		if client.ID() == room.Owner.ID() {
 			DestroyRoom(room)
 		} else {
 			room.Clients = slices.Delete(room.Clients, index, index+1)
@@ -184,4 +190,8 @@ func RemoveClient(room *Room, client *clients.Client) {
 			SendRoomClients(room, room.Clients)
 		}
 	}
+}
+
+func (room *Room) Tick() {
+	room.State.Tick()
 }
