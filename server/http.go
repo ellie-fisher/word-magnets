@@ -9,6 +9,7 @@
 package main
 
 import (
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -66,6 +67,9 @@ func httpHandler(writer http.ResponseWriter, req *http.Request) {
 
 		sendErrorPage(writer, req, status, desc)
 	} else {
+		ext := filepath.Ext(path)
+
+		writer.Header().Set("Content-Type", mime.TypeByExtension(ext))
 		writer.WriteHeader(200)
 		writer.Write(bytes)
 	}
