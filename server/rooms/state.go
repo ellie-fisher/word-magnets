@@ -15,6 +15,7 @@ import (
 
 const defaultTime = uint8(0)
 const createSubmitTime = uint8(5)
+const voteBaseTime = uint8(5)
 const voteTimeMult = uint8(5)
 const voteSubmitTime = uint8(5)
 const resultsBaseTime = uint8(5)
@@ -50,7 +51,7 @@ func (machine *StateMachine) Enter() {
 	case CreateSubmitTag:
 		machine.room.TimeLeft = createSubmitTime
 	case VoteTag:
-		machine.room.TimeLeft = voteTimeMult * uint8(len(machine.room.Sentences))
+		machine.room.TimeLeft = voteBaseTime + voteTimeMult*uint8(len(machine.room.Sentences))
 	case VoteSubmitTag:
 		machine.room.TimeLeft = voteSubmitTime
 	case ResultsTag:

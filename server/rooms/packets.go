@@ -10,6 +10,7 @@ package rooms
 
 import (
 	"strings"
+
 	"word-magnets/clients"
 	"word-magnets/util"
 	"word-magnets/words"
@@ -148,9 +149,8 @@ func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
 
 	if err == nil {
 		for _, client := range clients {
-			if err = writer.Write(client.ID, client.Name); err != nil {
-				break
-			}
+			writer.WriteString(client.ID())
+			writer.WriteString(client.Name)
 		}
 	}
 
