@@ -9,17 +9,21 @@
 :root {
 	--bg-color: rgb(57, 100, 46);
 	--fields-bg-color: rgb(84, 146, 69);
+
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
 	--input-secondary-color: rgb(102, 175, 84);
 	--input-secondary-disabled: rgb(57, 100, 46);
-	--input-outline-color: rgb(221, 233, 117);
-	--tab-color: rgb(48, 94, 36);
-	--tab-color-disabled: var(--input-secondary-color);
-	--tab-text-color: rgb(121, 201, 101);
-	--tab-text-disabled: var(--input-text-secondary);
+	--input-outline-color: var(--input-secondary-disabled);
+	--input-primary-outline: var(--input-text-primary);
 	--input-text-primary: rgb(66, 70, 43);
 	--input-text-secondary: rgb(32, 56, 26);
+
+	--tab-color: rgb(48, 94, 36);
+	--tab-color-disabled: var(--input-secondary-color);
+	--tab-outline-color: var(--input-primary-disabled);
+	--tab-text-color: rgb(121, 201, 101);
+	--tab-text-disabled: var(--input-text-secondary);
 }
 
 html {
@@ -76,13 +80,8 @@ input, select {
 	margin-left: 0em;
 }
 
-select {
-	font-size: 1em;
-}
-
-hr {
-	border-color: var(--hr-color);
-	border-width: 1px;
+input:focus, select:focus {
+	outline: 0.1em groove var(--input-outline-color);
 }
 
 input[type="button"] {
@@ -96,15 +95,15 @@ input[type="button"]:disabled {
 	cursor: default;
 }
 
-input[type="button"].primary:focus {
-	outline: none;
-}
-
 input.primary {
 	background-color: var(--input-primary-color);
 	color: var(--input-text-primary);
 	display: block;
 	margin-top: 1em;
+}
+
+input.primary:focus {
+	outline: 0.1em solid var(--input-primary-outline);
 }
 
 input.primary:disabled {
@@ -128,8 +127,17 @@ input.tab:disabled {
 	color: var(--tab-text-disabled);
 }
 
-input:focus {
-	outline: 0.1em groove var(--input-outline-color);
+input.tab:focus, input.tab:active {
+	outline: 0.1em solid var(--tab-outline-color);
+}
+
+select {
+	font-size: 1em;
+}
+
+hr {
+	border-color: var(--hr-color);
+	border-width: 1px;
 }
 
 .room-fields {
