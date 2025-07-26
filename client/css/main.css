@@ -127,8 +127,12 @@ input.tab:disabled {
 	color: var(--tab-text-disabled);
 }
 
-input.tab:focus, input.tab:active {
+input.tab:focus {
 	outline: 0.1em solid var(--tab-outline-color);
+}
+
+input.tab:active {
+	outline: none;
 }
 
 select {
