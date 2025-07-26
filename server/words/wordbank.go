@@ -21,49 +21,55 @@ const (
 	Adjective
 	Verb
 	Pronoun
+	Auxiliary
+	Preposition
 	Miscellaneous
 )
 
+var wordbanks = map[WordType]Wordbank{
+	Noun:          nouns,
+	Adjective:     adjectives,
+	Verb:          verbs,
+	Pronoun:       pronouns,
+	Auxiliary:     auxiliaries,
+	Preposition:   prepositions,
+	Miscellaneous: miscellaneous,
+}
+
 func NewWordbank(wordType WordType) Wordbank {
-	var bank Wordbank
+	if bank := wordbanks[wordType]; bank == nil {
+		return Wordbank{}
+	} else {
+		switch wordType {
+		case Noun:
+			fallthrough
+		case Adjective:
+			fallthrough
+		case Verb:
+			/* Pick random words from the wordbank without repeats. Some wordbanks are fixed, so we won't be selecting
+			   randomly from them. */
 
-	switch wordType {
-	case Noun:
-		bank = nouns
-	case Adjective:
-		bank = adjectives
-	case Verb:
-		bank = verbs
-	case Pronoun:
-		bank = pronouns
-	case Miscellaneous:
-		bank = miscellaneous
-	default:
-	}
+			var selected Wordbank
 
-	// Pick random words from the wordbank without repeats. Pronoun and Miscellaneous wordbanks are fixed, so we are
-	// not going to pick randomly from them.
-	if wordType != Pronoun && wordType != Miscellaneous {
-		var selected Wordbank
+			length := len(bank)
+			increments := length / maxWordsPerBank
 
-		length := len(bank)
-		increments := length / maxWordsPerBank
+			for i := range maxWordsPerBank {
+				index := 0
+				start := i * increments
 
-		for i := range maxWordsPerBank {
-			index := 0
-			start := i * increments
+				if i == maxWordsPerBank-1 {
+					index = util.RandIntn(start, length)
+				} else {
+					index = util.RandIntn(start, start+increments)
+				}
 
-			if i == maxWordsPerBank-1 {
-				index = util.RandIntn(start, length)
-			} else {
-				index = util.RandIntn(start, start+increments)
+				selected = append(selected, bank[index])
 			}
 
-			selected = append(selected, bank[index])
+			bank = selected
 		}
 
-		bank = selected
+		return bank
 	}
-
-	return bank
 }

@@ -70,6 +70,8 @@ func (room *Room) SelectWords() {
 		words.NewWordbank(words.Adjective),
 		words.NewWordbank(words.Verb),
 		words.NewWordbank(words.Pronoun),
+		words.NewWordbank(words.Auxiliary),
+		words.NewWordbank(words.Preposition),
 		words.NewWordbank(words.Miscellaneous),
 	}
 

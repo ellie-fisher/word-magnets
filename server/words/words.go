@@ -37840,14 +37840,20 @@ var pronouns = []string{
 	"it",
 }
 
-var miscellaneous = []string{
+var auxiliaries = []string{
 	"be", "is", "was", "are", "am", "were", "do",
 	"a", "an", "the",
 	"have", "has", "had",
-	"to", "as", "at", "of", "for", "if", "in", "on", "with",
-	"and", "but", "or",
+}
+
+var prepositions = []string{
+	"to", "as", "at", "of", "for", "in", "on", "with",
+}
+
+var miscellaneous = []string{
+	"if", "and", "but", "or",
 	"yes", "no",
-	"ex-", "re-",
+	"ex-", "re-", "un-",
 	"-r", "-s", "-t", "-e", "-d", "-y", "-ly", "-ing",
 	"-.", "-?", "-!", "-,", "-'", "-\"",
 	" ",
