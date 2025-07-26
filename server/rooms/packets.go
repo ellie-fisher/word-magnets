@@ -103,9 +103,9 @@ func SendCreateJoinRoomError(trans Transmitter, message string) error {
 
 	if err := writer.Write(CreateJoinRoomErrorPacket, message); err != nil {
 		return err
+	} else {
+		return trans.Send(writer.Bytes())
 	}
-
-	return trans.Send(writer.Bytes())
 }
 
 func SendRoomDestroyed(trans Transmitter, reason string) error {
@@ -113,9 +113,9 @@ func SendRoomDestroyed(trans Transmitter, reason string) error {
 
 	if err := writer.Write(RoomDestroyedPacket, reason); err != nil {
 		return err
+	} else {
+		return trans.Send(writer.Bytes())
 	}
-
-	return trans.Send(writer.Bytes())
 }
 
 func SendRoomData(trans Transmitter, room *Room) error {

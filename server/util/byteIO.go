@@ -36,10 +36,6 @@ func (reader *ByteReader) ReadU8() uint8 {
 	return value
 }
 
-func (reader *ByteReader) ReadBool() bool {
-	return reader.ReadU8() != 0
-}
-
 func (reader *ByteReader) ReadString() string {
 	length := reader.ReadU8()
 	str := ""
@@ -84,14 +80,6 @@ func (writer *ByteWriter) WriteU8(value uint8) {
 	writer.index++
 }
 
-func (writer *ByteWriter) WriteBool(value bool) {
-	if value {
-		writer.WriteU8(1)
-	} else {
-		writer.WriteU8(0)
-	}
-}
-
 func (writer *ByteWriter) WriteString(value string) bool {
 	bytes := []byte(value)
 	truncated := len(bytes) > MaxStringLength
@@ -113,8 +101,6 @@ func (writer *ByteWriter) Write(values ...any) error {
 		switch cast := value.(type) {
 		case uint8:
 			writer.WriteU8(cast)
-		case bool:
-			writer.WriteBool(cast)
 		case string:
 			writer.WriteString(cast)
 		default:
