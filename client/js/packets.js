@@ -29,6 +29,16 @@ const PacketTypes = enumerate([
 	"RoomSentencesPacket",
 ]);
 
+const RoomStates = enumerate([
+	"Lobby",
+	"Create",
+	"CreateSubmit",
+	"Vote",
+	"VoteSubmit",
+	"Results",
+	"End",
+]);
+
 /**
  * ByteReader is a class for reading Uint8Arrays.
  */
