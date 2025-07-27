@@ -7,8 +7,9 @@
  */
 
 :root {
-	--bg-color: rgb(57, 100, 46);
+	--bg-color: rgb(33, 58, 26);
 	--fields-bg-color: rgb(84, 146, 69);
+	--hr-color: rgb(74, 129, 60);
 
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
@@ -99,7 +100,6 @@ input.primary {
 	background-color: var(--input-primary-color);
 	color: var(--input-text-primary);
 	display: block;
-	margin-top: 1em;
 }
 
 input.primary:focus {
@@ -140,8 +140,7 @@ select {
 }
 
 hr {
-	border-color: var(--hr-color);
-	border-width: 1px;
+	border: 0.1em solid var(--hr-color);
 }
 
 .room-fields {
@@ -151,7 +150,13 @@ hr {
 	border-top-left-radius: 0em;
 }
 
-.field-row {
-	padding-top: 0.5em;
+.room-fields > h2 {
+	margin: 0em;
+	margin-bottom: 1em;
 	padding-bottom: 0.5em;
+	border-bottom: 0.1em solid var(--hr-color);
+}
+
+.field-row {
+	padding-bottom: 0.75em;
 }
