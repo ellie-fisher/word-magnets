@@ -10,6 +10,16 @@
  * A quasi-frontend-framework because we don't need or want any external dependencies.
  */
 
+/**
+ * Creates a DOM element.
+ *
+ * @param {string} tag                      - The tag of the element to create.
+ * @param {object|string} fieldsOrInnerHTML - If it's an object, it's used as an attributes object. If it's a string,
+ *                                            it sets the element's `innerHTML` property.
+ * @param {string} innerHTML                - Sets the element's `innerHTML` property ONLY if `fieldsOrInnerHTML` is
+ *                                            an attributes object.
+ * @returns Node
+ */
 const createElement = (tag, fieldsOrInnerHTML = {}, innerHTML = "") => {
 	const element = document.createElement(tag);
 
@@ -23,10 +33,34 @@ const createElement = (tag, fieldsOrInnerHTML = {}, innerHTML = "") => {
 	return element;
 };
 
+/**
+ * Wrapper for `document.getElementById()`.
+ *
+ * @param {string} id
+ * @returns Node | null
+ */
 const getElement = id => document.getElementById(id);
 
-const combineElements = (parentTag, ...elements) => {
+/**
+ * Combines multiple elements into one new parent tag.
+ *
+ * @param {string} parentTag    - The tag of the parent element to create.
+ * @param {...Node|object} args - The elements to add to the new parent. If the first item is a plain object, it is
+ *                                used as an attributes object instead.
+ * @returns Node
+ */
+const combineElements = (parentTag, ...args) => {
 	const parent = createElement(parentTag);
-	parent.append(...elements);
+
+	// The second argument can optionally be an attributes object.
+	if (args.length > 0 && typeof(args[0]) === "object" && !(args[0] instanceof Node)) {
+		const attributes = args[0];
+
+		Object.keys(attributes).forEach(key => parent[key] = attributes[key]);
+		args = args.slice(1);
+	}
+
+	parent.append(...args);
+
 	return parent;
 };
