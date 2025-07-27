@@ -64,3 +64,14 @@ const combineElements = (parentTag, ...args) => {
 
 	return parent;
 };
+
+/**
+ * Clears the `innerHTML` of `parent` and sets its children to `children`.
+ *
+ * @param {Node} parent
+ * @param  {...Node|string} children
+ */
+const setChildren = (parent, ...children) => {
+	parent.innerHTML = "";
+	parent.append(...children);
+};

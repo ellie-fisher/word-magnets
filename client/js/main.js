@@ -8,6 +8,8 @@
 
 /**
  * Views:
+ *   - Loading
+ *     - Error
  *   - Create room
  *     - Error
  *   - Join room
@@ -20,4 +22,40 @@
  *   - Disconnected from room
  */
 
-getElement("main").append(combineElements("div", createElement("h1", "Word Magnets"), CreateJoinView()));
+document.addEventListener("DOMContentLoaded", () => {
+	const main = getElement("main");
+
+	let url = `${window.location.hostname}${window.location.pathname === "/" ? "" : window.location.pathname}:4000`;
+
+	if (window.location.protocol === "https:") {
+		url = `wss://${url}`;
+	} else {
+		url = `ws://${url}`;
+	}
+
+	const socket = new WebSocket(url);
+
+	socket.onopen = event => {
+		setChildren(main, createElement("h1", "Word Magnets"), CreateJoinView());
+	};
+
+	socket.onclose = event => {
+		setChildren(main,
+			LoadingView(null,
+				createElement("strong", { className: "error" }, "Socket Error:"), " Lost connection to the main server. Please try refreshing the page.",
+			),
+		);
+	};
+
+	socket.onerror = event => {
+		setChildren(main,
+			LoadingView(null,
+				createElement("strong", { className: "error" }, "Socket Error:"), " Could not connect to the main server.",
+			),
+		);
+	};
+
+	main.append(
+		LoadingView(null, createElement("strong", "Word Magnets"), " is loading..."),
+	);
+});

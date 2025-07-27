@@ -59,6 +59,7 @@ body {
 
 @media only screen and (max-width: 600px) {
 	#main {
+		/* A bit of a bodge but that's okay. */
 		height: 80vh;
 		width: 90vw;
 	}
@@ -159,4 +160,20 @@ hr {
 
 .field-row {
 	padding-bottom: 0.75em;
+}
+
+.center, .loading {
+	display: grid;
+	align-content: center;
+	justify-content: center;
+	text-align: center;
+}
+
+.loading {
+	height: 100vh;
+	font-size: 2em;
+}
+
+.error {
+	color: crimson;
 }
