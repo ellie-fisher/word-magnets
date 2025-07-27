@@ -34,28 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const socket = new WebSocket(url);
+	let openedOnce = false;
 
 	socket.onopen = event => {
+		openedOnce = true;
 		setChildren(main, createElement("h1", "Word Magnets"), CreateJoinView());
 	};
 
 	socket.onclose = event => {
 		setChildren(main,
 			LoadingView(null,
-				createElement("strong", { className: "error" }, "Socket Error:"), " Lost connection to the main server. Please try refreshing the page.",
+				createElement("strong", { className: "error" }, "Socket Error:"),
+				openedOnce ?
+					" Lost connection to the main server. Please try again later." :
+					" Could not connect to the main server.",
 			),
 		);
 	};
 
-	socket.onerror = event => {
-		setChildren(main,
-			LoadingView(null,
-				createElement("strong", { className: "error" }, "Socket Error:"), " Could not connect to the main server.",
-			),
-		);
-	};
+	socket.onerror = socket.onclose;
 
-	main.append(
-		LoadingView(null, createElement("strong", "Word Magnets"), " is loading..."),
-	);
+	main.append(LoadingView(null, createElement("strong", "Word Magnets"), " is loading..."));
 });
