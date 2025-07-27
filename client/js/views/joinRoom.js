@@ -19,6 +19,7 @@ const JoinRoomView = (data = {}) => {
 	return combineElements("section",
 		RoomFieldsFragment({
 			fields,
+			title: "Join a Room",
 			onFieldChange(field, oldValue) {
 				button.disabled = !fields.every(validateField);
 				onFieldChange(field, oldValue);

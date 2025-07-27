@@ -21,6 +21,7 @@ const CreateRoomView = (data = {}) => {
 	return combineElements("section",
 		RoomFieldsFragment({
 			fields,
+			title: "Create a Room",
 			onFieldChange(field, oldValue) {
 				button.disabled = !fields.every(validateField);
 				onFieldChange(field, oldValue);

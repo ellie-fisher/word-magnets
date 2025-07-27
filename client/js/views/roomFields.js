@@ -7,7 +7,7 @@
  */
 
 const RoomFieldsFragment = (data = {}, ...children) => {
-	const { fields = [], onFieldChange = (field, value) => {} } = data;
+	const { fields = [], title = "", onFieldChange = (field, value) => {} } = data;
 	const fieldElements = [];
 
 	fields.forEach(field => {
@@ -53,15 +53,15 @@ const RoomFieldsFragment = (data = {}, ...children) => {
 		}
 
 		fieldElements.push(
-			combineElements("div",
+			combineElements("div", { className: "field-row" },
 				combineElements("div", createElement("strong", `${field.label}`)), " ", input
 			),
 		);
 	});
 
-	const section = createElement("section", { className: "room-fields" });
-
-	section.append(...fieldElements, ...children);
-
-	return section;
-}
+	return combineElements("section", { className: "room-fields" },
+		createElement("h2", title),
+		...fieldElements,
+		...children,
+	);
+};
