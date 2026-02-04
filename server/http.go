@@ -56,7 +56,7 @@ func httpHandler(writer http.ResponseWriter, req *http.Request) {
 
 	if strings.Contains(path, "../") || strings.Contains(path, "/..") {
 		sendErrorPage(writer, req, 404, "Not Found")
-	} else if bytes, err := os.ReadFile(filepath.Join("../client/", path)); err != nil {
+	} else if bytes, err := os.ReadFile(filepath.Join("../client/public/", path)); err != nil {
 		status := 500
 		desc := "Internal Server Error"
 

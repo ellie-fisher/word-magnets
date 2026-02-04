@@ -15,6 +15,11 @@ func RandIntn(min int, max int) int {
 	return rand.Intn(max-min) + min
 }
 
+// HasIndex checks if index is a valid index of slice.
+func HasIndex[T any](slice []T, index int) bool {
+	return index >= 0 && index < len(slice)
+}
+
 // EqualFold is [strings.EqualFold], ASCII only. It reports whether s and t are equal, ASCII-case-insensitively.
 // (Taken from the "net" module.)
 func EqualFold(s, t string) bool {
