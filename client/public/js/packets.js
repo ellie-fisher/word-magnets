@@ -1,7 +1,8 @@
 /**
  * Copyright (C) 2025 Ellie Fisher
  *
- * This file is part of the Word Magnets source code. It may be used under the GNU Affero General Public License v3.0.
+ * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
+ * Public License v3.0.
  *
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
@@ -39,21 +40,24 @@ const RoomStates = enumerate([
 	"End",
 ]);
 
+const U8_MAX_VALUE = 255;
+const MAX_STRING_LENGTH = 255;
+
 /**
  * ByteReader is a class for reading Uint8Arrays.
  */
 class ByteReader {
-	constructor(arr) {
-		this._arr = arr;
+	constructor(array) {
+		this._array = array;
 		this._index = 0;
 	}
 
 	isAtEnd() {
-		return this._index >= this._arr.length;
+		return this._index >= this._array.length;
 	}
 
 	readU8() {
-		return this.isAtEnd() ? 0 : this._arr[this._index++];
+		return this.isAtEnd() ? 0 : this._array[this._index++];
 	}
 
 	readString() {
@@ -66,7 +70,7 @@ class ByteReader {
 
 		return str;
 	}
-};
+}
 
 const readCreateJoinRoomError = reader => {
 	return reader.readString();
@@ -133,4 +137,99 @@ const readRoomSentences = reader => {
 	}
 
 	return sentences;
+};
+
+/**
+ * ByteWriter is a class for writing Uint8Arrays.
+ */
+class ByteWriter {
+	constructor() {
+		this._array = [];
+		this._index = 0;
+	}
+
+	bytes() {
+		return new Uint8Array(this._array);
+	}
+
+	writeU8(value) {
+		value %= U8_MAX_VALUE + 1;
+
+		if (this._index < this._array.length) {
+			this._array[this._index] = value;
+		} else {
+			this._array.push(value);
+		}
+
+		this._index++;
+	}
+
+	writeString(value) {
+		const truncated = value.length > MAX_STRING_LENGTH;
+
+		if (truncated) {
+			value = value.slice(0, MAX_STRING_LENGTH);
+		}
+
+		this.writeU8(value.length);
+
+		for (const ch of value) {
+			this.writeU8(ch.charCodeAt(0));
+		}
+
+		return truncated;
+	}
+
+	write(...values) {
+		let success = true;
+
+		for (const value of values) {
+			switch (typeof value) {
+				case "number":
+					success = Number.isInteger(value) && value >= 0 && value <= U8_MAX_VALUE;
+
+					if (success) {
+						this.writeU8(value);
+					}
+
+					break;
+
+				case "string":
+					this.writeString(value);
+					break;
+
+				default:
+					success = false;
+					break;
+			}
+
+			if (!success) {
+				break;
+			}
+		}
+
+		return success;
+	}
 }
+
+const sendCreateRoom = (socket, roomData) => {
+	const writer = new ByteWriter();
+
+	writer.write(
+		PacketTypes.CreateRoomPacket,
+		roomData.ownerName.trim(),
+		roomData.timeLimit,
+		roomData.roundLimit,
+		roomData.clientLimit,
+	);
+
+	socket.send(writer.bytes());
+};
+
+const sendJoinRoom = (socket, roomID, clientName) => {
+	const writer = new ByteWriter();
+
+	writer.write(PacketTypes.JoinRoomPacket, roomID, clientName);
+
+	socket.send(writer.bytes());
+};

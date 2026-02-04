@@ -1,0 +1,23 @@
+{
+  "name": "word-magnets",
+  "version": "0.1.0",
+  "description": "",
+  "homepage": "https://github.com/ellie-fisher/word-magnets#readme",
+  "bugs": {
+    "url": "https://github.com/ellie-fisher/word-magnets/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ellie-fisher/word-magnets.git"
+  },
+  "license": "AGPL-3.0-or-later",
+  "author": "Ellie Fisher",
+  "type": "commonjs",
+  "main": "public/js/main.js",
+  "scripts": {
+    "format": "prettier public/js/**/*.js --write"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
+  }
+}

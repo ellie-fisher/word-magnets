@@ -39,3 +39,6 @@ out/
 # Sublime Text files
 *.sublime-project
 *.sublime-workspace
+
+# npm files
+node_modules/
