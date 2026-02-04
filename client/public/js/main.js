@@ -23,6 +23,9 @@
  *   - Disconnected from room
  */
 
+const PROTOCOL_NAME = "word-magnets.vanilla";
+const PROTOCOL_VERSION = 1;
+
 document.addEventListener("DOMContentLoaded", () => {
 	const main = getElement("main");
 
@@ -34,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		url = `ws://${url}`;
 	}
 
-	const socket = new WebSocket(url);
+	const socket = new WebSocket(url, [`${PROTOCOL_NAME}#${PROTOCOL_VERSION}`]);
 
 	let openedOnce = false;
 
@@ -43,16 +46,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		setChildren(main, createElement("h1", "Word Magnets"), CreateJoinView({ socket }));
 	};
 
-	socket.onclose = () => {
-		setChildren(
-			main,
-			ErrorMessageView({
-				title: "Socket Error: ",
-				message: openedOnce
-					? "Lost connection to the main server. Please refresh the page or try again later."
-					: "Could not connect to the main server.",
-			}),
-		);
+	socket.onclose = event => {
+		let message = openedOnce
+			? "Lost connection to the main server. Please refresh the page or try again later."
+			: "Could not connect to the main server.";
+
+		if (event.reason != "") {
+			message = event.reason;
+		}
+
+		setChildren(main, ErrorMessageView({ title: "Socket Error: ", message }));
 	};
 
 	socket.onerror = socket.onclose;

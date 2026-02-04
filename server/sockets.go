@@ -14,6 +14,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/gorilla/websocket"
 
@@ -22,10 +24,14 @@ import (
 	"word-magnets/util"
 )
 
+const PROTOCOL_NAME = "word-magnets.vanilla"
+const PROTOCOL_VERSION = 1
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     checkOrigin,
+	Subprotocols:    []string{PROTOCOL_NAME + "#" + strconv.Itoa(PROTOCOL_VERSION)},
 }
 
 // checkOrigin validates the origin and request URLs to make sure they match. The hostnames must be
@@ -130,8 +136,36 @@ func closeHandler(client *clients.Client, _ int, _ string) error {
 func socketHandler(writer http.ResponseWriter, req *http.Request) {
 	if conn, err := upgrader.Upgrade(writer, req, nil); err != nil {
 		log.Printf("[Error] Failed to upgrade to WebSocket: %s", err)
+	} else if subprotocol := conn.Subprotocol(); subprotocol != upgrader.Subprotocols[0] {
+		closeMessage := "Invalid subprotocol. (Ask a nerd what this means.)"
+
+		if reqProtocols := websocket.Subprotocols(req); subprotocol == "" && len(reqProtocols) > 0 {
+			subprotocol = reqProtocols[0]
+		}
+
+		if index := strings.IndexByte(subprotocol, '#'); index >= 0 {
+			name := subprotocol[:index]
+			version, err := strconv.ParseInt(subprotocol[index+1:], 10, 32)
+
+			if name != PROTOCOL_NAME {
+				closeMessage = "You are using a different application from the server you are trying to connect to."
+			} else if err == nil {
+				if version < PROTOCOL_VERSION {
+					closeMessage = "You are using an older version of the application than the server you are trying to connect to."
+				} else if version > PROTOCOL_VERSION {
+					closeMessage = "You are using a newer version of the application than the server you are trying to connect to."
+				}
+			}
+		}
+
+		conn.WriteMessage(
+			websocket.CloseMessage,
+			websocket.FormatCloseMessage(websocket.CloseProtocolError, closeMessage),
+		)
+
+		conn.Close()
 	} else {
-		log.Printf("New connection: %s", conn.RemoteAddr())
+		log.Printf("New connection: %s (%s)", conn.RemoteAddr(), conn.Subprotocol())
 
 		if client, err := clients.NewClient(conn); err != nil {
 			log.Printf("[Error] Failed to create client for socket: %s", err)
