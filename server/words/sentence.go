@@ -8,6 +8,8 @@
 
 package words
 
+import "word-magnets/util"
+
 type WordEntry struct {
 	BankIndex uint8
 	WordIndex uint8
@@ -16,4 +18,56 @@ type WordEntry struct {
 type Sentence struct {
 	AuthorID string
 	Words    []*WordEntry
+}
+
+const maxLength = 100
+
+func (sentence Sentence) String(wordbanks []Wordbank) string {
+	str := ""
+	prevHyphen := false
+
+	for i := 0; i < len(wordbanks) && i < maxLength; i++ {
+		entry := sentence.Words[i]
+
+		if !util.HasIndex(wordbanks, int(entry.BankIndex)) {
+			return ""
+		}
+
+		bank := wordbanks[entry.BankIndex]
+
+		if !util.HasIndex(bank, int(entry.WordIndex)) {
+			return ""
+		}
+
+		word := bank[entry.WordIndex]
+
+		if word[0] != '-' && !prevHyphen {
+			str += " "
+		}
+
+		start := 0
+		end := len(word)
+		prevHyphen = false
+
+		if word[0] == '-' {
+			start++
+		}
+
+		if word[len(word)-1] == '-' {
+			end--
+			prevHyphen = true
+		}
+
+		str += word[start:end]
+
+		if len(str) > maxLength {
+			break
+		}
+	}
+
+	if len(str) > maxLength {
+		str = str[:maxLength]
+	}
+
+	return str
 }
