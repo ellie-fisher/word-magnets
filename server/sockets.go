@@ -1,7 +1,8 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
- * This file is part of the Word Magnets source code. It may be used under the GNU Affero General Public License v3.0.
+ * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
+ * Public License v3.0.
  *
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
@@ -27,8 +28,8 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     checkOrigin,
 }
 
-// checkOrigin validates the origin and request URLs to make sure they match. The hostnames must be the same, but the
-// ports must match the configured port settings.
+// checkOrigin validates the origin and request URLs to make sure they match. The hostnames must be
+// the same, but the ports must match the configured port settings.
 func checkOrigin(req *http.Request) bool {
 	origin := req.Header["Origin"]
 
@@ -64,9 +65,9 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		data := rooms.ReadCreateRoom(reader)
 
 		if success, message := rooms.ValidateRoomData(data); !success {
-			rooms.SendCreateJoinRoomError(client, message)
+			rooms.SendCreateRoomError(client, message)
 		} else if room := rooms.NewRoom(client, data); room == nil {
-			rooms.SendCreateJoinRoomError(client, rooms.NewRoomErrorMessage)
+			rooms.SendCreateRoomError(client, rooms.NewRoomErrorMessage)
 		} else {
 			rooms.AddClient(room, client, data.OwnerName)
 		}
@@ -75,11 +76,11 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		id, name := rooms.ReadJoinRoom(reader)
 
 		if success, message := clients.ValidateName(name); !success {
-			rooms.SendCreateJoinRoomError(client, message)
+			rooms.SendJoinRoomError(client, message)
 		} else if room := rooms.GetRoom(id); room == nil {
-			rooms.SendCreateJoinRoomError(client, "Room not found.")
+			rooms.SendJoinRoomError(client, "Room not found.")
 		} else if len(room.Clients) >= int(room.ClientLimit) {
-			rooms.SendCreateJoinRoomError(client, "Room is full.")
+			rooms.SendJoinRoomError(client, "Room is full.")
 		} else {
 			rooms.AddClient(room, client, name)
 		}

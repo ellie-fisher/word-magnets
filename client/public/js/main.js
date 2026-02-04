@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
  * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
  * Public License v3.0.
@@ -46,13 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	socket.onclose = () => {
 		setChildren(
 			main,
-			LoadingView(
-				null,
-				createElement("strong", { className: "error" }, "Socket Error:"),
-				openedOnce
-					? " Lost connection to the main server. Please refresh the page or try again later."
-					: " Could not connect to the main server.",
-			),
+			ErrorMessageView({
+				title: "Socket Error: ",
+				message: openedOnce
+					? "Lost connection to the main server. Please refresh the page or try again later."
+					: "Could not connect to the main server.",
+			}),
 		);
 	};
 
@@ -60,9 +59,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	socket.onmessage = async event => {
 		const packet = new Uint8Array(await event.data.arrayBuffer());
+		const reader = new ByteReader(packet);
 
-		switch (packet[0]) {
-			case PacketTypes.CreateJoinRoomErrorPacket: {
+		console.log(packet);
+
+		switch (reader.readU8()) {
+			case PacketTypes.CreateRoomErrorPacket: {
+				setChildren(
+					main,
+					ErrorMessageView({
+						title: "Could not create room: ",
+						message: readCreateRoomError(reader),
+					}),
+				);
+				break;
+			}
+			case PacketTypes.JoinRoomErrorPacket: {
+				setChildren(
+					main,
+					ErrorMessageView({
+						title: "Could not join room: ",
+						message: readJoinRoomError(reader),
+					}),
+				);
 				break;
 			}
 
@@ -92,5 +111,5 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	};
 
-	main.append(LoadingView(null, createElement("strong", "Word Magnets"), " is loading..."));
+	main.append(MessageView(null, createElement("strong", "Word Magnets"), " is loading..."));
 });

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
  * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
  * Public License v3.0.
@@ -8,18 +8,42 @@
  */
 
 const RoomFieldsFragment = (data = {}, ...children) => {
-	const { fields = [], title = "", onFieldChange = (field, value) => {} } = data;
+	const {
+		fields = [],
+		title = "Default Title Text",
+		socket = null,
+		buttonText = "Default Button Text",
+		onButtonClick = (socket, userData) => {},
+	} = data;
+
 	const fieldElements = [];
+
+	let waiting = false;
+
+	const button = createElement("input", {
+		type: "button",
+		className: "primary",
+		value: buttonText,
+		disabled: true,
+		onclick() {
+			waiting = true;
+			button.disabled = true;
+
+			const userData = {};
+			fields.forEach(field => (userData[field.id] = field.value));
+
+			onButtonClick(socket, userData);
+		},
+	});
 
 	fields.forEach(field => {
 		let input = "";
 
-		field.value = field.default;
+		field.value = field.default ?? "";
 
 		const onChange = event => {
-			const oldValue = field.value;
 			field.value = event.target.value;
-			onFieldChange(field, oldValue);
+			button.disabled = waiting || !fields.every(validateField);
 		};
 
 		switch (field.type) {
@@ -72,5 +96,6 @@ const RoomFieldsFragment = (data = {}, ...children) => {
 		createElement("h2", title),
 		...fieldElements,
 		...children,
+		button,
 	);
 };

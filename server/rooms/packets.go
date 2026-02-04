@@ -1,7 +1,8 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
- * This file is part of the Word Magnets source code. It may be used under the GNU Affero General Public License v3.0.
+ * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
+ * Public License v3.0.
  *
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
@@ -33,7 +34,8 @@ const (
 
 	/* Server=>Client */
 
-	CreateJoinRoomErrorPacket
+	CreateRoomErrorPacket
+	JoinRoomErrorPacket
 	RoomDestroyedPacket
 
 	RoomDataPacket
@@ -98,10 +100,20 @@ func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
  * Server-to-client packets
  */
 
-func SendCreateJoinRoomError(trans Transmitter, message string) error {
+func SendCreateRoomError(trans Transmitter, message string) error {
 	writer := util.NewByteWriter(0)
 
-	if err := writer.Write(CreateJoinRoomErrorPacket, message); err != nil {
+	if err := writer.Write(CreateRoomErrorPacket, message); err != nil {
+		return err
+	} else {
+		return trans.Send(writer.Bytes())
+	}
+}
+
+func SendJoinRoomError(trans Transmitter, message string) error {
+	writer := util.NewByteWriter(0)
+
+	if err := writer.Write(JoinRoomErrorPacket, message); err != nil {
 		return err
 	} else {
 		return trans.Send(writer.Bytes())

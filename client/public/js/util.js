@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
  * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
  * Public License v3.0.

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
  * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
  * Public License v3.0.
@@ -8,32 +8,21 @@
  */
 
 const JoinRoomView = (data = {}) => {
-	const { onFieldChange = () => {} } = data;
+	const { socket } = data;
 
 	const fields = [
-		{ id: "roomID", type: "string", label: "Room Code", min: 8, max: 8 },
-		{ id: "name", type: "string", label: "Your Name", min: 1, max: 16 },
+		{ id: "roomID", type: "string", label: "Room Code", min: 8, max: 8, default: "" },
+		{ id: "clientName", type: "string", label: "Your Name", min: 1, max: 16, default: "" },
 	];
-
-	const button = createElement("input", {
-		type: "button",
-		className: "primary",
-		value: "Join Room",
-		disabled: true,
-	});
 
 	return combineElements(
 		"section",
-		RoomFieldsFragment(
-			{
-				fields,
-				title: "Join a Room",
-				onFieldChange(field, oldValue) {
-					button.disabled = !fields.every(validateField);
-					onFieldChange(field, oldValue);
-				},
-			},
-			button,
-		),
+		RoomFieldsFragment({
+			fields,
+			socket,
+			title: "Join a Room",
+			buttonText: "Join Room",
+			onButtonClick: sendJoinRoom,
+		}),
 	);
 };

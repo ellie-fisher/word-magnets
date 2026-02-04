@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2025 Ellie Fisher
+ * Copyright (C) 2026 Ellie Fisher
  *
  * This file is part of the Word Magnets source code. It may be used under the GNU Affero General
  * Public License v3.0.
@@ -22,7 +22,8 @@ const PacketTypes = enumerate([
 
 	/* Server=>Client */
 
-	"CreateJoinRoomErrorPacket",
+	"CreateRoomErrorPacket",
+	"JoinRoomErrorPacket",
 	"RoomDestroyedPacket",
 	"RoomDataPacket",
 	"RoomClientsPacket",
@@ -72,7 +73,11 @@ class ByteReader {
 	}
 }
 
-const readCreateJoinRoomError = reader => {
+const readCreateRoomError = reader => {
+	return reader.readString();
+};
+
+const readJoinRoomError = reader => {
 	return reader.readString();
 };
 
@@ -212,24 +217,24 @@ class ByteWriter {
 	}
 }
 
-const sendCreateRoom = (socket, roomData) => {
+const sendCreateRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
 	writer.write(
 		PacketTypes.CreateRoomPacket,
-		roomData.ownerName.trim(),
-		roomData.timeLimit,
-		roomData.roundLimit,
-		roomData.clientLimit,
+		data.ownerName.trim(),
+		data.timeLimit,
+		data.roundLimit,
+		data.clientLimit,
 	);
 
 	socket.send(writer.bytes());
 };
 
-const sendJoinRoom = (socket, roomID, clientName) => {
+const sendJoinRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
-	writer.write(PacketTypes.JoinRoomPacket, roomID, clientName);
+	writer.write(PacketTypes.JoinRoomPacket, data.roomID, data.clientName);
 
 	socket.send(writer.bytes());
 };
