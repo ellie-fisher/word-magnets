@@ -222,10 +222,10 @@ const sendCreateRoom = (socket, data) => {
 
 	writer.write(
 		PacketTypes.CreateRoomPacket,
-		data.ownerName.trim(),
-		data.timeLimit,
-		data.roundLimit,
-		data.clientLimit,
+		String(data.ownerName.trim()),
+		parseInt(data.timeLimit),
+		parseInt(data.roundLimit),
+		parseInt(data.clientLimit),
 	);
 
 	socket.send(writer.bytes());
@@ -234,7 +234,6 @@ const sendCreateRoom = (socket, data) => {
 const sendJoinRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
-	writer.write(PacketTypes.JoinRoomPacket, data.roomID, data.clientName);
-
+	writer.write(PacketTypes.JoinRoomPacket, String(data.roomID), String(data.clientName));
 	socket.send(writer.bytes());
 };

@@ -10,24 +10,11 @@
 const CreateRoomView = (data = {}) => {
 	const { socket } = data;
 
-	const fields = [
-		{
-			id: "timeLimit",
-			type: "int",
-			label: "Time Limit (seconds)",
-			min: 30,
-			max: 120,
-			default: 60,
-			increments: 10,
-		},
-		{ id: "roundLimit", type: "int", label: "Rounds", min: 1, max: 12, default: 8 },
-		{ id: "clientLimit", type: "int", label: "Player Limit", min: 2, max: 10, default: 6 },
-		{ id: "ownerName", type: "string", label: "Your Name", min: 1, max: 16, default: "" },
-	];
+	const fields = structuredClone(Fields.createRoom);
 
 	return combineElements(
 		"section",
-		RoomFieldsFragment({
+		RoomFieldsView({
 			fields,
 			socket,
 			title: "Create a Room",

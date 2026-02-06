@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const RoomFieldsFragment = (data = {}, ...children) => {
+const RoomFieldsView = (data = {}, ...children) => {
 	const {
 		fields = [],
 		title = "Default Title Text",
@@ -16,85 +16,43 @@ const RoomFieldsFragment = (data = {}, ...children) => {
 		onButtonClick = (socket, userData) => {},
 	} = data;
 
-	const fieldElements = [];
-
 	let waiting = false;
 
-	const button = createElement("input", {
-		type: "button",
-		className: "primary",
-		value: buttonText,
-		disabled: true,
-		onclick() {
+	const userData = {};
+
+	const button = createButton(
+		buttonText,
+		"primary",
+		({ target }) => {
 			waiting = true;
-			button.disabled = true;
-
-			const userData = {};
-			fields.forEach(field => (userData[field.id] = field.value));
-
+			target.disabled = true;
 			onButtonClick(socket, userData);
 		},
-	});
-
-	fields.forEach(field => {
-		let input = "";
-
-		field.value = field.default ?? "";
-
-		const onChange = event => {
-			field.value = event.target.value;
-			button.disabled = waiting || !fields.every(validateField);
-		};
-
-		switch (field.type) {
-			case "string": {
-				input = createElement("input", {
-					type: "text",
-					minLength: field.min,
-					maxLength: field.max,
-					oninput: onChange,
-					onchange: onChange,
-				});
-
-				break;
-			}
-
-			case "int": {
-				const increments = field.increments ?? 1;
-				const options = [];
-
-				for (let i = field.min; i <= field.max; i += increments) {
-					options.push(
-						createElement("option", { value: i, selected: i === field.default }, i),
-					);
-				}
-
-				input = createElement("select", { onchange: onChange });
-				input.append(...options);
-
-				break;
-			}
-
-			default:
-				break;
-		}
-
-		fieldElements.push(
-			combineElements(
-				"div",
-				{ className: "field-row" },
-				combineElements("div", createElement("strong", `${field.label}`)),
-				" ",
-				input,
-			),
-		);
-	});
+		{ disabled: true },
+	);
 
 	return combineElements(
 		"section",
 		{ className: "room-fields" },
+
 		createElement("h2", title),
-		...fieldElements,
+
+		...fields.map(field => {
+			userData[field.id] = field.default ?? "";
+
+			return combineElements(
+				"div",
+				{ className: "field-row" },
+				combineElements("div", createElement("strong", `${field.label}`)),
+				" ",
+				createFromField(field, ({ target }) => {
+					userData[field.id] = target.value;
+					button.disabled =
+						waiting || !fields.every(field => validateField(field, userData[field.id]));
+				}),
+			);
+		}),
+
 		...children,
 		button,
 	);

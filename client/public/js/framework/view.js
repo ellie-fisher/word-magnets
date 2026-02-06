@@ -36,6 +36,58 @@ const createElement = (tag, fieldsOrInnerHTML = {}, innerHTML = "") => {
 };
 
 /**
+ * Shortcut helper function for creating buttons.
+ *
+ * @param {string} value
+ * @param {string} [className=""]
+ * @param {MouseEvent} [onclick=()=>{}]
+ * @param {object} [attributes={}]
+ *
+ * @returns HTMLInputElement
+ */
+const createButton = (value, className = "", onclick = () => {}, attributes = {}) => {
+	return createElement("input", { type: "button", value, className, onclick, ...attributes });
+};
+
+/**
+ * Creates an element from field data.
+ *
+ * @param {Field} field
+ * @param {Event} [onchange=()=>{}]
+ *
+ * @returns {HTMLElement | null}
+ */
+const createFromField = (field, onchange = () => {}) => {
+	switch (field.type) {
+		case "string": {
+			return createElement("input", {
+				type: "text",
+				minLength: field.min,
+				maxLength: field.max,
+				onchange,
+				oninput: onchange,
+			});
+		}
+
+		case "int": {
+			const increments = field.increments ?? 1;
+			const dropdown = createElement("select", { onchange });
+
+			for (let i = field.min; i <= field.max; i += increments) {
+				dropdown.append(
+					createElement("option", { value: i, selected: i === field.default }, i),
+				);
+			}
+
+			return dropdown;
+		}
+
+		default:
+			return null;
+	}
+};
+
+/**
  * Wrapper for `document.getElementById()`.
  *
  * @param {string} id

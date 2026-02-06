@@ -18,16 +18,14 @@ const enumerate = arr => {
 	return arr;
 };
 
-const has = Object.hasOwn;
-
-const validateField = field => {
+const validateField = (field, value) => {
 	switch (field.type) {
 		case "string": {
-			return field.value.length >= field.min && field.value.length <= field.max;
+			return value.length >= field.min && value.length <= field.max;
 		}
 
 		case "int": {
-			const parsed = parseInt(field.value);
+			const parsed = parseInt(value);
 
 			return !isNaN(parsed) && parsed >= field.min && parsed <= field.max;
 		}
@@ -35,4 +33,13 @@ const validateField = field => {
 		default:
 			return false;
 	}
+};
+
+const deepFreeze = (value, visited = new Set()) => {
+	if (!visited.has(value) && typeof value === "object") {
+		visited.add(value);
+		Object.keys(value).forEach(key => (value[key] = deepFreeze(value[key])));
+	}
+
+	return Object.freeze(value);
 };

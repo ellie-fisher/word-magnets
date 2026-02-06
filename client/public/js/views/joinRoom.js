@@ -10,14 +10,11 @@
 const JoinRoomView = (data = {}) => {
 	const { socket } = data;
 
-	const fields = [
-		{ id: "roomID", type: "string", label: "Room Code", min: 8, max: 8, default: "" },
-		{ id: "clientName", type: "string", label: "Your Name", min: 1, max: 16, default: "" },
-	];
+	const fields = structuredClone(Fields.joinRoom);
 
 	return combineElements(
 		"section",
-		RoomFieldsFragment({
+		RoomFieldsView({
 			fields,
 			socket,
 			title: "Join a Room",

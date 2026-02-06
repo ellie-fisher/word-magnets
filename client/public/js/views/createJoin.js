@@ -9,32 +9,20 @@
 
 const CreateJoinView = (data = {}) => {
 	const updateTabs = showCreate => {
-		createView.hidden = !showCreate;
-		createButton.disabled = showCreate;
-		joinView.hidden = showCreate;
-		joinButton.disabled = !showCreate;
+		elements[0].disabled = showCreate;
+		elements[1].disabled = !showCreate;
+		elements[2].hidden = !showCreate;
+		elements[3].hidden = showCreate;
 	};
 
-	const createView = CreateRoomView(data);
-	const createButton = createElement("input", {
-		type: "button",
-		className: "tab",
-		value: "Create",
-		onclick() {
-			updateTabs(true);
-		},
-	});
-	const joinView = JoinRoomView(data);
-	const joinButton = createElement("input", {
-		type: "button",
-		className: "tab",
-		value: "Join",
-		onclick() {
-			updateTabs(false);
-		},
-	});
+	const elements = [
+		createButton("Create", "tab", () => updateTabs(true)),
+		createButton("Join", "tab", () => updateTabs(false)),
+		CreateRoomView(data),
+		JoinRoomView(data),
+	];
 
 	updateTabs(true);
 
-	return combineElements("article", createButton, joinButton, createView, joinView);
+	return combineElements("article", ...elements);
 };
