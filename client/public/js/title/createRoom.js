@@ -7,19 +7,24 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const JoinRoomView = (data = {}) => {
+import { combineElements } from "../framework.js";
+import { Fields } from "../fields.js";
+import { sendCreateRoom } from "../packets.js";
+import { RoomFieldsView } from "./roomFields.js";
+
+export const CreateRoomView = (data = {}) => {
 	const { socket } = data;
 
-	const fields = structuredClone(Fields.joinRoom);
+	const fields = structuredClone(Fields.createRoom);
 
 	return combineElements(
 		"section",
 		RoomFieldsView({
 			fields,
 			socket,
-			title: "Join a Room",
-			buttonText: "Join Room",
-			onButtonClick: sendJoinRoom,
+			title: "Create a Room",
+			buttonText: "Create Room",
+			onButtonClick: sendCreateRoom,
 		}),
 	);
 };

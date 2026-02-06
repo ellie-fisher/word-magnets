@@ -7,7 +7,9 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const PacketTypes = enumerate([
+import { enumerate } from "./util.js";
+
+export const PacketTypes = enumerate([
 	"InvalidPacket",
 
 	/* Client=>Server */
@@ -31,7 +33,7 @@ const PacketTypes = enumerate([
 	"RoomSentencesPacket",
 ]);
 
-const RoomStates = enumerate([
+export const RoomStates = enumerate([
 	"Lobby",
 	"Create",
 	"CreateSubmit",
@@ -47,7 +49,7 @@ const MAX_STRING_LENGTH = 255;
 /**
  * ByteReader is a class for reading Uint8Arrays.
  */
-class ByteReader {
+export class ByteReader {
 	constructor(array) {
 		this._array = array;
 		this._index = 0;
@@ -73,19 +75,19 @@ class ByteReader {
 	}
 }
 
-const readCreateRoomError = reader => {
+export const readCreateRoomError = reader => {
 	return reader.readString();
 };
 
-const readJoinRoomError = reader => {
+export const readJoinRoomError = reader => {
 	return reader.readString();
 };
 
-const readRoomDestroyed = reader => {
+export const readRoomDestroyed = reader => {
 	return reader.readString();
 };
 
-const readRoomData = reader => {
+export const readRoomData = reader => {
 	return {
 		id: reader.readString(),
 		state: reader.readU8(),
@@ -97,7 +99,7 @@ const readRoomData = reader => {
 	};
 };
 
-const readRoomClients = reader => {
+export const readRoomClients = reader => {
 	const clients = [];
 	const count = reader.readU8();
 
@@ -108,7 +110,7 @@ const readRoomClients = reader => {
 	return clients;
 };
 
-const readRoomWords = reader => {
+export const readRoomWords = reader => {
 	const wordbanks = [];
 	const bankCount = reader.readU8();
 
@@ -126,7 +128,7 @@ const readRoomWords = reader => {
 	return wordbanks;
 };
 
-const readRoomSentences = reader => {
+export const readRoomSentences = reader => {
 	const sentences = [];
 	const sentenceCount = reader.readU8();
 
@@ -147,7 +149,7 @@ const readRoomSentences = reader => {
 /**
  * ByteWriter is a class for writing Uint8Arrays.
  */
-class ByteWriter {
+export class ByteWriter {
 	constructor() {
 		this._array = [];
 		this._index = 0;
@@ -217,7 +219,7 @@ class ByteWriter {
 	}
 }
 
-const sendCreateRoom = (socket, data) => {
+export const sendCreateRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
 	writer.write(
@@ -231,7 +233,7 @@ const sendCreateRoom = (socket, data) => {
 	socket.send(writer.bytes());
 };
 
-const sendJoinRoom = (socket, data) => {
+export const sendJoinRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
 	writer.write(PacketTypes.JoinRoomPacket, String(data.roomID), String(data.clientName));

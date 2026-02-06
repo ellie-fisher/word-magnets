@@ -10,7 +10,7 @@
 /**
  * enumerate makes an array able to be used as an enum by mapping its values to its indices.
  */
-const enumerate = arr => {
+export const enumerate = arr => {
 	arr.forEach((value, index) => {
 		arr[value] = index;
 	});
@@ -18,7 +18,7 @@ const enumerate = arr => {
 	return arr;
 };
 
-const validateField = (field, value) => {
+export const validateField = (field, value) => {
 	switch (field.type) {
 		case "string": {
 			return value.length >= field.min && value.length <= field.max;
@@ -35,7 +35,7 @@ const validateField = (field, value) => {
 	}
 };
 
-const deepFreeze = (value, visited = new Set()) => {
+export const deepFreeze = (value, visited = new Set()) => {
 	if (!visited.has(value) && typeof value === "object") {
 		visited.add(value);
 		Object.keys(value).forEach(key => (value[key] = deepFreeze(value[key])));

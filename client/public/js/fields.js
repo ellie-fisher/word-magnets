@@ -7,7 +7,9 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const Fields = deepFreeze({
+import { deepFreeze } from "./util.js";
+
+export const Fields = deepFreeze({
 	createRoom: [
 		{
 			id: "timeLimit",

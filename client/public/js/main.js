@@ -23,14 +23,16 @@
  *   - Disconnected from room
  */
 
+import { AppView } from "./app/view.js";
+import { AppState } from "./app/state.js";
+import { ByteReader, PacketTypes, readCreateRoomError, readJoinRoomError } from "./packets.js";
+
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
 const PROTOCOL_NAME = `${PROTOCOL_APP}.${PROTOCOL_BRANCH}`;
 const PROTOCOL_VERSION = 1;
 
 document.addEventListener("DOMContentLoaded", () => {
-	const main = getElement("main");
-
 	let url = `${window.location.hostname}${window.location.pathname === "/" ? "" : window.location.pathname}:4000`;
 
 	if (window.location.protocol === "https:") {
@@ -40,12 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const socket = new WebSocket(url, [`${PROTOCOL_NAME}#${PROTOCOL_VERSION}`]);
+	const appView = AppView({ socket, state: AppState });
 
 	let openedOnce = false;
 
 	socket.onopen = () => {
 		openedOnce = true;
-		setChildren(main, createElement("h1", "Word Magnets"), CreateJoinView({ socket }));
+		AppState.setValue("view", "title");
 	};
 
 	socket.onclose = event => {
@@ -57,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			message = event.reason;
 		}
 
-		setChildren(main, ErrorMessageView({ title: "Socket Error: ", message }));
+		AppState.setValue("view", "error", { title: "Socket Error: ", message });
 	};
 
 	socket.onerror = socket.onclose;
@@ -70,23 +73,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		switch (reader.readU8()) {
 			case PacketTypes.CreateRoomErrorPacket: {
-				setChildren(
-					main,
-					ErrorMessageView({
-						title: "Could not create room: ",
-						message: readCreateRoomError(reader),
-					}),
-				);
+				AppState.setValue("view", "error", {
+					title: "Could not create room: ",
+					message: readCreateRoomError(reader),
+				});
+
 				break;
 			}
+
 			case PacketTypes.JoinRoomErrorPacket: {
-				setChildren(
-					main,
-					ErrorMessageView({
-						title: "Could not join room: ",
-						message: readJoinRoomError(reader),
-					}),
-				);
+				AppState.setValue("view", "error", {
+					title: "Could not join room: ",
+					message: readJoinRoomError(reader),
+				});
+
 				break;
 			}
 
@@ -95,6 +95,11 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			case PacketTypes.RoomDataPacket: {
+				AppState.setValue("view", "room");
+				/*const roomData = readRoomData(reader);
+
+				RoomState.updateValues(roomData);
+				setChildren(main, RoomLobbyView());*/
 				break;
 			}
 
@@ -115,6 +120,4 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 		}
 	};
-
-	main.append(MessageView(null, createElement("strong", "Word Magnets"), " is loading..."));
 });

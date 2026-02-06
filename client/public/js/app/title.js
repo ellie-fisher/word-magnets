@@ -7,7 +7,11 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const CreateJoinView = (data = {}) => {
+import { createButton, combineElements } from "../framework.js";
+import { CreateRoomView } from "../title/createRoom.js";
+import { JoinRoomView } from "../title/joinRoom.js";
+
+export const TitleView = (data = {}) => {
 	const updateTabs = showCreate => {
 		elements[0].disabled = showCreate;
 		elements[1].disabled = !showCreate;

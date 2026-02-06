@@ -7,7 +7,10 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const RoomFieldsView = (data = {}, ...children) => {
+import { combineElements, createButton, createElement, createFromField } from "../framework.js";
+import { validateField } from "../util.js";
+
+export const RoomFieldsView = (data = {}, ...children) => {
 	const {
 		fields = [],
 		title = "Default Title Text",

@@ -7,4 +7,6 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-const RoomLobbyView = (data = {}) => {};
+export const RoomLobbyView = (data = {}) => {
+	return combineElements("ul", createElement("li", RoomState.getValue("id")));
+};
