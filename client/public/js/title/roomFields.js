@@ -10,7 +10,7 @@
 import { combineElements, createButton, createElement, createFromField } from "../framework.js";
 import { validateField } from "../util.js";
 
-export const RoomFieldsView = (data = {}, ...children) => {
+export const RoomFields = (data = {}) => {
 	const {
 		fields = [],
 		title = "Default Title Text",
@@ -56,7 +56,6 @@ export const RoomFieldsView = (data = {}, ...children) => {
 			);
 		}),
 
-		...children,
 		button,
 	);
 };

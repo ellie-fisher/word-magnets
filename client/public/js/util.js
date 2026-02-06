@@ -8,7 +8,11 @@
  */
 
 /**
- * enumerate makes an array able to be used as an enum by mapping its values to its indices.
+ * Gives an array enum-like functionality.
+ *
+ * @param {any[]} arr
+ *
+ * @returns {any[]}
  */
 export const enumerate = arr => {
 	arr.forEach((value, index) => {
@@ -35,6 +39,14 @@ export const validateField = (field, value) => {
 	}
 };
 
+/**
+ * Recursively freezes an object and all its values/children.
+ *
+ * @param {any} value
+ * @param {Set<any>} visited
+ *
+ * @returns {any}
+ */
 export const deepFreeze = (value, visited = new Set()) => {
 	if (!visited.has(value) && typeof value === "object") {
 		visited.add(value);

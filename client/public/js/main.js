@@ -23,8 +23,7 @@
  *   - Disconnected from room
  */
 
-import { AppView } from "./app/view.js";
-import { AppState } from "./app/state.js";
+import { App, setAppView } from "./app.js";
 import { ByteReader, PacketTypes, readCreateRoomError, readJoinRoomError } from "./packets.js";
 
 const PROTOCOL_APP = "word-magnets";
@@ -42,13 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const socket = new WebSocket(url, [`${PROTOCOL_NAME}#${PROTOCOL_VERSION}`]);
-	const appView = AppView({ socket, state: AppState });
+
+	App();
+	setAppView("loading");
 
 	let openedOnce = false;
 
 	socket.onopen = () => {
 		openedOnce = true;
-		AppState.setValue("view", "title");
+		setAppView("title", { socket });
 	};
 
 	socket.onclose = event => {
@@ -56,11 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
 			? "Lost connection to the main server. Please refresh the page or try again later."
 			: "Could not connect to the main server.";
 
-		if (event.reason != "") {
-			message = event.reason;
+		const { reason } = event;
+
+		if (typeof reason === "string" && reason !== "") {
+			message = reason;
 		}
 
-		AppState.setValue("view", "error", { title: "Socket Error: ", message });
+		setAppView("error", { title: "Socket Error: ", message });
 	};
 
 	socket.onerror = socket.onclose;
@@ -73,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		switch (reader.readU8()) {
 			case PacketTypes.CreateRoomErrorPacket: {
-				AppState.setValue("view", "error", {
+				setAppView("error", {
 					title: "Could not create room: ",
 					message: readCreateRoomError(reader),
 				});
@@ -82,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			case PacketTypes.JoinRoomErrorPacket: {
-				AppState.setValue("view", "error", {
+				setAppView("error", {
 					title: "Could not join room: ",
 					message: readJoinRoomError(reader),
 				});
@@ -95,11 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			case PacketTypes.RoomDataPacket: {
-				AppState.setValue("view", "room");
-				/*const roomData = readRoomData(reader);
-
-				RoomState.updateValues(roomData);
-				setChildren(main, RoomLobbyView());*/
+				setAppView("room", { socket });
 				break;
 			}
 

@@ -7,21 +7,17 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { combineElements, createElement } from "../framework.js";
+import { createElement, combineElements } from "./framework.js";
 
-export const MessageView = (data = {}, ...children) => {
+export const createMessage = (...children) => {
 	return combineElements("div", { className: "loading" }, combineElements("div", ...children));
 };
 
-export const ErrorMessageView = (
-	data = { title: "Error:", message: "Unknown error" },
-	...children
-) => {
-	return MessageView(
-		null,
-		createElement("strong", { className: "error" }, data.title),
+export const createErrorMessage = (title = "Error: ", message = "Unknown error", ...children) => {
+	return createMessage(
+		createElement("strong", { className: "error" }, title),
 		createElement("br"),
-		data.message,
+		message,
 		...children,
 	);
 };
