@@ -20,17 +20,21 @@ const [roomData, _setRoomData] = createSignal({
 	clientLimit: Fields.createRoom.find(field => field.id === "clientLimit")?.default ?? 2,
 });
 
+const [clients, setClients] = createSignal([]);
+
 export const Room = (data = {}) => {
 	const { socket = null } = data;
 
 	const children = {
-		id: createElement("li"),
-		timeLeft: createElement("li"),
-		timeLimit: createElement("li"),
-		round: createElement("li"),
-		roundLimit: createElement("li"),
-		clientLimit: createElement("li"),
+		id: createElement("div"),
+		timeLeft: createElement("div"),
+		timeLimit: createElement("div"),
+		round: createElement("div"),
+		roundLimit: createElement("div"),
+		clientLimit: createElement("div"),
 	};
+
+	const players = createElement("ul");
 
 	createEffect(() => {
 		const _roomData = roomData();
@@ -40,10 +44,17 @@ export const Room = (data = {}) => {
 		});
 	});
 
+	createEffect(() => {
+		players.replaceChildren(
+			...clients().map(({ id, name }) => combineElements("li", { title: id }, name)),
+		);
+	});
+
 	return combineElements(
 		"article",
-		combineElements("ul", ...Object.keys(children).map(key => children[key])),
+		combineElements("div", ...Object.keys(children).map(key => children[key]), players),
 	);
 };
 
 export const setRoomData = _setRoomData;
+export const setRoomClients = setClients;

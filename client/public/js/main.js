@@ -23,8 +23,17 @@
  *   - Disconnected from room
  */
 
+import {
+	ByteReader,
+	PacketTypes,
+	readCreateRoomError,
+	readJoinRoomError,
+	readRoomClients,
+	readRoomData,
+} from "./packets.js";
+
 import { App, setAppView } from "./app.js";
-import { ByteReader, PacketTypes, readCreateRoomError, readJoinRoomError } from "./packets.js";
+import { setRoomClients, setRoomData } from "./room/room.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -99,10 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 			case PacketTypes.RoomDataPacket: {
 				setAppView("room", { socket });
+				setRoomData(readRoomData(reader));
 				break;
 			}
 
 			case PacketTypes.RoomClientsPacket: {
+				setRoomClients(readRoomClients(reader));
 				break;
 			}
 
