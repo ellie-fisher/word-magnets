@@ -26,7 +26,7 @@ export const Fields = deepFreeze({
 	],
 
 	joinRoom: [
-		{ id: "roomID", type: "string", label: "Room Code", min: 8, max: 8, default: "" },
+		{ id: "roomID", type: "STRING", label: "Room Code", min: 8, max: 8, default: "" },
 		{ id: "clientName", type: "string", label: "Your Name", min: 1, max: 16, default: "" },
 	],
 });

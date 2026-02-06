@@ -24,6 +24,7 @@ export const enumerate = arr => {
 
 export const validateField = (field, value) => {
 	switch (field.type) {
+		case "STRING":
 		case "string": {
 			return value.length >= field.min && value.length <= field.max;
 		}

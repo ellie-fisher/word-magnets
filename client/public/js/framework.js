@@ -125,6 +125,7 @@ export const createButton = (value, className = "", onclick = () => {}, attribut
  */
 export const createFromField = (field, onchange = () => {}) => {
 	switch (field.type) {
+		case "STRING":
 		case "string": {
 			return createElement("input", {
 				type: "text",

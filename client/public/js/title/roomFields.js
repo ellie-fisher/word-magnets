@@ -49,6 +49,10 @@ export const RoomFields = (data = {}) => {
 				combineElements("div", createElement("strong", `${field.label}`)),
 				" ",
 				createFromField(field, ({ target }) => {
+					if (field.type === "STRING") {
+						target.value = target.value.toUpperCase();
+					}
+
 					userData[field.id] = target.value;
 					button.disabled =
 						waiting || !fields.every(field => validateField(field, userData[field.id]));
