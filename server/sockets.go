@@ -24,7 +24,9 @@ import (
 	"word-magnets/util"
 )
 
-const PROTOCOL_NAME = "word-magnets.vanilla"
+const PROTOCOL_APP = "word-magnets"
+const PROTOCOL_BRANCH = "vanilla"
+const PROTOCOL_NAME = PROTOCOL_APP + "." + PROTOCOL_BRANCH
 const PROTOCOL_VERSION = 1
 
 var upgrader = websocket.Upgrader{

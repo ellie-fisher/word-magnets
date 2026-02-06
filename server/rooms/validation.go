@@ -37,8 +37,8 @@ func init() {
 	roundLimitValidator.MinError = "Round limit must be at least " + strconv.Itoa(int(roundLimitValidator.Min))
 	roundLimitValidator.MaxError = "Round limit cannot be more than " + strconv.Itoa(int(roundLimitValidator.Max))
 
-	clientLimitValidator.MinError = "Client limit must be at least " + strconv.Itoa(int(clientLimitValidator.Min))
-	clientLimitValidator.MaxError = "Client limit cannot be more than " + strconv.Itoa(int(clientLimitValidator.Max))
+	clientLimitValidator.MinError = "Player limit must be at least " + strconv.Itoa(int(clientLimitValidator.Min))
+	clientLimitValidator.MaxError = "Player limit cannot be more than " + strconv.Itoa(int(clientLimitValidator.Max))
 }
 
 func ValidateRoomData(data *UserRoomData) (success bool, message string) {

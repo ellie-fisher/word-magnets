@@ -19,7 +19,7 @@ import (
 )
 
 // Simple, reusable template for error pages.
-const errorPageTemplate = `
+const errorTemplate = `
 	<!DOCTYPE html>
 	<html>
 	<head>
@@ -35,10 +35,8 @@ const errorPageTemplate = `
 
 // sendErrorPage sends the filled error page template.
 func sendErrorPage(writer http.ResponseWriter, _ *http.Request, statusCode int, desc string) {
-	desc = strconv.Itoa(statusCode) + " - " + desc
-
 	writer.WriteHeader(statusCode)
-	writer.Write([]byte(strings.ReplaceAll(errorPageTemplate, "{{}}", desc)))
+	writer.Write([]byte(strings.ReplaceAll(errorTemplate, "{{}}", strconv.Itoa(statusCode)+" - "+desc)))
 }
 
 // httpHandler is a basic HTTP handler for serving files.
