@@ -9,11 +9,12 @@
 
 :root {
 	--bg-color: rgb(33, 58, 26);
-	--fields-bg-color: rgb(84, 146, 69);
+	--container-bg-color: rgb(84, 146, 69);
 	--hr-color: rgb(74, 129, 60);
 
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
+	--input-primary-pressed: rgb(187, 197, 99);
 	--input-secondary-color: rgb(102, 175, 84);
 	--input-secondary-disabled: rgb(57, 100, 46);
 	--input-outline-color: var(--input-secondary-disabled);
@@ -67,75 +68,117 @@ body {
 	}
 }
 
-input, select {
+input,
+button,
+select {
 	background-color: var(--input-secondary-color);
 
-	border: 0em;
+	border-width: 0em;
 	border-radius: 0.25em;
 
 	color: var(--input-text-secondary);
 	font-size: 1.25em;
 
-	padding: 2%;
-	padding-top: 1%;
-	padding-bottom: 1%;
-
+	padding: 1% 2% 1% 2%;
 	margin: 0.25em;
-	margin-left: 0em;
 }
 
-input:focus, select:focus {
+input:focus,
+button:focus,
+select:focus {
 	outline: 0.1em groove var(--input-outline-color);
 }
 
-input[type="button"] {
+button {
 	background-color: var(--input-secondary-color);
 	font-size: 100%;
 	cursor: pointer;
 }
 
-input[type="button"]:disabled {
+button:disabled {
 	background-color: var(--input-secondary-disabled);
 	cursor: default;
 }
 
-input.primary {
+button.primary {
 	background-color: var(--input-primary-color);
 	color: var(--input-text-primary);
 	display: block;
 }
 
-input.primary:focus {
+button.primary:active {
+	background-color: var(--input-primary-pressed);
+}
+
+button.primary:focus {
 	outline: 0.1em solid var(--input-primary-outline);
 }
 
-input.primary:disabled {
+button.primary:disabled {
 	background-color: var(--input-primary-disabled);
 	cursor: not-allowed;
 }
 
-input.tab {
+button.tab {
 	background-color: var(--tab-color);
 	border-bottom-left-radius: 0em;
 	border-bottom-right-radius: 0em;
 
 	color: var(--tab-text-color);
 	font-size: 0.75em;
-	
+
 	margin: 0em;
 }
 
-input.tab:disabled {
+button.tab:disabled {
 	background-color: var(--tab-color-disabled);
 	color: var(--tab-text-disabled);
 }
 
-input.tab:focus {
+button.tab:focus {
 	outline: 0.1em solid var(--tab-outline-color);
 }
 
-input.tab:active {
+button.tab:active {
 	outline: none;
+}
+
+button.word-tile {
+	border: 0.1em outset bisque;
+	border-radius: 0em;
+	outline: none;
+
+	background-color: beige;
+	color: black;
+
+	margin: 0.25em;
+	padding: 0.5% 1% 0.5% 1%;
+}
+
+button.word-tile:active {
+	border-style: inset;
+}
+
+button.room-id {
+	font-family: monospace;
+	outline: none;
+}
+
+small > button {
+	padding: 0.5% 2% 0.5% 2%;
+	margin: 0em 0.15em 0em 0.15em;
+	font-size: 1em;
+}
+
+button.room-id + button {
+	font-family: monospace;
+	background-color: var(--input-primary-color);
+	color: var(--input-text-primary);
+	outline: none;
+}
+
+button.room-id + button:active {
+	background-color: var(--input-primary-pressed);
 }
 
 select {
@@ -146,14 +189,17 @@ hr {
 	border: 0.1em solid var(--hr-color);
 }
 
-.room-fields {
-	background-color: var(--fields-bg-color);
+.container {
+	background-color: var(--container-bg-color);
 	padding: 1em;
 	border-radius: 0.25em;
+}
+
+.tab~.container {
 	border-top-left-radius: 0em;
 }
 
-.room-fields > h2 {
+.container>h2 {
 	margin: 0em;
 	margin-bottom: 1em;
 	padding-bottom: 0.5em;
@@ -164,7 +210,8 @@ hr {
 	padding-bottom: 0.75em;
 }
 
-.center, .loading {
+.center,
+.loading {
 	display: grid;
 	align-content: center;
 	justify-content: center;
@@ -178,4 +225,9 @@ hr {
 
 .error {
 	color: crimson;
+}
+
+.room-header {
+	display: grid;
+	grid-template-columns: 33% 33% 33%;
 }

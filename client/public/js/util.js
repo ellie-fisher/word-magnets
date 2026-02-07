@@ -56,3 +56,16 @@ export const deepFreeze = (value, visited = new Set()) => {
 
 	return Object.freeze(value);
 };
+
+export const onPress = callback => {
+	return { onmousedown: callback, ontouchstart: callback };
+};
+
+export const onRelease = callback => {
+	return {
+		onmouseup: callback,
+		onmouseleave: callback,
+		ontouchend: callback,
+		ontouchcancel: callback,
+	};
+};

@@ -7,14 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import {
-	createEffect,
-	createSignal,
-	createElement,
-	combineElements,
-	createButton,
-} from "../framework.js";
-
+import { createEffect, createSignal, $ } from "../framework.js";
 import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom } from "../packets.js";
 import { RoomFields } from "./roomFields.js";
@@ -23,30 +16,43 @@ export const Title = (data = {}) => {
 	const [tab, setTab] = createSignal(true);
 
 	const children = [
-		createButton("Create", "tab", () => setTab(true)),
-		createButton("Join", "tab", () => setTab(false)),
-
-		combineElements(
-			"section",
-			RoomFields({
-				fields: structuredClone(Fields.createRoom),
-				socket: data.socket ?? null,
-				title: "Create a Room",
-				buttonText: "Create Room",
-				onButtonClick: sendCreateRoom,
-			}),
+		$(
+			"button",
+			{
+				className: "tab",
+				onclick() {
+					setTab(true);
+				},
+			},
+			"Create",
 		),
 
-		combineElements(
-			"section",
-			RoomFields({
-				fields: structuredClone(Fields.joinRoom),
-				socket: data.socket ?? null,
-				title: "Join a Room",
-				buttonText: "Join Room",
-				onButtonClick: sendJoinRoom,
-			}),
+		$(
+			"button",
+			{
+				className: "tab",
+				onclick() {
+					setTab(false);
+				},
+			},
+			"Join",
 		),
+
+		RoomFields({
+			fields: structuredClone(Fields.createRoom),
+			socket: data.socket ?? null,
+			title: "Create a Room",
+			buttonText: "Create Room",
+			onButtonClick: sendCreateRoom,
+		}),
+
+		RoomFields({
+			fields: structuredClone(Fields.joinRoom),
+			socket: data.socket ?? null,
+			title: "Join a Room",
+			buttonText: "Join Room",
+			onButtonClick: sendJoinRoom,
+		}),
 	];
 
 	createEffect(() => {
@@ -56,5 +62,5 @@ export const Title = (data = {}) => {
 		children[3].hidden = tab();
 	});
 
-	return combineElements("article", createElement("h1", "Word Magnets"), ...children);
+	return $("article", $("h1", "Word Magnets"), ...children);
 };

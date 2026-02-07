@@ -8,7 +8,7 @@
  */
 
 /**
- * Exceedingly simple frontend framework ***heavily*** inspired by SolidJS.
+ * Exceedingly simple frontend framework ***heavily*** inspired by SolidJS (and a lil bit of Redux).
  */
 
 let currentEffect = null;
@@ -48,86 +48,62 @@ export function createEffect(func, initialPayload = null) {
 /**
  * Creates a DOM element.
  *
- * @param {string} tag                      - The tag of the element to create.
- * @param {object|string} fieldsOrInnerHTML - If it's an object, it's used as an attributes object.
- *                                            If it's a string, it sets the element's `innerHTML`
- *                                            property.
- * @param {string} innerHTML                - Sets the element's `innerHTML` property ONLY if
- *                                            `fieldsOrInnerHTML` is an attributes object.
+ * @param {string} tag - The tag of the element to create.
+ * @param {...} args   - If the first element in the `args` array is a plain object, it's treated as
+ *                       an attributes object.
+ *                       If the first or second element is a string, it sets the `textContext` of
+ *                       the new element.
+ *                       Everything else is treated as a child.
+ *
  * @returns Node
  */
-export const createElement = (tag, fieldsOrInnerHTML = {}, innerHTML = "") => {
+export const $ = (tag, ...args) => {
 	const element = document.createElement(tag);
 
-	if (typeof fieldsOrInnerHTML === "object") {
-		Object.keys(fieldsOrInnerHTML).forEach(key => (element[key] = fieldsOrInnerHTML[key]));
-		element.innerHTML = innerHTML;
-	} else {
-		element.innerHTML = fieldsOrInnerHTML;
+	let i = 0;
+
+	// Check whether second argument is an attributes object.
+	if (args.length >= i && typeof args[i] === "object" && !(args[i] instanceof Node)) {
+		const attributes = args[i];
+		Object.keys(attributes).forEach(key => (element[key] = attributes[key]));
+		i++;
+	}
+
+	// Check whether second or third argument is for `textContent`.
+	if (args.length >= i && typeof args[i] === "string") {
+		element.textContent = args[i];
+		i++;
+	}
+
+	// The rest of the arguments are children.
+	for (; i < args.length; i++) {
+		element.append(args[i]);
 	}
 
 	return element;
 };
 
 /**
+ * Replaces an element's children with new ones.
+ */
+export const $replace = (node, ...children) => {
+	node.replaceChildren(...children);
+	return node;
+};
+
+/**
  * Wrapper for `document.getElementById()`.
- *
- * @param {string} id
- * @returns Node | null
  */
-export const getElement = id => document.getElementById(id);
-
-/**
- * Combines multiple elements into one new parent tag.
- *
- * @param {string} parentTag    - The tag of the parent element to create.
- * @param {...Node|object} args - The elements to add to the new parent. If the first item is a
- *                                plain object, it is used as an attributes object instead.
- * @returns Node
- */
-export const combineElements = (parentTag, ...args) => {
-	const parent = createElement(parentTag);
-
-	// The second argument can optionally be an attributes object.
-	if (args.length > 0 && typeof args[0] === "object" && !(args[0] instanceof Node)) {
-		const attributes = args[0];
-
-		Object.keys(attributes).forEach(key => (parent[key] = attributes[key]));
-		args = args.slice(1);
-	}
-
-	parent.append(...args);
-
-	return parent;
-};
-
-/**
- * Shortcut helper function for creating buttons.
- *
- * @param {string} value
- * @param {string} [className=""]
- * @param {MouseEvent} [onclick=()=>{}]
- * @param {object} [attributes={}]
- *
- * @returns HTMLInputElement
- */
-export const createButton = (value, className = "", onclick = () => {}, attributes = {}) => {
-	return createElement("input", { type: "button", value, className, onclick, ...attributes });
-};
+export const $get = id => document.getElementById(id);
 
 /**
  * Creates an element from field data.
- *
- * @param {Field} field
- * @param {Event} [onchange=()=>{}]
- *
- * @returns {HTMLElement | null}
  */
-export const createFromField = (field, onchange = () => {}) => {
+export const $field = (field, onchange = () => {}) => {
 	switch (field.type) {
 		case "STRING":
 		case "string": {
-			return createElement("input", {
+			return $("input", {
 				type: "text",
 				minLength: field.min,
 				maxLength: field.max,
@@ -138,12 +114,10 @@ export const createFromField = (field, onchange = () => {}) => {
 
 		case "int": {
 			const increments = field.increments ?? 1;
-			const dropdown = createElement("select", { onchange });
+			const dropdown = $("select", { onchange });
 
 			for (let i = field.min; i <= field.max; i += increments) {
-				dropdown.append(
-					createElement("option", { value: i, selected: i === field.default }, i),
-				);
+				dropdown.append($("option", { value: i, selected: i === field.default }, i));
 			}
 
 			return dropdown;

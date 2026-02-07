@@ -7,8 +7,8 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createEffect, createSignal, createElement, getElement } from "./framework.js";
-import { createMessage, createErrorMessage } from "./message.js";
+import { createEffect, createSignal, $, $get } from "./framework.js";
+import { $message, $error } from "./message.js";
 
 import { Title } from "./title/title.js";
 import { Room } from "./room/room.js";
@@ -16,21 +16,21 @@ import { Room } from "./room/room.js";
 const [view, setView] = createSignal("loading");
 
 export const App = () => {
-	const element = getElement("main");
+	const element = $get("main");
 
 	let child = "";
 
 	createEffect((payload = {}) => {
-		child = createErrorMessage("Error: ", "Unknown view! (Ask a nerd what this means.)");
+		child = $error("Error: ", "Unknown view! (Ask a nerd what this means.)");
 
 		switch (view()) {
 			case "loading": {
-				child = createMessage(createElement("strong", "Word Magnets"), " is loading...");
+				child = $message($("strong", "Word Magnets"), " is loading...");
 				break;
 			}
 
 			case "error": {
-				child = createErrorMessage(payload.title, payload.message);
+				child = $error(payload.title, payload.message);
 				break;
 			}
 

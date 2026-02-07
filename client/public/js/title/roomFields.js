@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { combineElements, createButton, createElement, createFromField } from "../framework.js";
+import { $, $field } from "../framework.js";
 import { validateField } from "../util.js";
 
 export const RoomFields = (data = {}) => {
@@ -23,32 +23,35 @@ export const RoomFields = (data = {}) => {
 
 	const userData = {};
 
-	const button = createButton(
-		buttonText,
-		"primary",
-		({ target }) => {
-			waiting = true;
-			target.disabled = true;
-			onButtonClick(socket, userData);
+	const button = $(
+		"button",
+		{
+			className: "primary",
+			disabled: true,
+			onclick({ target }) {
+				waiting = true;
+				target.disabled = true;
+				onButtonClick(socket, userData);
+			},
 		},
-		{ disabled: true },
+		buttonText,
 	);
 
-	return combineElements(
+	return $(
 		"section",
-		{ className: "room-fields" },
+		{ className: "container" },
 
-		createElement("h2", title),
+		$("h2", title),
 
 		...fields.map(field => {
 			userData[field.id] = field.default ?? "";
 
-			return combineElements(
+			return $(
 				"div",
 				{ className: "field-row" },
-				combineElements("div", createElement("strong", `${field.label}`)),
+				$("div", $("strong", `${field.label}`)),
 				" ",
-				createFromField(field, ({ target }) => {
+				$field(field, ({ target }) => {
 					if (field.type === "STRING") {
 						target.value = target.value.toUpperCase();
 					}
