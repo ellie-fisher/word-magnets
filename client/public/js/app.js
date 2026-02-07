@@ -12,11 +12,13 @@ import { $message, $error } from "./message.js";
 
 import { Title } from "./title/title.js";
 import { Room } from "./room/room.js";
+import { Popup } from "./popup.js";
 
 const [view, setView] = createSignal("loading");
 
 export const App = () => {
 	const element = $get("main");
+	const popup = Popup();
 
 	let child = "";
 
@@ -48,7 +50,7 @@ export const App = () => {
 				break;
 		}
 
-		element.replaceChildren(child);
+		element.replaceChildren(popup, child);
 	});
 
 	return element;

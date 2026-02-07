@@ -126,7 +126,9 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 				Clients:     []*clients.Client{},
 				Wordbanks:   []words.Wordbank{},
 				Sentences:   []words.Sentence{},
+				TimeLeft:    data.TimeLimit,
 				TimeLimit:   data.TimeLimit,
+				Round:       1,
 				RoundLimit:  data.RoundLimit,
 				ClientLimit: data.ClientLimit,
 			}
@@ -164,8 +166,8 @@ func GetRoom(id string) *Room {
 	}
 }
 
-// AddClient adds client to room, then retransmits the client list to all clients, room data, words (if applicable),
-// and sentences (if applicable).
+// AddClient adds client to room, retransmits the client list to all clients, then transmits room
+// data, words (if applicable), and sentences (if applicable) to the new client.
 func AddClient(room *Room, client *clients.Client, name string) {
 	client.RoomID = room.ID
 	client.Name = name

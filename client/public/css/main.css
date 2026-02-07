@@ -17,10 +17,15 @@
 	--input-primary-pressed: rgb(187, 197, 99);
 	--input-secondary-color: rgb(102, 175, 84);
 	--input-secondary-disabled: rgb(57, 100, 46);
+	--input-secondary-pressed: rgb(93, 160, 77);
+	--input-warning-color: rgb(195, 206, 103);
+	--input-warning-disabled: rgb(141, 148, 74);
+	--input-warning-pressed: rgb(159, 167, 90);
 	--input-outline-color: var(--input-secondary-disabled);
 	--input-primary-outline: var(--input-text-primary);
 	--input-text-primary: rgb(66, 70, 43);
 	--input-text-secondary: rgb(32, 56, 26);
+	--input-text-warning: var(--input-text-primary);
 
 	--tab-color: rgb(48, 94, 36);
 	--tab-color-disabled: var(--input-secondary-color);
@@ -81,6 +86,10 @@ select {
 
 	padding: 1% 2% 1% 2%;
 	margin: 0.25em;
+}
+
+button:active {
+	background-color: var(--input-secondary-pressed);
 }
 
 input:focus,
@@ -159,26 +168,31 @@ button.word-tile:active {
 	border-style: inset;
 }
 
-button.room-id {
+button.room-id,
+button.room-id+button {
 	font-family: monospace;
 	outline: none;
 }
 
-small > button {
+button.room-id {
+	background-color: var(--tab-color);
+	color: var(--tab-text-color);
+}
+
+small>button {
 	padding: 0.5% 2% 0.5% 2%;
 	margin: 0em 0.15em 0em 0.15em;
 	font-size: 1em;
 }
 
-button.room-id + button {
-	font-family: monospace;
-	background-color: var(--input-primary-color);
-	color: var(--input-text-primary);
-	outline: none;
+.popup button {
+	padding: 2% 12% 2% 12%;
+	margin: 1.5em;
+	display: inline;
 }
 
-button.room-id + button:active {
-	background-color: var(--input-primary-pressed);
+.popup button.primary {
+	display: inline;
 }
 
 select {
@@ -189,14 +203,28 @@ hr {
 	border: 0.1em solid var(--hr-color);
 }
 
+.tab~.container {
+	border-top-left-radius: 0em;
+}
+
+.tab.warning {
+	background-color: var(--input-warning-color);
+	color: var(--input-text-warning);
+	font-weight: bold;
+}
+
+.tab.warning:active {
+	background-color: var(--input-warning-pressed);
+}
+
+.field-row {
+	padding-bottom: 0.75em;
+}
+
 .container {
 	background-color: var(--container-bg-color);
 	padding: 1em;
 	border-radius: 0.25em;
-}
-
-.tab~.container {
-	border-top-left-radius: 0em;
 }
 
 .container>h2 {
@@ -206,12 +234,21 @@ hr {
 	border-bottom: 0.1em solid var(--hr-color);
 }
 
-.field-row {
-	padding-bottom: 0.75em;
+.popup {
+	position: absolute;
+	z-index: 999;
+	height: 100vh;
+	width: 100vw;
+	padding: 0em;
+	margin: 0em;
+	left: 0em;
+	top: 0em;
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .center,
-.loading {
+.loading,
+.popup {
 	display: grid;
 	align-content: center;
 	justify-content: center;

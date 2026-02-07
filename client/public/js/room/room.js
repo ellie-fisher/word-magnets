@@ -10,6 +10,7 @@
 import { createEffect, createSignal, $, $replace } from "../framework.js";
 import { Fields } from "../fields.js";
 import { onPress, onRelease } from "../util.js";
+import { hidePopup, popupData, setPopupData, showYesNoPopup } from "../popup.js";
 
 const [roomData, _setRoomData] = createSignal({
 	id: "",
@@ -36,15 +37,19 @@ export const Room = (data = {}) => {
 			...onRelease(() => {
 				setShowID(false);
 			}),
+			onmouseleave() {
+				setShowID(false);
+			},
 		}),
 		timeLeft: $("span"),
 		round: $("span"),
 		roundLimit: $("span"),
 	};
 
+	// We have these functions reassignable so we can change them when their values change.
 	let copyRoomID = () => {};
 
-	const children = [
+	const header = [
 		$("div", $("strong", "Time Left: "), fields.timeLeft),
 		$("div", $("strong", "Round: "), fields.round, " / ", fields.roundLimit),
 		$(
@@ -99,7 +104,21 @@ export const Room = (data = {}) => {
 	return $(
 		"article",
 		$("h1", "Lobby"),
-		$("section", $("p", { className: "container room-header" }, ...children), players),
+		$(
+			"section",
+			$(
+				"button",
+				{
+					className: "tab warning",
+					...onRelease(() => {
+						showYesNoPopup("Exit Room?", "Are you sure you want to exit the room?");
+					}),
+				},
+				"« Exit",
+			),
+			$("section", { className: "container room-header" }, ...header),
+			$("p", players),
+		),
 	);
 };
 

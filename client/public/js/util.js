@@ -57,15 +57,16 @@ export const deepFreeze = (value, visited = new Set()) => {
 	return Object.freeze(value);
 };
 
+/**
+ * A helper function for desktop and mobile press callbacks.
+ */
 export const onPress = callback => {
 	return { onmousedown: callback, ontouchstart: callback };
 };
 
+/**
+ * A helper function for desktop and mobile release callbacks.
+ */
 export const onRelease = callback => {
-	return {
-		onmouseup: callback,
-		onmouseleave: callback,
-		ontouchend: callback,
-		ontouchcancel: callback,
-	};
+	return { onmouseup: callback, ontouchend: callback };
 };
