@@ -41,15 +41,14 @@ func NewWordbank(wordType WordType) Wordbank {
 	if bank := wordbanks[wordType]; bank == nil {
 		return Wordbank{}
 	} else {
+		// Pick random words from the wordbank without repeats. Some wordbanks are fixed, so we won't be selecting
+		// randomly from them.
 		switch wordType {
 		case Noun:
 			fallthrough
 		case Adjective:
 			fallthrough
 		case Verb:
-			/* Pick random words from the wordbank without repeats. Some wordbanks are fixed, so we won't be selecting
-			   randomly from them. */
-
 			var selected Wordbank
 
 			length := len(bank)
@@ -69,6 +68,17 @@ func NewWordbank(wordType WordType) Wordbank {
 			}
 
 			bank = selected
+
+		// Ignore any fixed wordbanks. These cases are just here for posterity.
+		case Pronoun:
+			fallthrough
+		case Auxiliary:
+			fallthrough
+		case Preposition:
+			fallthrough
+		case Miscellaneous:
+			fallthrough
+		default:
 		}
 
 		return bank

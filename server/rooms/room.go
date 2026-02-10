@@ -16,6 +16,7 @@ import (
 	"strconv"
 
 	"word-magnets/clients"
+	"word-magnets/packets"
 	"word-magnets/words"
 )
 
@@ -24,9 +25,9 @@ type Room struct {
 	Owner   *clients.Client
 	Clients []*clients.Client
 
-	State     StateMachine     // TODO: State
-	Wordbanks []words.Wordbank // TODO: Wordbanks
-	Sentences []words.Sentence // TODO: Sentences
+	state     stateMachine      // TODO: State
+	Wordbanks []words.Wordbank  // TODO: Wordbanks
+	Sentences []*words.Sentence // TODO: Sentences
 
 	TimeLeft    uint8
 	TimeLimit   uint8
@@ -62,21 +63,53 @@ func (room *Room) IsOwner(id string) bool {
 	return room.Owner.ID() == id
 }
 
-// SelectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones), and
-// transmits them to all clients.
-func (room *Room) SelectWords() {
-	room.Sentences = []words.Sentence{}
-	room.Wordbanks = []words.Wordbank{
-		words.NewWordbank(words.Noun),
-		words.NewWordbank(words.Adjective),
-		words.NewWordbank(words.Verb),
-		words.NewWordbank(words.Pronoun),
-		words.NewWordbank(words.Auxiliary),
-		words.NewWordbank(words.Preposition),
-		words.NewWordbank(words.Miscellaneous),
+// AddClient adds client to room, retransmits the client list to all clients, then transmits room
+// data, words (if applicable), and sentences (if applicable) to the new client.
+func (room *Room) AddClient(client *clients.Client, name string) {
+	if oldRoom := GetRoom(client.RoomID); oldRoom != nil {
+		oldRoom.RemoveClient(client)
 	}
 
-	SendRoomWords(room, room.Wordbanks)
+	client.RoomID = room.ID
+	client.Name = name
+
+	room.Clients = append(room.Clients, client)
+	room.sendClients()
+	room.sendRoomData(client)
+	room.state.onAddClient(client)
+}
+
+// RemoveClient removes client from room, destroying room if client is the owner.
+func (room *Room) RemoveClient(client *clients.Client) {
+	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
+		return check.ID() == client.ID()
+	})
+
+	if index >= 0 {
+		if client.ID() == room.Owner.ID() {
+			DestroyRoom(room)
+		} else {
+			room.Clients = slices.Delete(room.Clients, index, index+1)
+			client.RoomID = ""
+			room.sendClients()
+		}
+	}
+}
+
+func (room *Room) Tick() {
+	room.state.tick()
+}
+
+func (room *Room) addSentence(sentence *words.Sentence) {
+	index := slices.IndexFunc(room.Sentences, func(item *words.Sentence) bool {
+		return item.AuthorID == sentence.AuthorID
+	})
+
+	if index >= 0 {
+		room.Sentences[index] = sentence
+	} else {
+		room.Sentences = append(room.Sentences, sentence)
+	}
 }
 
 // Rooms are stored by ID=>Room
@@ -113,7 +146,7 @@ func generateID() string {
 }
 
 // NewRoom attempts to create a new room, returning nil if it can't generate a unique ID.
-func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
+func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 	var room *Room
 
 	for range newRoomAttempts {
@@ -125,7 +158,7 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 				Owner:       owner,
 				Clients:     []*clients.Client{},
 				Wordbanks:   []words.Wordbank{},
-				Sentences:   []words.Sentence{},
+				Sentences:   []*words.Sentence{},
 				TimeLeft:    data.TimeLimit,
 				TimeLimit:   data.TimeLimit,
 				Round:       1,
@@ -133,7 +166,7 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 				ClientLimit: data.ClientLimit,
 			}
 
-			room.State = *NewStateMachine(room)
+			room.state = *NewStateMachine(room)
 			rooms[id] = room
 
 			break
@@ -145,7 +178,7 @@ func NewRoom(owner *clients.Client, data *UserRoomData) *Room {
 
 // DestroyRoom sends a packet to all clients that the room was destroyed and deletes the room.
 func DestroyRoom(room *Room) {
-	SendRoomDestroyed(room, "The room was shut down.")
+	room.sendRoomDestroyed("The room was shut down.")
 
 	for _, client := range room.Clients {
 		client.RoomID = ""
@@ -164,39 +197,4 @@ func GetRoom(id string) *Room {
 	} else {
 		return nil
 	}
-}
-
-// AddClient adds client to room, retransmits the client list to all clients, then transmits room
-// data, words (if applicable), and sentences (if applicable) to the new client.
-func AddClient(room *Room, client *clients.Client, name string) {
-	client.RoomID = room.ID
-	client.Name = name
-
-	room.Clients = append(room.Clients, client)
-	SendRoomClients(room, room.Clients)
-
-	SendRoomData(client, room)
-	SendRoomWords(client, room.Wordbanks)
-	SendRoomSentences(client, room.Sentences)
-}
-
-// RemoveClient removes client from room, destroying room if client is the owner.
-func RemoveClient(room *Room, client *clients.Client) {
-	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
-		return check.ID() == client.ID()
-	})
-
-	if index >= 0 {
-		if client.ID() == room.Owner.ID() {
-			DestroyRoom(room)
-		} else {
-			room.Clients = slices.Delete(room.Clients, index, index+1)
-			client.RoomID = ""
-			SendRoomClients(room, room.Clients)
-		}
-	}
-}
-
-func (room *Room) Tick() {
-	room.State.Tick()
 }

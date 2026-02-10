@@ -20,6 +20,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"word-magnets/clients"
+	"word-magnets/packets"
 	"word-magnets/rooms"
 	"word-magnets/util"
 )
@@ -65,68 +66,67 @@ func handlePacket(client *clients.Client, bytes []byte) {
 		return
 	}
 
-	reader := util.NewByteReader(bytes)
-	packetType := rooms.PacketType(reader.ReadU8())
+	reader := packets.NewPacketReader(bytes)
 
-	switch packetType {
-	case rooms.CreateRoomPacket:
-		data := rooms.ReadCreateRoom(reader)
+	switch packets.PacketType(reader.PeekU8()) {
+	case packets.CreateRoomPacket:
+		data := reader.ReadCreateRoom()
 
 		if success, message := rooms.ValidateRoomData(data); !success {
-			rooms.SendCreateRoomError(client, message)
+			client.SendRoomTitleError(true, message)
 		} else if room := rooms.NewRoom(client, data); room == nil {
-			rooms.SendCreateRoomError(client, rooms.NewRoomErrorMessage)
+			client.SendRoomTitleError(true, rooms.NewRoomErrorMessage)
 		} else {
-			rooms.AddClient(room, client, data.OwnerName)
+			room.AddClient(client, data.OwnerName)
 		}
 
-	case rooms.JoinRoomPacket:
-		id, name := rooms.ReadJoinRoom(reader)
+	case packets.JoinRoomPacket:
+		id, name := reader.ReadJoinRoom()
 
 		if success, message := clients.ValidateName(name); !success {
-			rooms.SendJoinRoomError(client, message)
+			client.SendRoomTitleError(false, message)
 		} else if room := rooms.GetRoom(id); room == nil {
-			rooms.SendJoinRoomError(client, "Room not found.")
+			client.SendRoomTitleError(false, "Room not found.")
 		} else if len(room.Clients) >= int(room.ClientLimit) {
-			rooms.SendJoinRoomError(client, "Room is full.")
+			client.SendRoomTitleError(false, "Room is full.")
 		} else {
-			rooms.AddClient(room, client, name)
+			room.AddClient(client, name)
 		}
 
-	case rooms.LeaveRoomPacket:
-		rooms.ReadLeaveRoom(reader) // Not necessary at the moment -- just here for posterity.
+	case packets.LeaveRoomPacket:
+		reader.ReadLeaveRoom() // Not necessary at the moment -- just here for posterity.
 
 		if room := rooms.GetRoom(client.RoomID); room != nil {
-			rooms.RemoveClient(room, client)
+			room.RemoveClient(client)
 		}
 
-	case rooms.RemoveClientPacket:
-		targetID := rooms.ReadRemoveClient(reader)
+	case packets.RemoveClientPacket:
+		targetID := reader.ReadRemoveClient()
 
 		if room := rooms.GetRoom(client.RoomID); room != nil {
 			if room.IsOwner(client.ID()) && !room.IsOwner(targetID) {
 				if target := room.GetClient(targetID); target != nil {
-					rooms.RemoveClient(room, target)
+					room.RemoveClient(target)
 				}
 			}
 		}
 
-	case rooms.StartGamePacket:
+	case packets.StartGamePacket:
 		fallthrough
-	case rooms.SubmitSentencePacket:
+	case packets.SubmitSentencePacket:
 		fallthrough
-	case rooms.SubmitVotePacket:
+	case packets.SubmitVotePacket:
 		fallthrough
 	default:
 		if room := rooms.GetRoom(client.RoomID); room != nil {
-			room.State.ReceivePacket(client, reader, packetType)
+			room.ReceivePacket(client, reader)
 		}
 	}
 }
 
 func closeHandler(client *clients.Client, _ int, _ string) error {
 	if room := rooms.GetRoom(client.RoomID); room != nil {
-		rooms.RemoveClient(room, client)
+		room.RemoveClient(client)
 	}
 
 	log.Printf("Disconnected: %s", client.Socket.RemoteAddr())
@@ -160,11 +160,7 @@ func socketHandler(writer http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		conn.WriteMessage(
-			websocket.CloseMessage,
-			websocket.FormatCloseMessage(websocket.CloseProtocolError, closeMessage),
-		)
-
+		conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseProtocolError, closeMessage))
 		conn.Close()
 	} else {
 		log.Printf("New connection: %s (%s)", conn.RemoteAddr(), conn.Subprotocol())

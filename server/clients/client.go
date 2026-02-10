@@ -10,6 +10,8 @@
 package clients
 
 import (
+	"word-magnets/packets"
+
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -23,13 +25,28 @@ type Client struct {
 	Score  uint8
 }
 
+func (client *Client) ID() string {
+	return client.id
+}
+
 // Send transmits a binary packet to the client.
 func (client *Client) Send(bytes []byte) error {
 	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
 }
 
-func (client *Client) ID() string {
-	return client.id
+func (client *Client) SendRoomTitleError(createOrJoin bool, message string) error {
+	writer := packets.NewPacketWriter(0)
+	packetType := packets.CreateRoomErrorPacket
+
+	if !createOrJoin {
+		packetType = packets.JoinRoomErrorPacket
+	}
+
+	if err := writer.Write(packetType, message); err != nil {
+		return err
+	} else {
+		return client.Send(writer.Bytes())
+	}
 }
 
 // NewClient attempts to generate a UUID and then create a Client object, returning nil if it fails.

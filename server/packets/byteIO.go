@@ -7,26 +7,36 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-package util
+package packets
 
 import "slices"
 
 const MaxStringLength = 255
 
 /**
- * ByteReader
+ * PacketReader
  */
 
-type ByteReader struct {
+type PacketReader struct {
 	index int
 	bytes []byte
 }
 
-func (reader *ByteReader) IsAtEnd() bool {
+func (reader *PacketReader) IsAtEnd() bool {
 	return reader.index >= len(reader.bytes)
 }
 
-func (reader *ByteReader) ReadU8() uint8 {
+func (reader *PacketReader) PeekU8() uint8 {
+	var value uint8
+
+	if !reader.IsAtEnd() {
+		value = reader.bytes[reader.index]
+	}
+
+	return value
+}
+
+func (reader *PacketReader) ReadU8() uint8 {
 	var value uint8
 
 	if !reader.IsAtEnd() {
@@ -37,7 +47,7 @@ func (reader *ByteReader) ReadU8() uint8 {
 	return value
 }
 
-func (reader *ByteReader) ReadString() string {
+func (reader *PacketReader) ReadString() string {
 	length := reader.ReadU8()
 	str := ""
 
@@ -48,30 +58,30 @@ func (reader *ByteReader) ReadString() string {
 	return str
 }
 
-func NewByteReader(bytes []byte) *ByteReader {
-	return &ByteReader{0, bytes}
+func NewPacketReader(bytes []byte) *PacketReader {
+	return &PacketReader{0, bytes}
 }
 
 /**
- * ByteWriter
+ * PacketWriter
  */
 
-type ByteWriterErr struct{}
+type PacketWriterErr struct{}
 
-func (err *ByteWriterErr) Error() string {
+func (err *PacketWriterErr) Error() string {
 	return "Failed to write one or more value(s)"
 }
 
-type ByteWriter struct {
+type PacketWriter struct {
 	index int
 	bytes []byte
 }
 
-func (writer *ByteWriter) Bytes() []byte {
+func (writer *PacketWriter) Bytes() []byte {
 	return writer.bytes
 }
 
-func (writer *ByteWriter) WriteU8(value uint8) {
+func (writer *PacketWriter) WriteU8(value uint8) {
 	if writer.index < len(writer.bytes) {
 		writer.bytes[writer.index] = value
 	} else {
@@ -81,7 +91,7 @@ func (writer *ByteWriter) WriteU8(value uint8) {
 	writer.index++
 }
 
-func (writer *ByteWriter) WriteString(value string) bool {
+func (writer *PacketWriter) WriteString(value string) bool {
 	bytes := []byte(value)
 	truncated := len(bytes) > MaxStringLength
 
@@ -97,7 +107,7 @@ func (writer *ByteWriter) WriteString(value string) bool {
 	return truncated
 }
 
-func (writer *ByteWriter) Write(values ...any) error {
+func (writer *PacketWriter) Write(values ...any) error {
 	for _, value := range values {
 		switch cast := value.(type) {
 		case uint8:
@@ -105,13 +115,13 @@ func (writer *ByteWriter) Write(values ...any) error {
 		case string:
 			writer.WriteString(cast)
 		default:
-			return &ByteWriterErr{}
+			return &PacketWriterErr{}
 		}
 	}
 
 	return nil
 }
 
-func NewByteWriter(size int) *ByteWriter {
-	return &ByteWriter{0, make([]byte, size)}
+func NewPacketWriter(size int) *PacketWriter {
+	return &PacketWriter{0, make([]byte, size)}
 }

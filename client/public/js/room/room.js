@@ -10,7 +10,7 @@
 import { createEffect, createSignal, $, $replace } from "../framework.js";
 import { Fields } from "../fields.js";
 import { onPress, onRelease } from "../util.js";
-import { hidePopup, popupData, setPopupData, showYesNoPopup } from "../popup.js";
+import { showYesNoPopup } from "../popup.js";
 
 const [roomData, _setRoomData] = createSignal({
 	id: "",

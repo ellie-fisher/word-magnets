@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"word-magnets/clients"
+	"word-magnets/packets"
 	"word-magnets/util"
 )
 
@@ -41,7 +42,11 @@ func init() {
 	clientLimitValidator.MaxError = "Player limit cannot be more than " + strconv.Itoa(int(clientLimitValidator.Max))
 }
 
-func ValidateRoomData(data *UserRoomData) (success bool, message string) {
+func ValidateRoomData(data *packets.UserRoomData) (success bool, message string) {
+	if data == nil {
+		return false, "An error occurred while reading the room data"
+	}
+
 	if success, message := clients.ValidateName(data.OwnerName); !success {
 		return success, message
 	}

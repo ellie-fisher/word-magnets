@@ -18,26 +18,26 @@ type WordEntry struct {
 
 type Sentence struct {
 	AuthorID string
-	Words    []*WordEntry
+	Value    string
 }
 
 const maxLength = 100
 
-func (sentence Sentence) String(wordbanks []Wordbank) string {
+func NewSentence(authorID string, words []WordEntry, wordbanks []Wordbank) *Sentence {
 	str := ""
 	prevHyphen := false
 
-	for i := 0; i < len(wordbanks) && i < maxLength; i++ {
-		entry := sentence.Words[i]
+	for i := 0; i < len(wordbanks) && i < maxLength && len(str) < maxLength; i++ {
+		entry := words[i]
 
 		if !util.HasIndex(wordbanks, int(entry.BankIndex)) {
-			return ""
+			return nil
 		}
 
 		bank := wordbanks[entry.BankIndex]
 
 		if !util.HasIndex(bank, int(entry.WordIndex)) {
-			return ""
+			return nil
 		}
 
 		word := bank[entry.WordIndex]
@@ -59,16 +59,18 @@ func (sentence Sentence) String(wordbanks []Wordbank) string {
 			prevHyphen = true
 		}
 
-		str += word[start:end]
+		wordSlice := word[start:end]
 
-		if len(str) > maxLength {
+		if len(str)+len(wordSlice) > maxLength {
 			break
 		}
+
+		str += wordSlice
 	}
 
 	if len(str) > maxLength {
 		str = str[:maxLength]
 	}
 
-	return str
+	return &Sentence{authorID, str}
 }

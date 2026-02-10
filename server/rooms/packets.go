@@ -10,133 +10,29 @@
 package rooms
 
 import (
-	"strings"
-
 	"word-magnets/clients"
+	"word-magnets/packets"
 	"word-magnets/util"
 	"word-magnets/words"
 )
 
-type PacketType = uint8
+func (room *Room) sendRoomDestroyed(reason string) error {
+	writer := packets.NewPacketWriter(0)
 
-const (
-	InvalidPacket PacketType = iota
-
-	/* Client=>Server */
-
-	CreateRoomPacket
-	JoinRoomPacket
-	LeaveRoomPacket
-	RemoveClientPacket
-	StartGamePacket
-	SubmitSentencePacket
-	SubmitVotePacket
-
-	/* Server=>Client */
-
-	CreateRoomErrorPacket
-	JoinRoomErrorPacket
-	RoomDestroyedPacket
-
-	RoomDataPacket
-	RoomClientsPacket
-	RoomWordsPacket
-	RoomSentencesPacket
-)
-
-// Transmitter is any struct that can send binary packets.
-type Transmitter interface {
-	Send(bytes []byte) error
-}
-
-/**
- * Client-to-server packets
- */
-
-type UserRoomData struct {
-	OwnerName   string
-	TimeLimit   uint8
-	RoundLimit  uint8
-	ClientLimit uint8
-}
-
-func ReadCreateRoom(reader *util.ByteReader) *UserRoomData {
-	return &UserRoomData{
-		OwnerName:   strings.TrimSpace(reader.ReadString()),
-		TimeLimit:   reader.ReadU8(),
-		RoundLimit:  reader.ReadU8(),
-		ClientLimit: reader.ReadU8(),
-	}
-}
-
-func ReadJoinRoom(reader *util.ByteReader) (id string, clientName string) {
-	return reader.ReadString(), strings.TrimSpace(reader.ReadString())
-}
-
-func ReadLeaveRoom(reader *util.ByteReader) {}
-
-func ReadRemoveClient(reader *util.ByteReader) (id string) {
-	return reader.ReadString()
-}
-
-func ReadStartGame(reader *util.ByteReader) {}
-
-func ReadSubmitSentence(reader *util.ByteReader) words.Sentence {
-	var sentence words.Sentence
-	length := reader.ReadU8()
-
-	for range length {
-		sentence.Words = append(sentence.Words, &words.WordEntry{reader.ReadU8(), reader.ReadU8()})
-	}
-
-	return sentence
-}
-
-func ReadSubmitVote(reader *util.ByteReader) (index uint8) {
-	return reader.ReadU8()
-}
-
-/**
- * Server-to-client packets
- */
-
-func SendCreateRoomError(trans Transmitter, message string) error {
-	writer := util.NewByteWriter(0)
-
-	if err := writer.Write(CreateRoomErrorPacket, message); err != nil {
+	if err := writer.Write(packets.RoomDestroyedPacket, reason); err != nil {
 		return err
 	} else {
-		return trans.Send(writer.Bytes())
+		return room.Send(writer.Bytes())
 	}
 }
 
-func SendJoinRoomError(trans Transmitter, message string) error {
-	writer := util.NewByteWriter(0)
-
-	if err := writer.Write(JoinRoomErrorPacket, message); err != nil {
-		return err
-	} else {
-		return trans.Send(writer.Bytes())
-	}
-}
-
-func SendRoomDestroyed(trans Transmitter, reason string) error {
-	writer := util.NewByteWriter(0)
-
-	if err := writer.Write(RoomDestroyedPacket, reason); err != nil {
-		return err
-	} else {
-		return trans.Send(writer.Bytes())
-	}
-}
-
-func SendRoomData(trans Transmitter, room *Room) error {
-	writer := util.NewByteWriter(0)
+func (room *Room) sendRoomData(client *clients.Client) error {
+	writer := packets.NewPacketWriter(0)
 
 	err := writer.Write(
-		RoomDataPacket,
+		packets.RoomDataPacket,
 		room.ID,
-		room.State.State(),
+		room.state.tag(),
 		room.TimeLeft,
 		room.TimeLimit,
 		room.Round,
@@ -148,39 +44,37 @@ func SendRoomData(trans Transmitter, room *Room) error {
 		return err
 	}
 
-	return trans.Send(writer.Bytes())
+	if client == nil {
+		return room.Send(writer.Bytes())
+	} else {
+		return client.Send(writer.Bytes())
+	}
 }
 
-func SendRoomClients(trans Transmitter, clients []*clients.Client) error {
-	writer := util.NewByteWriter(0)
+func (room *Room) sendClients() error {
+	writer := packets.NewPacketWriter(0)
 
-	err := writer.Write(
-		RoomClientsPacket,
-		uint8(len(clients)),
-	)
-
-	if err == nil {
-		for _, client := range clients {
-			writer.WriteString(client.ID())
-			writer.WriteString(client.Name)
-		}
-	}
-
-	if err != nil {
+	if err := writer.Write(packets.RoomClientsPacket, uint8(len(room.Clients))); err != nil {
 		return err
 	}
 
-	return trans.Send(writer.Bytes())
+	for _, client := range room.Clients {
+		writer.WriteString(client.ID())
+		writer.WriteString(client.Name)
+	}
+
+	return room.Send(writer.Bytes())
 }
 
-func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
-	writer := util.NewByteWriter(0)
+// sendWords sends the room's words to either a specific client or the entire room if client is nil.
+func (room *Room) sendWords(client *clients.Client) error {
+	writer := packets.NewPacketWriter(0)
 
-	if err := writer.Write(RoomWordsPacket, uint8(len(wordbanks))); err != nil {
+	if err := writer.Write(packets.RoomWordsPacket, uint8(len(room.Wordbanks))); err != nil {
 		return err
 	}
 
-	for _, bank := range wordbanks {
+	for _, bank := range room.Wordbanks {
 		writer.WriteU8(uint8(len(bank)))
 
 		for _, word := range bank {
@@ -188,32 +82,86 @@ func SendRoomWords(trans Transmitter, wordbanks []words.Wordbank) error {
 		}
 	}
 
-	return trans.Send(writer.Bytes())
+	if client == nil {
+		return room.Send(writer.Bytes())
+	} else {
+		return client.Send(writer.Bytes())
+	}
 }
 
-func SendRoomSentences(trans Transmitter, sentences []words.Sentence) error {
-	writer := util.NewByteWriter(0)
+// sendSentences sends the sentences either to a specific client or the whole room. It's used
+// during the various voting phases.
+//
+// The first time it's anonymized, which means that author IDs are *not* included, and the clients'
+// own sentences aren't sent to them.
+//
+// The second time is during the voting results phase, which means that author IDs *are* included,
+// as well as the numbers of votes.
+func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
+	includeAuthors := uint8(0)
+	clients := []*clients.Client{}
+	authors := util.NewSet[string]()
 
-	err := writer.Write(
-		RoomSentencesPacket,
-		uint8(len(sentences)),
-	)
+	if target == nil {
+		clients = room.Clients
+	} else {
+		clients = append(clients, target)
+	}
 
-	if err == nil {
-		for _, sentence := range sentences {
-			writer.WriteU8(uint8(len(sentence.Words)))
+	for _, sentence := range room.Sentences {
+		authors.Add(sentence.AuthorID)
+	}
 
-			for _, entry := range sentence.Words {
-				if err = writer.Write(uint8(entry.BankIndex), uint8(entry.WordIndex)); err != nil {
-					break
+	for _, client := range clients {
+		writer := packets.NewPacketWriter(0)
+		length := uint8(len(room.Sentences))
+
+		if !anonymous {
+			includeAuthors = 1
+		}
+
+		// We won't be writing the client's own sentence to them during the initial voting phase, so
+		// we must modify the length we send out.
+		if authors.Has(client.ID()) && anonymous && length > 0 {
+			length--
+		}
+
+		if err := writer.Write(packets.RoomSentencesPacket, includeAuthors, length); err != nil {
+			for _, sentence := range room.Sentences {
+				if anonymous {
+					// Don't write the client's own sentence if we're sending the voting options.
+					if sentence.AuthorID == client.ID() {
+						continue
+					}
+				} else {
+					writer.WriteString(sentence.AuthorID)
 				}
+
+				writer.WriteString(sentence.Value)
 			}
+
+			client.Send(writer.Bytes())
 		}
 	}
+}
 
-	if err != nil {
-		return err
+// selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed
+// ones), and transmits them to all clients.
+func (room *Room) selectWords() error {
+	room.Sentences = []*words.Sentence{}
+	room.Wordbanks = []words.Wordbank{
+		words.NewWordbank(words.Noun),
+		words.NewWordbank(words.Adjective),
+		words.NewWordbank(words.Verb),
+		words.NewWordbank(words.Pronoun),
+		words.NewWordbank(words.Auxiliary),
+		words.NewWordbank(words.Preposition),
+		words.NewWordbank(words.Miscellaneous),
 	}
 
-	return trans.Send(writer.Bytes())
+	return room.sendWords(nil)
+}
+
+func (room *Room) ReceivePacket(client *clients.Client, reader *packets.PacketReader) {
+	room.state.receivePacket(client, reader)
 }

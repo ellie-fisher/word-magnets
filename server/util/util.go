@@ -11,6 +11,12 @@ package util
 
 import "math/rand"
 
+type Number interface {
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
+		~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~float32 | ~float64
+}
+
 // RandIntn is a wrapper for rand.Intn with min and max parameters.
 func RandIntn(min int, max int) int {
 	return rand.Intn(max-min) + min
@@ -44,4 +50,32 @@ func lower(b byte) byte {
 		return b + ('a' - 'A')
 	}
 	return b
+}
+
+// Go doesn't have sets natively, so we just use a map with the smallest possible value as a hack.
+type Set[T Number | string] struct {
+	values map[T]bool
+}
+
+func (set *Set[T]) Add(value T) {
+	set.values[value] = true
+}
+
+func (set *Set[T]) Delete(value T) {
+	delete(set.values, value)
+}
+
+func (set *Set[T]) Has(value T) bool {
+	_, has := set.values[value]
+	return has
+}
+
+func NewSet[T Number | string](values ...T) *Set[T] {
+	set := &Set[T]{map[T]bool{}}
+
+	for _, value := range values {
+		set.values[value] = true
+	}
+
+	return set
 }
