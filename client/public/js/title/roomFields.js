@@ -57,8 +57,7 @@ export const RoomFields = (data = {}) => {
 					}
 
 					userData[field.id] = target.value;
-					button.disabled =
-						waiting || !fields.every(field => validateField(field, userData[field.id]));
+					button.disabled = waiting || !fields.every(field => validateField(field, userData[field.id]));
 				}),
 			);
 		}),

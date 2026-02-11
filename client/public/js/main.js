@@ -33,7 +33,7 @@ import {
 } from "./packets.js";
 
 import { App, setAppView } from "./app.js";
-import { setRoomClients, setRoomData } from "./room/room.js";
+import { setRoomClients, setRoomData } from "./room/header.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -85,19 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		switch (reader.readU8()) {
 			case PacketTypes.CreateRoomErrorPacket: {
-				setAppView("error", {
-					title: "Could not create room: ",
-					message: readCreateRoomError(reader),
-				});
+				setAppView("error", { title: "Could not create room: ", message: readCreateRoomError(reader) });
 
 				break;
 			}
 
 			case PacketTypes.JoinRoomErrorPacket: {
-				setAppView("error", {
-					title: "Could not join room: ",
-					message: readJoinRoomError(reader),
-				});
+				setAppView("error", { title: "Could not join room: ", message: readJoinRoomError(reader) });
 
 				break;
 			}

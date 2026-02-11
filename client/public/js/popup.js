@@ -16,11 +16,7 @@ const [_popupData, _setPopupData] = createSignal({ ...defaultData });
 export const Popup = (data = {}) => {
 	const title = $("h2");
 	const body = $("p");
-	const popup = $(
-		"section",
-		{ className: "popup" },
-		$("p", { className: "container" }, title, body),
-	);
+	const popup = $("section", { className: "popup" }, $("p", { className: "container" }, title, body));
 
 	createEffect(() => {
 		const data = _popupData();

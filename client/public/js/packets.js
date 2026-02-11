@@ -19,6 +19,7 @@ export const PacketTypes = enumerate([
 	"LeaveRoomPacket",
 	"RemoveClientPacket",
 	"StartGamePacket",
+	"CancelStartGamePacket",
 	"SubmitSentencePacket",
 	"SubmitVotePacket",
 
@@ -35,6 +36,7 @@ export const PacketTypes = enumerate([
 
 export const RoomStates = enumerate([
 	"Lobby",
+	"StartGame",
 	"Create",
 	"CreateSubmit",
 	"Vote",
@@ -237,5 +239,12 @@ export const sendJoinRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
 	writer.write(PacketTypes.JoinRoomPacket, String(data.roomID), String(data.clientName));
+	socket.send(writer.bytes());
+};
+
+export const sendStartGame = socket => {
+	const writer = new ByteWriter();
+
+	writer.write(PacketTypes.StartGamePacket);
 	socket.send(writer.bytes());
 };

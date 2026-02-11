@@ -260,8 +260,13 @@ hr {
 	font-size: 2em;
 }
 
-.error {
+.error,
+.danger {
 	color: crimson;
+}
+
+.danger {
+	font-weight: bold;
 }
 
 .room-header {

@@ -8,11 +8,24 @@
  */
 
 import { $ } from "../framework.js";
-import { Header } from "./header.js";
-import { Lobby } from "./lobby.js";
+import { sendStartGame } from "../packets.js";
+import { onRelease } from "../util.js";
 
-export const Room = (data = {}) => {
+export const Lobby = (data = {}) => {
 	const { socket = null } = data;
 
-	return $("article", $("h1", "Lobby"), Header(), Lobby({ socket }));
+	return $(
+		"p",
+		$(
+			"button",
+			{
+				...onRelease(() => {
+					if (socket !== null) {
+						sendStartGame(socket);
+					}
+				}),
+			},
+			"Start Game",
+		),
+	);
 };
