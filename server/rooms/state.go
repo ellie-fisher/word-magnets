@@ -15,6 +15,7 @@ import (
 )
 
 const defaultTime = uint8(0)
+const startGameTime = uint8(5)
 const createSubmitTime = uint8(5)
 const voteBaseTime = uint8(5)
 const voteTimeMult = uint8(5)
@@ -27,6 +28,7 @@ type stateTag = uint8
 
 const (
 	lobbyTag stateTag = iota
+	startGameTag
 	createTag
 	createSubmitTag
 	voteTag
@@ -41,177 +43,130 @@ type stateMachine struct {
 }
 
 type state struct {
-	tag           func() stateTag
-	enter         func(room *Room)
-	leave         func(room *Room)
-	next          func(room *Room) *state
-	tick          func(room *Room)
-	onAddClient   func(room *Room, client *clients.Client)
+	tag           stateTag
+	doesTick      bool
+	getStartTime  func(*Room) uint8
+	onEnter       func(*Room)
+	onClientEnter func(*Room, *clients.Client)
+	next          func(*Room) *state
 	receivePacket func(*stateMachine, *clients.Client, *packets.PacketReader)
 }
 
-var lobbyState = state{
-	tag:         func() stateTag { return lobbyTag },
-	enter:       func(*Room) {},
-	leave:       func(*Room) {},
-	next:        func(*Room) *state { return &createState },
-	tick:        func(*Room) {},
-	onAddClient: func(*Room, *clients.Client) {},
+func (roomState *state) enter(room *Room) {
+	room.TimeLeft = roomState.getStartTime(room)
+	room.sendRoomData(nil)
+	roomState.onClientEnter(room, nil)
+}
 
-	receivePacket: func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
+func (roomState *state) tick(room *Room) {
+	if roomState.doesTick {
+		if room.TimeLeft <= 0 {
+			room.state.next()
+		} else {
+			room.TimeLeft--
+			room.sendRoomData(nil)
+		}
+	}
+}
+
+func newStateWithDefaults(tag stateTag, doesTick bool, next *state) state {
+	return state{
+		tag:           tag,
+		doesTick:      doesTick,
+		getStartTime:  func(*Room) uint8 { return 0 },
+		onEnter:       func(*Room) {},
+		onClientEnter: func(*Room, *clients.Client) {},
+		next:          func(*Room) *state { return next },
+		receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
+	}
+}
+
+var lobbyState state = newStateWithDefaults(lobbyTag, false, &startGameState)
+var startGameState state = newStateWithDefaults(startGameTag, true, &createState)
+var createState state = newStateWithDefaults(createTag, true, &createSubmitState)
+var createSubmitState state = newStateWithDefaults(createSubmitTag, true, &voteState)
+var voteState state = newStateWithDefaults(voteTag, true, &voteSubmitState)
+var voteSubmitState state = newStateWithDefaults(voteSubmitTag, true, &resultsState)
+var resultsState state = newStateWithDefaults(resultsTag, true, nil)
+var endState state = newStateWithDefaults(endTag, true, &lobbyState)
+
+func init() {
+	/* Overwrite state defaults with any fields that differ. */
+
+	// lobbyState
+	lobbyState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
 		if reader.PeekU8() == packets.StartGamePacket && machine.room.Owner == client && client != nil {
 			reader.ReadStartGame()
 			machine.next()
 		}
-	},
-}
+	}
 
-var createState = state{
-	tag: func() stateTag { return createTag },
+	// startGameState
+	startGameState.getStartTime = func(*Room) uint8 { return startGameTime }
+	startGameState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
+		if reader.PeekU8() == packets.CancelStartGamePacket && machine.room.Owner == client && client != nil {
+			reader.ReadCancelStartGame()
+			machine.reset()
+		}
+	}
 
-	enter: func(room *Room) {
-		room.TimeLeft = room.TimeLimit
-		room.selectWords()
-		room.sendRoomData(nil)
-	},
+	// createState
+	createState.getStartTime = func(room *Room) uint8 { return room.TimeLimit }
+	createState.onEnter = func(room *Room) { room.selectWords() }
+	createState.onClientEnter = func(room *Room, client *clients.Client) { room.sendWords(client) }
 
-	leave: func(*Room) {},
-	next:  func(*Room) *state { return &createSubmitState },
-	tick:  defaultTick,
-
-	onAddClient: func(room *Room, client *clients.Client) {
-		room.sendWords(client)
-	},
-
-	receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
-}
-
-var createSubmitState = state{
-	tag: func() stateTag { return createSubmitTag },
-
-	enter: func(room *Room) {
-		room.TimeLeft = createSubmitTime
-		room.sendRoomData(nil)
-	},
-
-	leave:       func(*Room) {},
-	next:        func(*Room) *state { return &voteState },
-	tick:        defaultTick,
-	onAddClient: func(*Room, *clients.Client) {},
-
-	receivePacket: func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.PeekU8() == packets.StartGamePacket && client != nil {
+	// createSubmitState
+	createSubmitState.getStartTime = func(*Room) uint8 { return createSubmitTime }
+	createSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
+		if reader.PeekU8() == packets.SubmitSentencePacket && client != nil {
 			machine.room.addSentence(reader.ReadSubmitSentence(client.ID(), machine.room.Wordbanks))
 		}
-	},
-}
-
-var voteState = state{
-	tag: func() stateTag { return voteTag },
-
-	enter: func(room *Room) {
-		room.TimeLeft = voteBaseTime + voteTimeMult*uint8(len(room.Sentences))
-		room.sendRoomData(nil)
-		room.sendSentences(nil, true)
-	},
-
-	leave: func(*Room) {},
-	next:  func(*Room) *state { return &voteSubmitState },
-	tick:  defaultTick,
-
-	onAddClient: func(room *Room, client *clients.Client) {
-		room.sendSentences(client, true)
-	},
-
-	receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
-}
-
-var voteSubmitState = state{
-	tag: func() stateTag { return voteSubmitTag },
-
-	enter: func(room *Room) {
-		room.TimeLeft = voteSubmitTime
-		room.sendRoomData(nil)
-	},
-
-	leave:         func(*Room) {},
-	next:          func(*Room) *state { return &resultsState },
-	tick:          defaultTick,
-	onAddClient:   func(*Room, *clients.Client) {},
-	receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
-}
-
-var resultsState = state{
-	tag: func() stateTag { return resultsTag },
-
-	enter: func(room *Room) {
-		room.TimeLeft = resultsBaseTime + resultsTimeMult*uint8(len(room.Sentences))
-		room.sendRoomData(nil)
-		room.sendSentences(nil, false)
-	},
-
-	leave: func(*Room) {},
-	next:  func(*Room) *state { return nil },
-	tick:  defaultTick,
-
-	onAddClient: func(room *Room, client *clients.Client) {
-		room.sendSentences(client, false)
-	},
-
-	receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
-}
-
-var endState = state{
-	tag: func() stateTag { return endTag },
-
-	enter: func(room *Room) {
-		room.TimeLeft = endTime
-	},
-
-	leave: func(room *Room) {
-		room.Round++
-	},
-
-	next:          func(*Room) *state { return nil },
-	tick:          defaultTick,
-	onAddClient:   func(*Room, *clients.Client) {},
-	receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
-}
-
-func defaultTick(room *Room) {
-	if room.TimeLeft <= 0 {
-		room.state.next()
-	} else {
-		room.TimeLeft--
-		room.sendRoomData(nil)
 	}
+
+	// voteState
+	voteState.getStartTime = func(room *Room) uint8 { return voteBaseTime + voteTimeMult*uint8(len(room.Sentences)) }
+	voteState.onClientEnter = func(room *Room, client *clients.Client) { room.sendSentences(client, true) }
+
+	// voteSubmitState
+	voteSubmitState.getStartTime = func(*Room) uint8 { return voteSubmitTime }
+	voteSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
+		// TODO: Tally votes
+	}
+
+	// resultsState
+	resultsState.getStartTime = func(room *Room) uint8 { return resultsBaseTime + resultsTimeMult*uint8(len(room.Sentences)) }
+	resultsState.onClientEnter = func(room *Room, client *clients.Client) { room.sendSentences(client, false) }
+	resultsState.next = func(room *Room) *state {
+		if room.Round < room.RoundLimit {
+			room.Round++
+			return &createState
+		} else {
+			return &endState
+		}
+	}
+
+	// endState
+	endState.getStartTime = func(*Room) uint8 { return endTime }
 }
 
-func (machine *stateMachine) tag() stateTag {
-	return machine.state.tag()
-}
+func (machine *stateMachine) tag() stateTag { return machine.state.tag }
+func (machine *stateMachine) enter()        { machine.state.enter(machine.room) }
 
-func (machine *stateMachine) enter() {
-	machine.state.enter(machine.room)
-}
-
-func (machine *stateMachine) leave() {
-	machine.state.leave(machine.room)
+func (machine *stateMachine) clientEnter(client *clients.Client) {
+	machine.state.onClientEnter(machine.room, client)
 }
 
 func (machine *stateMachine) next() {
-	machine.leave()
 	machine.state = machine.state.next(machine.room)
 	machine.enter()
 }
 
-func (machine *stateMachine) tick() {
-	machine.state.tick(machine.room)
+func (machine *stateMachine) reset() {
+	machine.state = &lobbyState
+	machine.enter()
 }
 
-func (machine *stateMachine) onAddClient(client *clients.Client) {
-	machine.state.onAddClient(machine.room, client)
-}
+func (machine *stateMachine) tick() { machine.state.tick(machine.room) }
 
 func (machine *stateMachine) receivePacket(client *clients.Client, reader *packets.PacketReader) {
 	machine.state.receivePacket(machine, client, reader)

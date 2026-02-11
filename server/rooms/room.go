@@ -76,7 +76,7 @@ func (room *Room) AddClient(client *clients.Client, name string) {
 	room.Clients = append(room.Clients, client)
 	room.sendClients()
 	room.sendRoomData(client)
-	room.state.onAddClient(client)
+	room.state.clientEnter(client)
 }
 
 // RemoveClient removes client from room, destroying room if client is the owner.

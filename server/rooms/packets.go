@@ -145,9 +145,8 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 	}
 }
 
-// selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed
-// ones), and transmits them to all clients.
-func (room *Room) selectWords() error {
+// selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
+func (room *Room) selectWords() {
 	room.Sentences = []*words.Sentence{}
 	room.Wordbanks = []words.Wordbank{
 		words.NewWordbank(words.Noun),
@@ -158,8 +157,6 @@ func (room *Room) selectWords() error {
 		words.NewWordbank(words.Preposition),
 		words.NewWordbank(words.Miscellaneous),
 	}
-
-	return room.sendWords(nil)
 }
 
 func (room *Room) ReceivePacket(client *clients.Client, reader *packets.PacketReader) {

@@ -27,6 +27,7 @@ const (
 	LeaveRoomPacket
 	RemoveClientPacket
 	StartGamePacket
+	CancelStartGamePacket
 	SubmitSentencePacket
 	SubmitVotePacket
 
@@ -87,6 +88,10 @@ func (reader *PacketReader) ReadRemoveClient() (id string) {
 }
 
 func (reader *PacketReader) ReadStartGame() {
+	reader.ReadU8()
+}
+
+func (reader *PacketReader) ReadCancelStartGame() {
 	reader.ReadU8()
 }
 
