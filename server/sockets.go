@@ -68,50 +68,52 @@ func handlePacket(client *clients.Client, bytes []byte) {
 
 	reader := packets.NewPacketReader(bytes)
 
-	switch packets.PacketType(reader.PeekU8()) {
+	switch reader.PeekU8() {
 	case packets.CreateRoomPacket:
-		data := reader.ReadCreateRoom()
-
-		if success, message := rooms.ValidateRoomData(data); !success {
-			client.SendRoomTitleError(true, message)
-		} else if room := rooms.NewRoom(client, data); room == nil {
-			client.SendRoomTitleError(true, rooms.NewRoomErrorMessage)
-		} else {
-			room.AddClient(client, data.OwnerName)
+		if matched, data := reader.ReadCreateRoom(); matched {
+			if success, message := rooms.ValidateRoomData(data); !success {
+				client.SendRoomTitleError(true, message)
+			} else if room := rooms.NewRoom(client, data); room == nil {
+				client.SendRoomTitleError(true, rooms.NewRoomErrorMessage)
+			} else {
+				room.AddClient(client, data.OwnerName)
+			}
 		}
 
 	case packets.JoinRoomPacket:
-		id, name := reader.ReadJoinRoom()
-
-		if success, message := clients.ValidateName(name); !success {
-			client.SendRoomTitleError(false, message)
-		} else if room := rooms.GetRoom(id); room == nil {
-			client.SendRoomTitleError(false, "Room not found.")
-		} else if len(room.Clients) >= int(room.ClientLimit) {
-			client.SendRoomTitleError(false, "Room is full.")
-		} else {
-			room.AddClient(client, name)
+		if matched, id, name := reader.ReadJoinRoom(); matched {
+			if success, message := clients.ValidateName(name); !success {
+				client.SendRoomTitleError(false, message)
+			} else if room := rooms.GetRoom(id); room == nil {
+				client.SendRoomTitleError(false, "Room not found.")
+			} else if len(room.Clients) >= int(room.ClientLimit) {
+				client.SendRoomTitleError(false, "The room is full.")
+			} else {
+				room.AddClient(client, name)
+			}
 		}
 
 	case packets.LeaveRoomPacket:
-		reader.ReadLeaveRoom() // Not necessary at the moment -- just here for posterity.
-
-		if room := rooms.GetRoom(client.RoomID); room != nil {
-			room.RemoveClient(client)
+		if reader.ReadLeaveRoom() {
+			if room := rooms.GetRoom(client.RoomID); room != nil {
+				room.RemoveClient(client)
+			}
 		}
 
 	case packets.RemoveClientPacket:
-		targetID := reader.ReadRemoveClient()
-
-		if room := rooms.GetRoom(client.RoomID); room != nil {
-			if room.IsOwner(client.ID()) && !room.IsOwner(targetID) {
-				if target := room.GetClient(targetID); target != nil {
-					room.RemoveClient(target)
+		if matched, targetID := reader.ReadRemoveClient(); matched {
+			if room := rooms.GetRoom(client.RoomID); room != nil {
+				if room.IsOwner(client.ID()) && !room.IsOwner(targetID) {
+					if target := room.GetClient(targetID); target != nil {
+						room.RemoveClient(target)
+					}
 				}
 			}
 		}
 
 	case packets.StartGamePacket:
+		fallthrough
+	case packets.CancelStartGamePacket:
 		fallthrough
 	case packets.SubmitSentencePacket:
 		fallthrough

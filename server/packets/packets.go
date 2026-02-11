@@ -54,66 +54,66 @@ type UserRoomData struct {
 	ClientLimit uint8
 }
 
-func (reader *PacketReader) ReadCreateRoom() *UserRoomData {
-	if reader.ReadU8() != CreateRoomPacket {
-		return nil
+func (reader *PacketReader) ReadCreateRoom() (bool, *UserRoomData) {
+	if reader.MatchU8(CreateRoomPacket) {
+		return true, &UserRoomData{
+			OwnerName:   strings.TrimSpace(reader.ReadString()),
+			TimeLimit:   reader.ReadU8(),
+			RoundLimit:  reader.ReadU8(),
+			ClientLimit: reader.ReadU8(),
+		}
 	}
 
-	return &UserRoomData{
-		OwnerName:   strings.TrimSpace(reader.ReadString()),
-		TimeLimit:   reader.ReadU8(),
-		RoundLimit:  reader.ReadU8(),
-		ClientLimit: reader.ReadU8(),
-	}
+	return false, nil
 }
 
-func (reader *PacketReader) ReadJoinRoom() (id string, clientName string) {
-	if reader.ReadU8() != JoinRoomPacket {
-		return "", ""
+func (reader *PacketReader) ReadJoinRoom() (matched bool, id string, clientName string) {
+	if reader.MatchU8(JoinRoomPacket) {
+		return true, reader.ReadString(), strings.TrimSpace(reader.ReadString())
 	}
 
-	return reader.ReadString(), strings.TrimSpace(reader.ReadString())
+	return false, "", ""
 }
 
-func (reader *PacketReader) ReadLeaveRoom() {
-	reader.ReadU8()
+func (reader *PacketReader) ReadLeaveRoom() bool {
+	return reader.MatchU8(LeaveRoomPacket)
 }
 
-func (reader *PacketReader) ReadRemoveClient() (id string) {
-	if reader.ReadU8() != RemoveClientPacket {
-		return ""
+func (reader *PacketReader) ReadRemoveClient() (matched bool, id string) {
+	if reader.MatchU8(RemoveClientPacket) {
+		return true, reader.ReadString()
 	}
 
-	return reader.ReadString()
+	return false, ""
 }
 
-func (reader *PacketReader) ReadStartGame() {
-	reader.ReadU8()
+func (reader *PacketReader) ReadStartGame() bool {
+	return reader.MatchU8(StartGamePacket)
 }
 
-func (reader *PacketReader) ReadCancelStartGame() {
-	reader.ReadU8()
+func (reader *PacketReader) ReadCancelStartGame() bool {
+	return reader.MatchU8(CancelStartGamePacket)
 }
 
-func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []words.Wordbank) *words.Sentence {
-	if reader.ReadU8() != SubmitSentencePacket {
-		return nil
+func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []words.Wordbank) (bool, *words.Sentence) {
+	if reader.MatchU8(SubmitSentencePacket) {
+		entries := []words.WordEntry{}
+		length := reader.ReadU8()
+
+		for range length {
+			entries = append(entries, words.WordEntry{BankIndex: reader.ReadU8(), WordIndex: reader.ReadU8()})
+		}
+
+		return true, words.NewSentence(authorID, entries, wordbanks)
 	}
 
-	entries := []words.WordEntry{}
-	length := reader.ReadU8()
-
-	for range length {
-		entries = append(entries, words.WordEntry{BankIndex: reader.ReadU8(), WordIndex: reader.ReadU8()})
-	}
-
-	return words.NewSentence(authorID, entries, wordbanks)
+	return false, nil
 }
 
-func (reader *PacketReader) ReadSubmitVote() (index uint8) {
-	if reader.ReadU8() != SubmitVotePacket {
-		return 0
+func (reader *PacketReader) ReadSubmitVote() (bool, uint8) {
+	if reader.MatchU8(SubmitVotePacket) {
+		return true, reader.ReadU8()
 	}
 
-	return reader.ReadU8()
+	return false, 0
 }

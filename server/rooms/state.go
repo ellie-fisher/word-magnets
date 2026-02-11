@@ -95,8 +95,7 @@ func init() {
 
 	// lobbyState
 	lobbyState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.PeekU8() == packets.StartGamePacket && machine.room.Owner == client && client != nil {
-			reader.ReadStartGame()
+		if reader.ReadStartGame() && machine.room.Owner == client && client != nil {
 			machine.next()
 		}
 	}
@@ -104,8 +103,7 @@ func init() {
 	// startGameState
 	startGameState.getStartTime = func(*Room) uint8 { return startGameTime }
 	startGameState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.PeekU8() == packets.CancelStartGamePacket && machine.room.Owner == client && client != nil {
-			reader.ReadCancelStartGame()
+		if reader.ReadCancelStartGame() && machine.room.Owner == client && client != nil {
 			machine.reset()
 		}
 	}
@@ -118,8 +116,8 @@ func init() {
 	// createSubmitState
 	createSubmitState.getStartTime = func(*Room) uint8 { return createSubmitTime }
 	createSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.PeekU8() == packets.SubmitSentencePacket && client != nil {
-			machine.room.addSentence(reader.ReadSubmitSentence(client.ID(), machine.room.Wordbanks))
+		if matched, sentence := reader.ReadSubmitSentence(client.ID(), machine.room.Wordbanks); matched && client != nil {
+			machine.room.addSentence(sentence)
 		}
 	}
 

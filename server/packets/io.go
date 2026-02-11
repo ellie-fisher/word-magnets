@@ -58,6 +58,16 @@ func (reader *PacketReader) ReadString() string {
 	return str
 }
 
+func (reader *PacketReader) MatchU8(value uint8) bool {
+	matches := reader.PeekU8() == value
+
+	if matches {
+		reader.ReadU8()
+	}
+
+	return matches
+}
+
 func NewPacketReader(bytes []byte) *PacketReader {
 	return &PacketReader{0, bytes}
 }
