@@ -15,7 +15,7 @@ type Wordbank []string
 type WordType = uint8
 
 // NOTE: Does not apply to pronouns or miscellaneous, which are fixed.
-const maxWordsPerBank = 12
+const maxWordsPerBank = 8
 
 const (
 	Noun WordType = iota
