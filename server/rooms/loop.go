@@ -9,55 +9,75 @@
 
 package rooms
 
-import "time"
-
-const numThreadPools = 8
+import (
+	"sync"
+	"sync/atomic"
+	"time"
+)
 
 type threadPool struct {
 	index  int
 	ticker *time.Ticker
 	rooms  map[string]*Room
 	done   chan bool
+	mutex  sync.Mutex
 }
 
-var threadPools []threadPool
-var currentThreadPool = 0
+const numThreadPools = 8
+
+var threadPools []*threadPool
+var currentThreadPool atomic.Uint32
 
 func addRoomToPool(room *Room) {
 	if room.threadIndex < 0 || room.threadIndex >= numThreadPools {
-		room.threadIndex = currentThreadPool
-		threadPools[room.threadIndex].rooms[room.ID] = room
-		currentThreadPool = (currentThreadPool + 1) % numThreadPools
+		index := int(currentThreadPool.Add(1) % uint32(numThreadPools))
+		pool := threadPools[index]
+
+		room.threadIndex = index
+
+		pool.mutex.Lock()
+		pool.rooms[room.ID] = room
+		pool.mutex.Unlock()
 	}
 }
 
 func removeRoomFromPool(room *Room) {
-	if room.threadIndex >= 0 || room.threadIndex < numThreadPools {
-		delete(threadPools[room.threadIndex].rooms, room.ID)
+	if room.threadIndex >= 0 && room.threadIndex < numThreadPools {
+		pool := threadPools[room.threadIndex]
+
+		pool.mutex.Lock()
+		delete(pool.rooms, room.ID)
+		pool.mutex.Unlock()
 	}
 }
 
 func init() {
-	threadPools = make([]threadPool, numThreadPools)
+	threadPools = make([]*threadPool, numThreadPools)
 
 	for i := range numThreadPools {
-		pool := &threadPools[i]
-		pool.index = i
-		pool.ticker = time.NewTicker(time.Second)
-		pool.rooms = make(map[string]*Room)
-		pool.done = make(chan bool)
+		p := &threadPool{
+			index:  i,
+			ticker: time.NewTicker(time.Second),
+			rooms:  make(map[string]*Room),
+			done:   make(chan bool),
+		}
 
-		go func() {
+		threadPools[i] = p
+
+		go func(pool *threadPool) {
 			for {
 				select {
 				case <-pool.done:
+					pool.ticker.Stop()
 					return
 				case <-pool.ticker.C:
+					pool.mutex.Lock()
 					for _, room := range pool.rooms {
 						room.Tick()
 					}
+					pool.mutex.Unlock()
 				}
 			}
-		}()
+		}(p)
 	}
 }
