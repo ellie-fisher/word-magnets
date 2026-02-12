@@ -16,6 +16,9 @@ package words
 var nouns = []string{
 	"$$$",
 	"@",
+	":)",
+	":(",
+	":3", // :3
 	"-.com",
 	"-.gov",
 	"-.net",
@@ -1955,6 +1958,7 @@ var nouns = []string{
 	"blowfly",
 	"blowgun",
 	"blowhard",
+	"blowjob",
 	"blowout",
 	"blowpipe",
 	"blowtorch",
@@ -4790,12 +4794,15 @@ var nouns = []string{
 	"cultivator",
 	"culture",
 	"culvert",
+	"cum",
 	"cumbersomeness",
 	"cumin",
 	"cummerbund",
 	"cumquat",
 	"cumulonimbus",
 	"cumulus",
+	"cunnilingus",
+	"cunt",
 	"cup",
 	"cupboard",
 	"cupcake",
@@ -7143,6 +7150,7 @@ var nouns = []string{
 	"feldspar",
 	"felicitation",
 	"felicity",
+	"fellatio",
 	"fellowman",
 	"fellowship",
 	"felon",
@@ -11233,6 +11241,7 @@ var nouns = []string{
 	"lifeboat",
 	"lifebuoy",
 	"lifeguard",
+	"lifekind",
 	"lifelessness",
 	"lifeline",
 	"lifer",
@@ -13681,6 +13690,7 @@ var nouns = []string{
 	"owlet",
 	"owner",
 	"ownership",
+	"owo",
 	"ox",
 	"oxblood",
 	"oxcart",
@@ -15470,6 +15480,7 @@ var nouns = []string{
 	"pushover",
 	"pushup",
 	"pusillanimity",
+	"pussy",
 	"pussycat",
 	"pustule",
 	"put",
@@ -20735,6 +20746,7 @@ var nouns = []string{
 	"utopia",
 	"utterance",
 	"uvula",
+	"uwu",
 	"vacancy",
 	"vacation",
 	"vacationer",
@@ -21732,6 +21744,7 @@ var nouns = []string{
 	"yachtswoman",
 	"yack",
 	"yak",
+	"y'all", // Technically a pronoun but who cares
 	"yam",
 	"yammer",
 	"yammerer",
@@ -21849,9 +21862,6 @@ var nouns = []string{
 }
 
 var adjectives = []string{
-	":)",
-	":(",
-	":3", // :3
 	"$0.99",
 	"0",
 	"1",
@@ -22172,7 +22182,6 @@ var adjectives = []string{
 	"alimentary",
 	"alive",
 	"alkaline",
-	"all",
 	"allegedly",
 	"allegoric",
 	"allegorical",
@@ -32881,7 +32890,6 @@ var adjectives = []string{
 	"thankfully",
 	"thankless",
 	"thanklessly",
-	"that",
 	"theatrical",
 	"theatrically",
 	"theist",
@@ -32943,7 +32951,6 @@ var adjectives = []string{
 	"thirteenth",
 	"thirtieth",
 	"thirty",
-	"this",
 	"thither",
 	"tho",
 	"thoracic",
@@ -37829,29 +37836,29 @@ var verbs = []string{
 
 var pronouns = []string{
 	"I", "me", "my", "mine",
-	"you", "y'all",
+	"you", "all",
 	"she", "her",
 	"he", "him", "his",
 	"they", "them", "their",
 	"we", "us", "our",
-	"it",
+	"it", "that", "this",
+	"-self", "-selves",
 }
 
 var auxiliaries = []string{
-	"be", "is", "was", "are", "am", "were", "do",
 	"a", "an", "the",
-	"have", "has", "had",
+	"am", "are", "be", "is", "was", "were", "will",
+	"can", "did", "do", "not",
+	"had", "has", "have",
 }
 
 var prepositions = []string{
-	"to", "as", "at", "of", "for", "in", "on", "with",
+	"as", "at", "of", "for", "in", "on", "to", "with",
 }
 
 var miscellaneous = []string{
-	"and", "but", "or", "yet", "if",
-	"yes", "no",
-	"ex-", "re-", "un-",
-	"-r", "-s", "-t", "-e", "-d", "-y", "-ly", "-ing",
-	"-.", "-?", "-!", "-,", "-'", "-\"",
+	"and", "but", "if", "or", "yet",
+	"-e", "-d", "-n", "-r", "-s", "-t", "-y", "-ly", "-ing",
+	"-.", "-?", "-!", "-,", "'-", "-'", "\"-", "-\"",
 	" ",
 }
