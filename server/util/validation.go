@@ -9,11 +9,18 @@
 
 package util
 
+import (
+	"regexp"
+	"strings"
+)
+
 type FieldValidator struct {
-	Min      uint8
-	Max      uint8
-	MinError string
-	MaxError string
+	Min        uint8
+	Max        uint8
+	MinError   string
+	MaxError   string
+	SpaceError string
+	CharError  string
 }
 
 func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
@@ -29,5 +36,13 @@ func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
 }
 
 func (validator *FieldValidator) ValidateString(value string) (bool, string) {
+	if len(strings.TrimSpace(value)) != len(value) {
+		return false, validator.SpaceError
+	}
+
+	if matched, err := regexp.MatchString("[^ -~]", value); matched || err != nil {
+		return false, validator.CharError
+	}
+
 	return validator.ValidateU8(uint8(len(value)))
 }
