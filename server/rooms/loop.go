@@ -11,20 +11,53 @@ package rooms
 
 import "time"
 
-func init() {
-	roomTicker := time.NewTicker(time.Second)
-	done := make(chan bool)
+const numThreadPools = 8
 
-	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			case <-roomTicker.C:
-				for _, room := range rooms {
-					room.Tick()
+type threadPool struct {
+	index  int
+	ticker *time.Ticker
+	rooms  map[string]*Room
+	done   chan bool
+}
+
+var threadPools []threadPool
+var currentThreadPool = 0
+
+func addRoomToPool(room *Room) {
+	if room.threadIndex < 0 || room.threadIndex >= numThreadPools {
+		room.threadIndex = currentThreadPool
+		threadPools[room.threadIndex].rooms[room.ID] = room
+		currentThreadPool = (currentThreadPool + 1) % numThreadPools
+	}
+}
+
+func removeRoomFromPool(room *Room) {
+	if room.threadIndex >= 0 || room.threadIndex < numThreadPools {
+		delete(threadPools[room.threadIndex].rooms, room.ID)
+	}
+}
+
+func init() {
+	threadPools = make([]threadPool, numThreadPools)
+
+	for i := range numThreadPools {
+		pool := &threadPools[i]
+		pool.index = i
+		pool.ticker = time.NewTicker(time.Second)
+		pool.rooms = make(map[string]*Room)
+		pool.done = make(chan bool)
+
+		go func() {
+			for {
+				select {
+				case <-pool.done:
+					return
+				case <-pool.ticker.C:
+					for _, room := range pool.rooms {
+						room.Tick()
+					}
 				}
 			}
-		}
-	}()
+		}()
+	}
 }

@@ -45,7 +45,7 @@ body {
 
 	color: aliceblue;
 	font-family: Arial, sans-serif;
-	font-size: clamp(1.25rem, 0.5vw + 0.75rem, 2rem);
+	font-size: clamp(1rem, 0.5vw + 0.65rem, 2rem);
 	text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.9);
 
 	width: 100%;
@@ -82,10 +82,10 @@ select {
 	border-radius: 0.25em;
 
 	color: var(--input-text-secondary);
-	font-size: 1.25em;
+	font-size: 100%;
 
 	padding: 1% 2% 1% 2%;
-	margin: 0.25em;
+	margin: 0.5%;
 }
 
 button:active {
@@ -107,6 +107,10 @@ button {
 button:disabled {
 	background-color: var(--input-secondary-disabled);
 	cursor: default;
+}
+
+button:empty::after {
+	content: "\00A0";
 }
 
 button.primary {
@@ -162,6 +166,8 @@ button.word-tile {
 
 	margin: 0.25em;
 	padding: 0.5% 1% 0.5% 1%;
+
+	font-size: 90%;
 }
 
 button.word-tile:active {
@@ -193,6 +199,12 @@ small>button {
 
 .popup button.primary {
 	display: inline;
+}
+
+.wordbank {
+	border-top: 0.1em solid var(--hr-color);
+	padding-top: 1%;
+	padding-bottom: 0%;
 }
 
 select {
@@ -262,7 +274,7 @@ hr {
 
 .error,
 .danger {
-	color: crimson;
+	color: red;
 }
 
 .danger {

@@ -79,3 +79,15 @@ func NewSet[T Number | string](values ...T) *Set[T] {
 
 	return set
 }
+
+func BoolToInt[T Number](value bool) T {
+	if value {
+		return 1
+	} else {
+		return 0
+	}
+}
+
+func BoolToU8(value bool) uint8 {
+	return BoolToInt[uint8](value)
+}

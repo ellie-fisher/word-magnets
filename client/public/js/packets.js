@@ -25,8 +25,8 @@ export const PacketTypes = enumerate([
 
 	/* Server=>Client */
 
-	"CreateRoomErrorPacket",
-	"JoinRoomErrorPacket",
+	"ServerInfoPacket",
+	"RoomConnectErrorPacket",
 	"RoomDestroyedPacket",
 	"RoomDataPacket",
 	"RoomClientsPacket",
@@ -77,12 +77,8 @@ export class ByteReader {
 	}
 }
 
-export const readCreateRoomError = reader => {
-	return reader.readString();
-};
-
-export const readJoinRoomError = reader => {
-	return reader.readString();
+export const readRoomConnectError = reader => {
+	return { wasCreating: !!reader.readU8(), message: reader.readString() };
 };
 
 export const readRoomDestroyed = reader => {
@@ -238,7 +234,7 @@ export const sendCreateRoom = (socket, data) => {
 export const sendJoinRoom = (socket, data) => {
 	const writer = new ByteWriter();
 
-	writer.write(PacketTypes.JoinRoomPacket, String(data.roomID), String(data.clientName));
+	writer.write(PacketTypes.JoinRoomPacket, String(data.roomID.trim()), String(data.clientName.trim()));
 	socket.send(writer.bytes());
 };
 
@@ -246,5 +242,12 @@ export const sendStartGame = socket => {
 	const writer = new ByteWriter();
 
 	writer.write(PacketTypes.StartGamePacket);
+	socket.send(writer.bytes());
+};
+
+export const sendCancelStartGame = socket => {
+	const writer = new ByteWriter();
+
+	writer.write(PacketTypes.CancelStartGamePacket);
 	socket.send(writer.bytes());
 };

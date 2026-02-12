@@ -8,22 +8,11 @@
  */
 
 import { createEffect, createSignal, $, $replace } from "../framework.js";
-import { Fields } from "../fields.js";
 import { onPress, onRelease } from "../util.js";
 import { showYesNoPopup } from "../popup.js";
 import { RoomStates } from "../packets.js";
+import { getRoomData, getClients } from "./state.js";
 
-const [roomData, _setRoomData] = createSignal({
-	id: "",
-	state: 0,
-	timeLeft: Fields.createRoom.find(field => field.id === "timeLimit")?.default ?? 0,
-	timeLimit: Fields.createRoom.find(field => field.id === "timeLimit")?.default ?? 0,
-	round: 1,
-	roundLimit: Fields.createRoom.find(field => field.id === "roundLimit")?.default ?? 1,
-	clientLimit: Fields.createRoom.find(field => field.id === "clientLimit")?.default ?? 2,
-});
-
-const [clients, setClients] = createSignal([]);
 const [showID, setShowID] = createSignal(false);
 
 export const Header = (data = {}) => {
@@ -78,11 +67,11 @@ export const Header = (data = {}) => {
 	];
 
 	createEffect(() => {
-		const _roomData = roomData();
+		const _roomData = getRoomData();
 		const copy = { ..._roomData };
 
 		if (!showID()) {
-			copy.id = copy.id.replaceAll(/[a-zA-Z0-9]/g, "•");
+			copy.id = copy.id.replaceAll(/./g, "•");
 		}
 
 		copyRoomID = () => {
@@ -108,7 +97,7 @@ export const Header = (data = {}) => {
 		$replace(
 			players,
 			$("strong", "Players: "),
-			...clients().map(({ id, name }) => $("button", { className: "word-tile", title: id }, name)),
+			...getClients().map(({ id, name }) => $("button", { className: "word-tile", title: id }, name)),
 		);
 	});
 
@@ -128,6 +117,3 @@ export const Header = (data = {}) => {
 		$("p", players),
 	);
 };
-
-export const setRoomData = _setRoomData;
-export const setRoomClients = setClients;

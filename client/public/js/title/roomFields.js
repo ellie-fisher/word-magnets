@@ -56,8 +56,14 @@ export const RoomFields = (data = {}) => {
 						target.value = target.value.toUpperCase();
 					}
 
+					if (field.type.toLowerCase() === "string") {
+						target.value = target.value.replaceAll(/[\x09]/g, " ");
+						target.value = target.value.replaceAll(/[^ -~]/g, "");
+					}
+
 					userData[field.id] = target.value;
-					button.disabled = waiting || !fields.every(field => validateField(field, userData[field.id]));
+					button.disabled =
+						waiting || !fields.every(field => validateField(field, userData[field.id]));
 				}),
 			);
 		}),

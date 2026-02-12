@@ -11,6 +11,7 @@ package clients
 
 import (
 	"word-magnets/packets"
+	"word-magnets/util"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -34,15 +35,11 @@ func (client *Client) Send(bytes []byte) error {
 	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
 }
 
-func (client *Client) SendRoomTitleError(createOrJoin bool, message string) error {
+func (client *Client) SendRoomConnectError(wasCreating bool, message string) error {
 	writer := packets.NewPacketWriter(0)
-	packetType := packets.CreateRoomErrorPacket
+	packetType := packets.RoomConnectErrorPacket
 
-	if !createOrJoin {
-		packetType = packets.JoinRoomErrorPacket
-	}
-
-	if err := writer.Write(packetType, message); err != nil {
+	if err := writer.Write(packetType, util.BoolToU8(wasCreating), message); err != nil {
 		return err
 	} else {
 		return client.Send(writer.Bytes())

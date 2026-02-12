@@ -26,14 +26,16 @@
 import {
 	ByteReader,
 	PacketTypes,
-	readCreateRoomError,
-	readJoinRoomError,
 	readRoomClients,
+	readRoomConnectError,
 	readRoomData,
+	readRoomDestroyed,
+	readRoomSentences,
+	readRoomWords,
 } from "./packets.js";
 
 import { App, setAppView } from "./app.js";
-import { setRoomClients, setRoomData } from "./room/header.js";
+import { setRoomData, setClients, setWords, setSentences } from "./room/state.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -84,19 +86,19 @@ document.addEventListener("DOMContentLoaded", () => {
 		console.log(packet);
 
 		switch (reader.readU8()) {
-			case PacketTypes.CreateRoomErrorPacket: {
-				setAppView("error", { title: "Could not create room: ", message: readCreateRoomError(reader) });
+			case PacketTypes.RoomConnectErrorPacket: {
+				const { wasCreating, message } = readRoomConnectError(reader);
 
-				break;
-			}
-
-			case PacketTypes.JoinRoomErrorPacket: {
-				setAppView("error", { title: "Could not join room: ", message: readJoinRoomError(reader) });
+				setAppView("error", {
+					title: wasCreating ? "Could not create room: " : "Could not join room: ",
+					message,
+				});
 
 				break;
 			}
 
 			case PacketTypes.RoomDestroyedPacket: {
+				setAppView("error", { title: "Disconnected: ", message: readRoomDestroyed(reader) });
 				break;
 			}
 
@@ -107,15 +109,17 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			case PacketTypes.RoomClientsPacket: {
-				setRoomClients(readRoomClients(reader));
+				setClients(readRoomClients(reader));
 				break;
 			}
 
 			case PacketTypes.RoomWordsPacket: {
+				setWords(readRoomWords(reader));
 				break;
 			}
 
 			case PacketTypes.RoomSentencesPacket: {
+				setSentences(readRoomSentences(reader));
 				break;
 			}
 

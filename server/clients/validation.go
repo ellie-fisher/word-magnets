@@ -14,7 +14,12 @@ import (
 	"word-magnets/util"
 )
 
-var nameValidator = util.FieldValidator{Min: 1, Max: 16}
+var nameValidator = util.FieldValidator{
+	Min:        1,
+	Max:        16,
+	SpaceError: "Name cannot have trailing whitespace",
+	CharError:  "Name contains one or more invalid character(s)",
+}
 
 func init() {
 	nameValidator.MinError = "Name must be at least " + strconv.Itoa(int(nameValidator.Min)) + " character"

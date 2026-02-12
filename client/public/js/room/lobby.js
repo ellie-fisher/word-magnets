@@ -8,24 +8,29 @@
  */
 
 import { $ } from "../framework.js";
-import { sendStartGame } from "../packets.js";
+import { RoomStates, sendStartGame, sendCancelStartGame } from "../packets.js";
 import { onRelease } from "../util.js";
 
 export const Lobby = (data = {}) => {
-	const { socket = null } = data;
+	const { socket = null, state = 0 } = data;
 
 	return $(
 		"p",
 		$(
 			"button",
 			{
+				className: "primary",
 				...onRelease(() => {
 					if (socket !== null) {
-						sendStartGame(socket);
+						if (state === RoomStates.Lobby) {
+							sendStartGame(socket);
+						} else {
+							sendCancelStartGame(socket);
+						}
 					}
 				}),
 			},
-			"Start Game",
+			state === RoomStates.Lobby ? "Start Game" : "Cancel",
 		),
 	);
 };

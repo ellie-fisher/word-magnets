@@ -33,8 +33,8 @@ const (
 
 	/* Server=>Client */
 
-	CreateRoomErrorPacket
-	JoinRoomErrorPacket
+	ServerInfoPacket
+	RoomConnectErrorPacket
 	RoomDestroyedPacket
 
 	RoomDataPacket

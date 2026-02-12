@@ -13,7 +13,6 @@ import (
 	"word-magnets/clients"
 	"word-magnets/packets"
 	"word-magnets/util"
-	"word-magnets/words"
 )
 
 func (room *Room) sendRoomDestroyed(reason string) error {
@@ -98,7 +97,6 @@ func (room *Room) sendWords(client *clients.Client) error {
 // The second time is during the voting results phase, which means that author IDs *are* included,
 // as well as the numbers of votes.
 func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
-	includeAuthors := uint8(0)
 	clients := []*clients.Client{}
 	authors := util.NewSet[string]()
 
@@ -116,17 +114,13 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 		writer := packets.NewPacketWriter(0)
 		length := uint8(len(room.Sentences))
 
-		if !anonymous {
-			includeAuthors = 1
-		}
-
 		// We won't be writing the client's own sentence to them during the initial voting phase, so
 		// we must modify the length we send out.
 		if authors.Has(client.ID()) && anonymous && length > 0 {
 			length--
 		}
 
-		if err := writer.Write(packets.RoomSentencesPacket, includeAuthors, length); err != nil {
+		if err := writer.Write(packets.RoomSentencesPacket, util.BoolToU8(!anonymous), length); err != nil {
 			for _, sentence := range room.Sentences {
 				if anonymous {
 					// Don't write the client's own sentence if we're sending the voting options.
@@ -142,20 +136,6 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 
 			client.Send(writer.Bytes())
 		}
-	}
-}
-
-// selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
-func (room *Room) selectWords() {
-	room.Sentences = []*words.Sentence{}
-	room.Wordbanks = []words.Wordbank{
-		words.NewWordbank(words.Noun),
-		words.NewWordbank(words.Adjective),
-		words.NewWordbank(words.Verb),
-		words.NewWordbank(words.Pronoun),
-		words.NewWordbank(words.Auxiliary),
-		words.NewWordbank(words.Preposition),
-		words.NewWordbank(words.Miscellaneous),
 	}
 }
 

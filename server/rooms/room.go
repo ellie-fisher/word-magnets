@@ -21,9 +21,10 @@ import (
 )
 
 type Room struct {
-	ID      string
-	Owner   *clients.Client
-	Clients []*clients.Client
+	ID          string
+	threadIndex int
+	Owner       *clients.Client
+	Clients     []*clients.Client
 
 	state     stateMachine      // TODO: State
 	Wordbanks []words.Wordbank  // TODO: Wordbanks
@@ -100,6 +101,20 @@ func (room *Room) Tick() {
 	room.state.tick()
 }
 
+// selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
+func (room *Room) selectWords() {
+	room.Sentences = []*words.Sentence{}
+	room.Wordbanks = []words.Wordbank{
+		words.NewWordbank(words.Noun),
+		words.NewWordbank(words.Adjective),
+		words.NewWordbank(words.Verb),
+		words.NewWordbank(words.Pronoun),
+		words.NewWordbank(words.Auxiliary),
+		words.NewWordbank(words.Preposition),
+		words.NewWordbank(words.Miscellaneous),
+	}
+}
+
 func (room *Room) addSentence(sentence *words.Sentence) {
 	index := slices.IndexFunc(room.Sentences, func(item *words.Sentence) bool {
 		return item.AuthorID == sentence.AuthorID
@@ -155,6 +170,7 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 		if _, has := rooms[id]; !has {
 			room = &Room{
 				ID:          id,
+				threadIndex: -1,
 				Owner:       owner,
 				Clients:     []*clients.Client{},
 				Wordbanks:   []words.Wordbank{},
@@ -168,6 +184,8 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 
 			room.state = *NewStateMachine(room)
 			rooms[id] = room
+
+			addRoomToPool(room)
 
 			break
 		}
@@ -185,6 +203,7 @@ func DestroyRoom(room *Room) {
 	}
 
 	delete(rooms, room.ID)
+	removeRoomFromPool(room)
 
 	room.ID = ""
 	room.Owner = nil

@@ -72,9 +72,9 @@ func handlePacket(client *clients.Client, bytes []byte) {
 	case packets.CreateRoomPacket:
 		if matched, data := reader.ReadCreateRoom(); matched {
 			if success, message := rooms.ValidateRoomData(data); !success {
-				client.SendRoomTitleError(true, message)
+				client.SendRoomConnectError(true, message)
 			} else if room := rooms.NewRoom(client, data); room == nil {
-				client.SendRoomTitleError(true, rooms.NewRoomErrorMessage)
+				client.SendRoomConnectError(true, rooms.NewRoomErrorMessage)
 			} else {
 				room.AddClient(client, data.OwnerName)
 			}
@@ -83,11 +83,11 @@ func handlePacket(client *clients.Client, bytes []byte) {
 	case packets.JoinRoomPacket:
 		if matched, id, name := reader.ReadJoinRoom(); matched {
 			if success, message := clients.ValidateName(name); !success {
-				client.SendRoomTitleError(false, message)
+				client.SendRoomConnectError(false, message)
 			} else if room := rooms.GetRoom(id); room == nil {
-				client.SendRoomTitleError(false, "Room not found.")
+				client.SendRoomConnectError(false, "Room not found.")
 			} else if len(room.Clients) >= int(room.ClientLimit) {
-				client.SendRoomTitleError(false, "The room is full.")
+				client.SendRoomConnectError(false, "The room is full.")
 			} else {
 				room.AddClient(client, name)
 			}
