@@ -18,8 +18,8 @@ import (
 )
 
 var timeLimitValidator = util.FieldValidator{Min: 30, Max: 120}
-var roundLimitValidator = util.FieldValidator{Min: 1, Max: 12}
-var clientLimitValidator = util.FieldValidator{Min: 2, Max: 10}
+var roundLimitValidator = util.FieldValidator{Min: 1, Max: 10}
+var clientLimitValidator = util.FieldValidator{Min: 2, Max: 8}
 
 func init() {
 	/* Cache error messages so we're not calculating them every single time. */
