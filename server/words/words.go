@@ -37857,7 +37857,7 @@ var prepositions = []string{
 }
 
 var miscellaneous = []string{
-	"and", "but", "if", "or", "yet",
+	"and", "but", "if", "or", "so",
 	"-e", "-d", "-n", "-r", "-s", "-t", "-y", "-ly", "-ing",
 	"-.", "-?", "-!", "-,", "'-", "-'", "\"-", "-\"",
 	" ",
