@@ -10,19 +10,27 @@
 import { $, $replace, createEffect } from "../framework.js";
 import { getWords } from "./state.js";
 
+const Wordbank = wordbank => {
+	return $(
+		"p",
+		{ className: "wordbank" },
+		...wordbank.words.map(word =>
+			$("button", { className: "word-tile" }, word === " " ? "\u00A0" : word),
+		),
+	);
+};
+
 export const Create = (data = {}) => {
 	const body = $("section");
 
 	createEffect(() => {
-		const wordbanks = getWords().map(bank =>
-			$(
-				"p",
-				{ className: "wordbank" },
-				...bank.map(word => $("button", { className: "word-tile" }, word === " " ? "\u00A0" : word)),
-			),
-		);
+		const wordbanks = getWords();
+		const fixed = [];
+		const nonfixed = [];
 
-		$replace(body, ...wordbanks);
+		wordbanks.forEach(bank => (bank.isFixed ? fixed : nonfixed).push(Wordbank(bank)));
+
+		$replace(body, ...nonfixed, ...fixed);
 	});
 
 	return body;

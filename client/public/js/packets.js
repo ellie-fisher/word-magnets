@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { enumerate } from "./util.js";
+import { clamp, enumerate } from "./util.js";
 
 export const PacketTypes = enumerate([
 	"InvalidPacket",
@@ -65,6 +65,10 @@ export class ByteReader {
 		return this.isAtEnd() ? 0 : this._array[this._index++];
 	}
 
+	readBool() {
+		return this.readU8() != 0;
+	}
+
 	readString() {
 		let str = "";
 		const length = this.readU8();
@@ -113,14 +117,15 @@ export const readRoomWords = reader => {
 	const bankCount = reader.readU8();
 
 	for (let i = 0; i < bankCount; i++) {
+		const isFixed = reader.readBool();
 		const wordCount = reader.readU8();
-		const bank = [];
+		const words = [];
 
 		for (let j = 0; j < wordCount; j++) {
-			bank.push(reader.readString());
+			words.push(reader.readString());
 		}
 
-		wordbanks.push(bank);
+		wordbanks.push({ index: i, isFixed, words });
 	}
 
 	return wordbanks;
@@ -128,17 +133,11 @@ export const readRoomWords = reader => {
 
 export const readRoomSentences = reader => {
 	const sentences = [];
+	const includesNames = reader.readBool();
 	const sentenceCount = reader.readU8();
 
 	for (let i = 0; i < sentenceCount; i++) {
-		const wordCount = reader.readU8();
-		const sentence = [];
-
-		for (let j = 0; j < wordCount; j++) {
-			sentence.push({ bankIndex: reader.readU8(), wordIndex: reader.readU8() });
-		}
-
-		sentences.push(sentence);
+		sentences.push({ authorID: includesNames ? reader.readString() : "", value: reader.readString() });
 	}
 
 	return sentences;
@@ -158,7 +157,7 @@ export class ByteWriter {
 	}
 
 	writeU8(value) {
-		value %= U8_MAX_VALUE + 1;
+		value = clamp(value, 0, U8_MAX_VALUE);
 
 		if (this._index < this._array.length) {
 			this._array[this._index] = value;
@@ -167,6 +166,10 @@ export class ByteWriter {
 		}
 
 		this._index++;
+	}
+
+	writeBool(value) {
+		this.writeU8(value != 0);
 	}
 
 	writeString(value) {

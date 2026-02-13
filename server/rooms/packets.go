@@ -74,9 +74,12 @@ func (room *Room) sendWords(client *clients.Client) error {
 	}
 
 	for _, bank := range room.Wordbanks {
-		writer.WriteU8(uint8(len(bank)))
+		words := bank.Words()
 
-		for _, word := range bank {
+		writer.WriteBool(bank.IsFixed())
+		writer.WriteU8(uint8(len(words)))
+
+		for _, word := range words {
 			writer.WriteString(word)
 		}
 	}

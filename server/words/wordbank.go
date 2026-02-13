@@ -11,7 +11,6 @@ package words
 
 import "word-magnets/util"
 
-type Wordbank []string
 type WordType = uint8
 
 // NOTE: Does not apply to pronouns or miscellaneous, which are fixed.
@@ -27,60 +26,65 @@ const (
 	Miscellaneous
 )
 
-var wordbanks = map[WordType]Wordbank{
-	Noun:          nouns,
-	Adjective:     adjectives,
-	Verb:          verbs,
-	Pronoun:       pronouns,
-	Auxiliary:     auxiliaries,
-	Preposition:   prepositions,
-	Miscellaneous: miscellaneous,
+type Wordbank struct {
+	isFixed bool
+	words   []string
 }
 
-func NewWordbank(wordType WordType) Wordbank {
-	if bank := wordbanks[wordType]; bank == nil {
-		return Wordbank{}
-	} else {
-		// Pick random words from the wordbank without repeats. Some wordbanks are fixed, so we won't be selecting
-		// randomly from them.
-		switch wordType {
-		case Noun:
-			fallthrough
-		case Adjective:
-			fallthrough
-		case Verb:
-			var selected Wordbank
+func (wordbank *Wordbank) IsFixed() bool {
+	return wordbank.isFixed
+}
 
-			length := len(bank)
-			increments := length / maxWordsPerBank
+func (wordbank *Wordbank) Words() []string {
+	return wordbank.words[:]
+}
 
-			for i := range maxWordsPerBank {
-				index := 0
-				start := i * increments
+var fixedPronouns Wordbank = Wordbank{isFixed: true, words: pronouns}
+var fixedAuxiliaries Wordbank = Wordbank{isFixed: true, words: auxiliaries}
+var fixedPrepositions Wordbank = Wordbank{isFixed: true, words: prepositions}
+var fixedMiscellaneous Wordbank = Wordbank{isFixed: true, words: miscellaneous}
 
-				if i == maxWordsPerBank-1 {
-					index = util.RandIntn(start, length)
-				} else {
-					index = util.RandIntn(start, start+increments)
-				}
+func NewWordbank(wordType WordType) *Wordbank {
+	var wordbank *Wordbank = nil
 
-				selected = append(selected, bank[index])
+	switch wordType {
+	case Pronoun:
+		wordbank = &fixedPronouns
+	case Auxiliary:
+		wordbank = &fixedAuxiliaries
+	case Preposition:
+		wordbank = &fixedPrepositions
+	case Miscellaneous:
+		wordbank = &fixedMiscellaneous
+	case Noun:
+		wordbank = &Wordbank{isFixed: false, words: nouns}
+	case Adjective:
+		wordbank = &Wordbank{isFixed: false, words: adjectives}
+	case Verb:
+		wordbank = &Wordbank{isFixed: false, words: verbs}
+	default:
+	}
+
+	if wordbank != nil && !wordbank.isFixed {
+		var selected []string = make([]string, maxWordsPerBank)
+		length := len(wordbank.words)
+		increments := length / maxWordsPerBank
+
+		for i := range maxWordsPerBank {
+			index := 0
+			start := i * increments
+
+			if i == maxWordsPerBank-1 {
+				index = util.RandIntn(start, length)
+			} else {
+				index = util.RandIntn(start, start+increments)
 			}
 
-			bank = selected
-
-		// Ignore any fixed wordbanks. These cases are just here for posterity.
-		case Pronoun:
-			fallthrough
-		case Auxiliary:
-			fallthrough
-		case Preposition:
-			fallthrough
-		case Miscellaneous:
-			fallthrough
-		default:
+			selected[i] = wordbank.words[index]
 		}
 
-		return bank
+		wordbank.words = selected
 	}
+
+	return wordbank
 }

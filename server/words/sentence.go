@@ -23,7 +23,7 @@ type Sentence struct {
 
 const maxLength = 100
 
-func NewSentence(authorID string, words []WordEntry, wordbanks []Wordbank) *Sentence {
+func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
 	str := ""
 	prevHyphen := false
 
@@ -34,13 +34,13 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []Wordbank) *Sent
 			return nil
 		}
 
-		bank := wordbanks[entry.BankIndex]
+		words := wordbanks[entry.BankIndex].words
 
-		if !util.HasIndex(bank, int(entry.WordIndex)) {
+		if !util.HasIndex(words, int(entry.WordIndex)) {
 			return nil
 		}
 
-		word := bank[entry.WordIndex]
+		word := words[entry.WordIndex]
 
 		if word[0] != '-' && !prevHyphen {
 			str += " "

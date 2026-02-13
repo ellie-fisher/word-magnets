@@ -26,9 +26,9 @@ type Room struct {
 	Owner       *clients.Client
 	Clients     []*clients.Client
 
-	state     stateMachine      // TODO: State
-	Wordbanks []words.Wordbank  // TODO: Wordbanks
-	Sentences []*words.Sentence // TODO: Sentences
+	state     stateMachine
+	Wordbanks []*words.Wordbank
+	Sentences []*words.Sentence
 
 	TimeLeft    uint8
 	TimeLimit   uint8
@@ -104,7 +104,7 @@ func (room *Room) Tick() {
 // selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
 func (room *Room) selectWords() {
 	room.Sentences = []*words.Sentence{}
-	room.Wordbanks = []words.Wordbank{
+	room.Wordbanks = []*words.Wordbank{
 		words.NewWordbank(words.Noun),
 		words.NewWordbank(words.Adjective),
 		words.NewWordbank(words.Verb),
@@ -173,7 +173,7 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 				threadIndex: -1,
 				Owner:       owner,
 				Clients:     []*clients.Client{},
-				Wordbanks:   []words.Wordbank{},
+				Wordbanks:   []*words.Wordbank{},
 				Sentences:   []*words.Sentence{},
 				TimeLeft:    data.TimeLimit,
 				TimeLimit:   data.TimeLimit,

@@ -95,7 +95,7 @@ func (reader *PacketReader) ReadCancelStartGame() bool {
 	return reader.MatchU8(CancelStartGamePacket)
 }
 
-func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []words.Wordbank) (bool, *words.Sentence) {
+func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []*words.Wordbank) (bool, *words.Sentence) {
 	if reader.MatchU8(SubmitSentencePacket) {
 		entries := []words.WordEntry{}
 		length := reader.ReadU8()

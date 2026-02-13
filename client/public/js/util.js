@@ -8,6 +8,19 @@
  */
 
 /**
+ * Returns a number whose value is limited to the given range.
+ *
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ *
+ * @returns {number} A number in the range [min, max]
+ */
+export const clamp = (value, min, max) => {
+	return Math.min(Math.max(value, min), max);
+};
+
+/**
  * Gives an array enum-like functionality.
  *
  * @param {any[]} arr
