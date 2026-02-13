@@ -9,7 +9,11 @@
 
 package packets
 
-import "slices"
+import (
+	"slices"
+	"strings"
+	"word-magnets/util"
+)
 
 const MaxStringLength = 255
 
@@ -47,15 +51,21 @@ func (reader *PacketReader) ReadU8() uint8 {
 	return value
 }
 
+func (reader *PacketReader) ReadBool() bool {
+	return reader.ReadU8() != 0
+}
+
 func (reader *PacketReader) ReadString() string {
 	length := reader.ReadU8()
-	str := ""
+
+	var str strings.Builder
+	str.Grow(int(length))
 
 	for i := 0; i < int(length) && !reader.IsAtEnd(); i++ {
-		str += string(reader.ReadU8())
+		str.WriteByte(reader.ReadU8())
 	}
 
-	return str
+	return str.String()
 }
 
 func (reader *PacketReader) MatchU8(value uint8) bool {
@@ -101,6 +111,10 @@ func (writer *PacketWriter) WriteU8(value uint8) {
 	writer.index++
 }
 
+func (writer *PacketWriter) WriteBool(value bool) {
+	writer.WriteU8(util.BoolToU8(value))
+}
+
 func (writer *PacketWriter) WriteString(value string) bool {
 	bytes := []byte(value)
 	truncated := len(bytes) > MaxStringLength
@@ -122,6 +136,8 @@ func (writer *PacketWriter) Write(values ...any) error {
 		switch cast := value.(type) {
 		case uint8:
 			writer.WriteU8(cast)
+		case bool:
+			writer.WriteBool(cast)
 		case string:
 			writer.WriteString(cast)
 		default:

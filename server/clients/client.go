@@ -11,7 +11,6 @@ package clients
 
 import (
 	"word-magnets/packets"
-	"word-magnets/util"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -39,7 +38,7 @@ func (client *Client) SendRoomConnectError(wasCreating bool, message string) err
 	writer := packets.NewPacketWriter(0)
 	packetType := packets.RoomConnectErrorPacket
 
-	if err := writer.Write(packetType, util.BoolToU8(wasCreating), message); err != nil {
+	if err := writer.Write(packetType, wasCreating, message); err != nil {
 		return err
 	} else {
 		return client.Send(writer.Bytes())
