@@ -10,12 +10,15 @@
 import { createEffect, createSignal, $, $replace } from "../framework.js";
 import { onPress, onRelease } from "../util.js";
 import { showYesNoPopup } from "../popup.js";
-import { RoomStates } from "../packets.js";
+import { RoomStates, sendLeaveRoom } from "../packets.js";
 import { getRoomData, getClients } from "./state.js";
+import { setAppView } from "../app.js";
 
 const [showID, setShowID] = createSignal(false);
 
 export const Header = (data = {}) => {
+	const { socket = null } = data;
+
 	const fields = {
 		id: $("button", {
 			className: "small room-id",
@@ -34,11 +37,7 @@ export const Header = (data = {}) => {
 		roundLimit: $("span"),
 	};
 
-	const labels = {
-		id: $("strong", "Room ID: "),
-		timeLeft: $("strong", "Time Left: "),
-		round: $("strong", "Round: "),
-	};
+	const labels = { id: $("strong", "Code: "), timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: ") };
 
 	// We have these functions reassignable so we can change them when their values change.
 	let copyRoomID = () => {};
@@ -48,7 +47,6 @@ export const Header = (data = {}) => {
 		$("div", labels.round, fields.round, " / ", fields.roundLimit),
 		$(
 			"div",
-			{ className: "" },
 			labels.id,
 			$(
 				"small",
@@ -91,16 +89,6 @@ export const Header = (data = {}) => {
 		});
 	});
 
-	const players = $("div");
-
-	createEffect(() => {
-		$replace(
-			players,
-			$("strong", "Players: "),
-			...getClients().map(({ id, name }) => $("button", { className: "word-tile", title: id }, name)),
-		);
-	});
-
 	return $(
 		"section",
 		$(
@@ -108,12 +96,19 @@ export const Header = (data = {}) => {
 			{
 				className: "tab warning",
 				...onRelease(() => {
-					showYesNoPopup("Exit Room?", "Are you sure you want to exit the room?");
+					showYesNoPopup("Exit Room?", "Are you sure you want to exit the room?", () => {
+						setAppView("title", { socket });
+						sendLeaveRoom(socket);
+						return true;
+					});
 				}),
 			},
 			"« Exit",
 		),
-		$("section", { className: "container room-header" }, ...header),
-		$("p", players),
+		$(
+			"section",
+			{ className: "container room-header" },
+			$("section", { className: "room-data-fields" }, ...header),
+		),
 	);
 };

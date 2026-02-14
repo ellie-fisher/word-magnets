@@ -7,6 +7,9 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
+export const flagFixed = 1 << 0;
+export const flagPlayer = 1 << 1;
+
 /**
  * Returns a number whose value is limited to the given range.
  *

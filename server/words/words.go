@@ -21873,17 +21873,6 @@ var nouns = []string{
 
 var adjectives = []string{
 	"$0.99",
-	"0",
-	"1",
-	"2",
-	"3",
-	"4",
-	"5",
-	"6",
-	"7",
-	"8",
-	"9",
-	"10",
 	"aback",
 	"abaft",
 	"abashedly",
@@ -29100,7 +29089,6 @@ var adjectives = []string{
 	"nitpicking",
 	"nitrogenous",
 	"nix",
-	"no",
 	"noble",
 	"nobly",
 	"nocturnal",
@@ -29691,7 +29679,6 @@ var adjectives = []string{
 	"otherwise",
 	"otherworldly",
 	"otiose",
-	"out",
 	"outback",
 	"outboard",
 	"outbound",
@@ -31514,7 +31501,6 @@ var adjectives = []string{
 	"savory",
 	"savoury",
 	"savvy",
-	"say",
 	"scabby",
 	"scabrous",
 	"scaleless",
@@ -34905,7 +34891,6 @@ var adjectives = []string{
 	"yellowy",
 	"yeoman",
 	"yep",
-	"yes",
 	"yesterday",
 	"yesteryear",
 	"yet",
@@ -37379,12 +37364,14 @@ var verbs = []string{
 	"ruminate",
 	"rusticate",
 	"sadden",
+	"said",
 	"salivate",
 	"sanctify",
 	"sanitize",
 	"sate",
 	"satirize",
 	"satisfy",
+	"say",
 	"scandalize",
 	"scarify",
 	"scavenge",
@@ -37872,12 +37859,12 @@ var auxiliaries = []string{
 }
 
 var prepositions = []string{
-	"about", "after", "as", "at", "before", "by", "for", "in", "of", "on", "than", "to", "while", "with",
+	"about", "after", "as", "at", "before", "by", "for", "in", "of", "on", "out", "than", "to", "while", "with",
 }
 
 var miscellaneous = []string{
 	" ",
 	"-.", "-?", "-!", "-,", "'-", "-'", "\"-", "-\"",
 	"-e", "-d", "-n", "-r", "-s", "-t", "-y", "-ly", "-ing",
-	"and", "but", "if", "or", "so",
+	"and", "but", "if", "or", "so", "no",
 }

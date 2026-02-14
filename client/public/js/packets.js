@@ -117,7 +117,7 @@ export const readRoomWords = reader => {
 	const bankCount = reader.readU8();
 
 	for (let i = 0; i < bankCount; i++) {
-		const isFixed = reader.readBool();
+		const flags = reader.readU8();
 		const wordCount = reader.readU8();
 		const words = [];
 
@@ -125,7 +125,7 @@ export const readRoomWords = reader => {
 			words.push(reader.readString());
 		}
 
-		wordbanks.push({ index: i, isFixed, words });
+		wordbanks.push({ index: i, flags, words });
 	}
 
 	return wordbanks;
@@ -133,11 +133,11 @@ export const readRoomWords = reader => {
 
 export const readRoomSentences = reader => {
 	const sentences = [];
-	const includesNames = reader.readBool();
+	const anonymous = reader.readBool();
 	const sentenceCount = reader.readU8();
 
 	for (let i = 0; i < sentenceCount; i++) {
-		sentences.push({ authorID: includesNames ? reader.readString() : "", value: reader.readString() });
+		sentences.push({ authorID: anonymous ? "" : reader.readString(), value: reader.readString() });
 	}
 
 	return sentences;
@@ -252,5 +252,12 @@ export const sendCancelStartGame = socket => {
 	const writer = new ByteWriter();
 
 	writer.write(PacketTypes.CancelStartGamePacket);
+	socket.send(writer.bytes());
+};
+
+export const sendLeaveRoom = socket => {
+	const writer = new ByteWriter();
+
+	writer.write(PacketTypes.LeaveRoomPacket);
 	socket.send(writer.bytes());
 };

@@ -76,7 +76,7 @@ func (room *Room) sendWords(client *clients.Client) error {
 	for _, bank := range room.Wordbanks {
 		words := bank.Words()
 
-		writer.WriteBool(bank.IsFixed())
+		writer.WriteU8(bank.Flags())
 		writer.WriteU8(uint8(len(words)))
 
 		for _, word := range words {
@@ -123,7 +123,7 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 			length--
 		}
 
-		if err := writer.Write(packets.RoomSentencesPacket, !anonymous, length); err != nil {
+		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err != nil {
 			for _, sentence := range room.Sentences {
 				if anonymous {
 					// Don't write the client's own sentence if we're sending the voting options.

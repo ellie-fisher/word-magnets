@@ -103,11 +103,18 @@ func (room *Room) Tick() {
 
 // selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
 func (room *Room) selectWords() {
+	names := make([]string, len(room.Clients))
+
+	for i, client := range room.Clients {
+		names[i] = client.Name
+	}
+
 	room.Sentences = []*words.Sentence{}
 	room.Wordbanks = []*words.Wordbank{
 		words.NewWordbank(words.Noun),
 		words.NewWordbank(words.Adjective),
 		words.NewWordbank(words.Verb),
+		words.NewPlayerWordbank(names),
 		words.NewWordbank(words.Pronoun),
 		words.NewWordbank(words.Auxiliary),
 		words.NewWordbank(words.Preposition),

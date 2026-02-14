@@ -9,12 +9,11 @@
 
 package words
 
-import "word-magnets/util"
+import (
+	"word-magnets/util"
+)
 
 type WordType = uint8
-
-// NOTE: Does not apply to pronouns or miscellaneous, which are fixed.
-const maxWordsPerBank = 8
 
 const (
 	Noun WordType = iota
@@ -26,23 +25,43 @@ const (
 	Miscellaneous
 )
 
+type WordbankFlag = uint8
+
+const flagFixed WordbankFlag = 1 << 0
+const flagPlayer WordbankFlag = 1 << 1
+
+// NOTE: Only applies to nouns, adjectives, and verbs.
+const maxWordsPerBank = 8
+
 type Wordbank struct {
-	isFixed bool
-	words   []string
+	flags WordbankFlag
+	words []string
 }
 
 func (wordbank *Wordbank) IsFixed() bool {
-	return wordbank.isFixed
+	return (wordbank.flags & flagFixed) != 0
+}
+
+func (wordbank *Wordbank) IsPlayer() bool {
+	return (wordbank.flags & flagPlayer) != 0
+}
+
+func (wordbank *Wordbank) Flags() WordbankFlag {
+	return wordbank.flags
 }
 
 func (wordbank *Wordbank) Words() []string {
 	return wordbank.words[:]
 }
 
-var fixedPronouns Wordbank = Wordbank{isFixed: true, words: pronouns}
-var fixedAuxiliaries Wordbank = Wordbank{isFixed: true, words: auxiliaries}
-var fixedPrepositions Wordbank = Wordbank{isFixed: true, words: prepositions}
-var fixedMiscellaneous Wordbank = Wordbank{isFixed: true, words: miscellaneous}
+var fixedPronouns Wordbank = Wordbank{flags: flagFixed, words: pronouns}
+var fixedAuxiliaries Wordbank = Wordbank{flags: flagFixed, words: auxiliaries}
+var fixedPrepositions Wordbank = Wordbank{flags: flagFixed, words: prepositions}
+var fixedMiscellaneous Wordbank = Wordbank{flags: flagFixed, words: miscellaneous}
+
+func NewPlayerWordbank(names []string) *Wordbank {
+	return &Wordbank{flags: flagPlayer, words: names}
+}
 
 func NewWordbank(wordType WordType) *Wordbank {
 	var wordbank *Wordbank = nil
@@ -57,15 +76,15 @@ func NewWordbank(wordType WordType) *Wordbank {
 	case Miscellaneous:
 		wordbank = &fixedMiscellaneous
 	case Noun:
-		wordbank = &Wordbank{isFixed: false, words: nouns}
+		wordbank = &Wordbank{flags: 0, words: nouns}
 	case Adjective:
-		wordbank = &Wordbank{isFixed: false, words: adjectives}
+		wordbank = &Wordbank{flags: 0, words: adjectives}
 	case Verb:
-		wordbank = &Wordbank{isFixed: false, words: verbs}
+		wordbank = &Wordbank{flags: 0, words: verbs}
 	default:
 	}
 
-	if wordbank != nil && !wordbank.isFixed {
+	if wordbank != nil && !wordbank.IsFixed() {
 		var selected []string = make([]string, maxWordsPerBank)
 		length := len(wordbank.words)
 		increments := length / maxWordsPerBank

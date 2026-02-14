@@ -7,30 +7,40 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $ } from "../framework.js";
+import { $, $replace, createEffect } from "../framework.js";
 import { RoomStates, sendStartGame, sendCancelStartGame } from "../packets.js";
 import { onRelease } from "../util.js";
+import { getClients, getRoomData } from "./state.js";
 
 export const Lobby = (data = {}) => {
 	const { socket = null, state = 0 } = data;
+	const players = $("p", { className: "player-list" });
+
+	createEffect(() => {
+		$replace(players, ...getClients().map(({ id, name }) => $("span", { title: id }, name)));
+	});
 
 	return $(
-		"p",
+		"section",
+		$("p", $("strong", "Players:"), players),
 		$(
-			"button",
-			{
-				className: "primary",
-				...onRelease(() => {
-					if (socket !== null) {
-						if (state === RoomStates.Lobby) {
-							sendStartGame(socket);
-						} else {
-							sendCancelStartGame(socket);
+			"p",
+			$(
+				"button",
+				{
+					className: "primary",
+					...onRelease(() => {
+						if (socket !== null) {
+							if (state === RoomStates.Lobby) {
+								sendStartGame(socket);
+							} else {
+								sendCancelStartGame(socket);
+							}
 						}
-					}
-				}),
-			},
-			state === RoomStates.Lobby ? "Start Game" : "Cancel",
+					}),
+				},
+				state === RoomStates.Lobby ? "Start Game" : "Cancel",
+			),
 		),
 	);
 };

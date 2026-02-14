@@ -10,7 +10,12 @@
 :root {
 	--bg-color: rgb(33, 58, 26);
 	--container-bg-color: rgb(84, 146, 69);
-	--hr-color: rgb(74, 129, 60);
+	--body-text-color: aliceblue;
+	--body-font-family: Arial, sans-serif;
+	--body-font-size: clamp(1rem, 0.5vw + 0.55rem, 2rem);
+	--body-text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.9);
+	--default-border-color: rgb(74, 129, 60);
+	--default-border: 0.1em solid var(--default-border-color);
 
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
@@ -43,10 +48,10 @@ html {
 body {
 	background-color: var(--bg-color);
 
-	color: aliceblue;
-	font-family: Arial, sans-serif;
-	font-size: clamp(1rem, 0.5vw + 0.65rem, 2rem);
-	text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.9);
+	color: var(--body-text-color);
+	font-family: var(--body-font-family);
+	font-size: var(--body-font-size);
+	text-shadow: var(--body-text-shadow);
 
 	width: 100%;
 	height: 100%;
@@ -62,13 +67,11 @@ body {
 
 #main {
 	height: 100%;
-	width: 60vw;
+	width: 70vw;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1000px) {
 	#main {
-		/* A bit of a bodge but that's okay. */
-		height: 80vh;
 		width: 90vw;
 	}
 }
@@ -82,10 +85,11 @@ select {
 	border-radius: 0.25em;
 
 	color: var(--input-text-secondary);
-	font-size: 100%;
+	font-size: 1.2em;
 
-	padding: 1% 2% 1% 2%;
-	margin: 0.5%;
+	padding: 0.3em 0.6em 0.3em 0.6em;
+	margin: 0.25em;
+	margin-left: 0em;
 }
 
 button:active {
@@ -100,7 +104,6 @@ select:focus {
 
 button {
 	background-color: var(--input-secondary-color);
-	font-size: 100%;
 	cursor: pointer;
 }
 
@@ -138,7 +141,7 @@ button.tab {
 	border-bottom-right-radius: 0em;
 
 	color: var(--tab-text-color);
-	font-size: 0.75em;
+	font-size: 0.9em;
 
 	margin: 0em;
 }
@@ -165,9 +168,9 @@ button.word-tile {
 	color: black;
 
 	margin: 0.25em;
-	padding: 0.5% 1% 0.5% 1%;
+	padding: 0.25em 0.5em;
 
-	font-size: 90%;
+	font-size: 0.9em;
 }
 
 button.word-tile:active {
@@ -186,25 +189,23 @@ button.room-id {
 }
 
 small>button {
-	padding: 0.5% 2% 0.5% 2%;
+	padding: 0.2em 0.4em;
 	margin: 0em 0.15em 0em 0.15em;
 	font-size: 1em;
 }
 
-.popup button {
-	padding: 2% 12% 2% 12%;
-	margin: 1.5em;
-	display: inline;
-}
-
-.popup button.primary {
-	display: inline;
-}
-
 .wordbank {
-	border-top: 0.1em solid var(--hr-color);
-	padding-top: 1%;
-	padding-bottom: 0%;
+	border-top: var(--default-border);
+	border-bottom: var(--default-border);
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	margin-top: 1em;
+	margin-bottom: 0em;
+}
+
+.wordbank~.wordbank {
+	border-top: 0em;
+	margin-top: 0em;
 }
 
 select {
@@ -212,7 +213,7 @@ select {
 }
 
 hr {
-	border: 0.1em solid var(--hr-color);
+	border: var(--default-border);
 }
 
 .tab~.container {
@@ -243,7 +244,7 @@ hr {
 	margin: 0em;
 	margin-bottom: 1em;
 	padding-bottom: 0.5em;
-	border-bottom: 0.1em solid var(--hr-color);
+	border-bottom: var(--default-border);
 }
 
 .popup {
@@ -283,5 +284,35 @@ hr {
 
 .room-header {
 	display: grid;
-	grid-template-columns: 33% 33% 33%;
+	grid-template-columns: 100%;
+	row-gap: 0.75em;
+	margin-bottom: 2em;
+}
+
+.room-data-fields {
+	display: flex;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	row-gap: 0.2em;
+}
+
+@media only screen and (max-width: 800px) {
+	.room-header {
+		font-size: 0.8em;
+	}
+}
+
+.player-list {
+	display: flex;
+	flex-flow: column;
+	row-gap: 0.5em;
+	font-family: monospace;
+	margin-bottom: 2em;
+}
+
+.player-list > span {
+	background: rgba(0, 0, 0, 0.2);
+	padding: 0.75em 1em 0.75em 1em;
+	cursor: pointer;
+	border-radius: 1em;
 }

@@ -18,10 +18,10 @@ const defaultTime = uint8(0)
 const startGameTime = uint8(5)
 const createSubmitTime = uint8(5)
 const voteBaseTime = uint8(5)
-const voteTimeMult = uint8(5)
+const voteTimeMult = uint8(10)
 const voteSubmitTime = uint8(5)
 const resultsBaseTime = uint8(5)
-const resultsTimeMult = uint8(3)
+const resultsTimeMult = uint8(5)
 const endTime = uint8(15)
 
 type stateTag = uint8

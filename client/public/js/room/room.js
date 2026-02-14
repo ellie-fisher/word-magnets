@@ -17,10 +17,12 @@ import { Create } from "./create.js";
 export const Room = (data = {}) => {
 	const { socket = null } = data;
 	const body = $("section");
+	const title = $("h2", "Lobby");
 	let prevState = null;
 
 	createEffect(() => {
 		let view = "Unknown room view! (Ask a nerd what this means.)";
+		let titleText = "";
 
 		const { state } = getRoomData();
 
@@ -31,14 +33,21 @@ export const Room = (data = {}) => {
 		prevState = state;
 
 		switch (state) {
-			case RoomStates.Lobby:
+			case RoomStates.Lobby: {
+				view = Lobby({ socket, state });
+				titleText = "Lobby";
+				break;
+			}
+
 			case RoomStates.StartGame: {
 				view = Lobby({ socket, state });
+				titleText = "Starting Game...";
 				break;
 			}
 
 			case RoomStates.Create: {
 				view = Create();
+				titleText = "Create a sentence!";
 				break;
 			}
 
@@ -47,7 +56,8 @@ export const Room = (data = {}) => {
 		}
 
 		$replace(body, view);
+		title.textContent = titleText;
 	});
 
-	return $("article", $("h1", "Lobby"), Header(), body);
+	return $("article", title, Header({ socket }), body);
 };

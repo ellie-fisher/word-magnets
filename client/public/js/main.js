@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			message = reason;
 		}
 
-		setAppView("error", { title: "Socket Error: ", message });
+		setAppView("error", { title: "Socket Error: ", showButton: false, message, socket });
 	};
 
 	socket.onerror = socket.onclose;
@@ -92,13 +92,14 @@ document.addEventListener("DOMContentLoaded", () => {
 				setAppView("error", {
 					title: wasCreating ? "Could not create room: " : "Could not join room: ",
 					message,
+					socket,
 				});
 
 				break;
 			}
 
 			case PacketTypes.RoomDestroyedPacket: {
-				setAppView("error", { title: "Disconnected: ", message: readRoomDestroyed(reader) });
+				setAppView("error", { title: "Disconnected: ", message: readRoomDestroyed(reader), socket });
 				break;
 			}
 

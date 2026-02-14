@@ -8,6 +8,7 @@
  */
 
 import { $, $replace, createEffect } from "../framework.js";
+import { flagFixed, flagPlayer } from "../util.js";
 import { getWords } from "./state.js";
 
 const Wordbank = wordbank => {
@@ -15,7 +16,11 @@ const Wordbank = wordbank => {
 		"p",
 		{ className: "wordbank" },
 		...wordbank.words.map(word =>
-			$("button", { className: "word-tile" }, word === " " ? "\u00A0" : word),
+			$(
+				"button",
+				{ className: "word-tile" + (wordbank.flags & flagPlayer ? " player" : "") },
+				word === " " ? "\u00A0" : word,
+			),
 		),
 	);
 };
@@ -28,7 +33,7 @@ export const Create = (data = {}) => {
 		const fixed = [];
 		const nonfixed = [];
 
-		wordbanks.forEach(bank => (bank.isFixed ? fixed : nonfixed).push(Wordbank(bank)));
+		wordbanks.forEach(bank => (bank.flags & flagFixed ? fixed : nonfixed).push(Wordbank(bank)));
 
 		$replace(body, ...nonfixed, ...fixed);
 	});

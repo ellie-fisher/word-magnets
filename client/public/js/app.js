@@ -23,7 +23,7 @@ export const App = () => {
 	let child = "";
 
 	createEffect((payload = {}) => {
-		child = $error("Error: ", "Unknown view! (Ask a nerd what this means.)");
+		child = $error({ title: "Error: ", message: "Unknown view! (Ask a nerd what this means.)" });
 
 		switch (view()) {
 			case "loading": {
@@ -32,7 +32,7 @@ export const App = () => {
 			}
 
 			case "error": {
-				child = $error(payload.title, payload.message);
+				child = $error(payload);
 				break;
 			}
 
