@@ -17,7 +17,20 @@ export const Lobby = (data = {}) => {
 	const players = $("p", { className: "player-list" });
 
 	createEffect(() => {
-		$replace(players, ...getClients().map(({ id, name }) => $("span", { title: id }, name)));
+		const { clientLimit } = getRoomData();
+		const clients = getClients();
+		const children = [];
+
+		for (let i = 0; i < clientLimit; i++) {
+			if (i < clients.length) {
+				const { id, name } = clients[i];
+				children.push($("span", { title: id }, name));
+			} else {
+				children.push($("span", "\u00A0"));
+			}
+		}
+
+		$replace(players, ...children);
 	});
 
 	return $(
