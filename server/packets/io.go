@@ -126,9 +126,9 @@ func (writer *PacketWriter) WriteBool(value bool) {
 
 func (writer *PacketWriter) WriteString(value string) bool {
 	bytes := []byte(value)
-	truncated := len(bytes) > math.MaxUint8
+	success := len(bytes) <= math.MaxUint8
 
-	if truncated {
+	if !success {
 		bytes = bytes[:math.MaxUint8+1]
 	}
 
@@ -137,7 +137,7 @@ func (writer *PacketWriter) WriteString(value string) bool {
 	writer.bytes = slices.Concat(writer.bytes, bytes)
 	writer.index += len(bytes)
 
-	return truncated
+	return success
 }
 
 func (writer *PacketWriter) WriteU8Cond(value uint8, cond bool) {
