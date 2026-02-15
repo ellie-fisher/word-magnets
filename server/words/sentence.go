@@ -25,9 +25,10 @@ const maxLength = 100
 
 func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
 	str := ""
+	length := len(str)
 	prevHyphen := false
 
-	for i := 0; i < len(wordbanks) && i < maxLength && len(str) < maxLength; i++ {
+	for i := 0; i < len(wordbanks) && i < maxLength && length < maxLength; i++ {
 		entry := words[i]
 
 		if !util.HasIndex(wordbanks, int(entry.BankIndex)) {
@@ -60,15 +61,23 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 		}
 
 		wordSlice := word[start:end]
+		sliceLen := len(wordSlice)
 
-		if len(str)+len(wordSlice) > maxLength {
+		// We don't want players to be able to hack around the sentence length limit by setting
+		// their name to a hyphen, so we must account for that.
+		if sliceLen <= 0 {
+			sliceLen = 1
+		}
+
+		if length+sliceLen > maxLength {
 			break
 		}
 
 		str += wordSlice
+		length += sliceLen
 	}
 
-	if len(str) > maxLength {
+	if length > maxLength {
 		str = str[:maxLength]
 	}
 
