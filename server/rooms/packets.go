@@ -19,14 +19,15 @@ type roomDataFlag = uint8
 
 const (
 	roomDataFlagRoomID roomDataFlag = 1 << iota
+	roomDataFlagOwnerID
 	roomDataFlagState
 	roomDataFlagTimeLeft
 	roomDataFlagTimeLimit
 	roomDataFlagRound
 	roomDataFlagRoundLimit
 	roomDataFlagClientLimit
-	roomDataFlagAll = roomDataFlagRoomID | roomDataFlagState | roomDataFlagTimeLeft | roomDataFlagTimeLimit |
-		roomDataFlagRound | roomDataFlagRoundLimit | roomDataFlagClientLimit
+	roomDataFlagAll = roomDataFlagRoomID | roomDataFlagOwnerID | roomDataFlagState | roomDataFlagTimeLeft |
+		roomDataFlagTimeLimit | roomDataFlagRound | roomDataFlagRoundLimit | roomDataFlagClientLimit
 )
 
 func (room *Room) sendRoomDestroyed(reason string) error {
@@ -47,6 +48,7 @@ func (room *Room) sendRoomData(client *clients.Client, flags roomDataFlag) error
 	}
 
 	writer.WriteStringCond(room.id, (flags&roomDataFlagRoomID) != 0)
+	writer.WriteStringCond(room.owner.ID(), (flags&roomDataFlagOwnerID) != 0)
 	writer.WriteU8Cond(room.state.tag(), (flags&roomDataFlagState) != 0)
 	writer.WriteU8Cond(room.timeLeft, (flags&roomDataFlagTimeLeft) != 0)
 	writer.WriteU8Cond(room.timeLimit, (flags&roomDataFlagTimeLimit) != 0)

@@ -40,7 +40,7 @@ func (validator *FieldValidator) ValidateString(value string) (bool, string) {
 		return false, validator.SpaceError
 	}
 
-	if matched, err := regexp.MatchString("[^ -~]", value); matched || err != nil {
+	if matched, err := regexp.MatchString("[^ -)+-~]", value); matched || err != nil {
 		return false, validator.CharError
 	}
 

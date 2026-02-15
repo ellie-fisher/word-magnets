@@ -58,7 +58,7 @@ export const RoomFields = (data = {}) => {
 
 					if (field.type.toLowerCase() === "string") {
 						target.value = target.value.replaceAll(/[\x09]/g, " ");
-						target.value = target.value.replaceAll(/[^ -~]/g, "");
+						target.value = target.value.replaceAll(/[^ -)+-~]/g, "");
 					}
 
 					userData[field.id] = target.value;

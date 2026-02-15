@@ -16,6 +16,8 @@
 	--body-text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.9);
 	--default-border-color: rgb(74, 129, 60);
 	--default-border: 0.1em solid var(--default-border-color);
+	--button-box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
+	--button-text-shadow: 0.05em 0.05em rgba(255, 255, 255, 0.1);
 
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
@@ -104,6 +106,8 @@ select:focus {
 
 button {
 	background-color: var(--input-secondary-color);
+	box-shadow: var(--button-box-shadow);
+	text-shadow: var(--button-text-shadow);
 	cursor: pointer;
 }
 
@@ -140,6 +144,9 @@ button.tab {
 	border-bottom-left-radius: 0em;
 	border-bottom-right-radius: 0em;
 
+	box-shadow: 0.1rem 0rem 0.1rem rgba(0, 0, 0, 0.2);
+	text-shadow: 0.05em 0.05em rgba(0, 0, 0, 0.1);
+
 	color: var(--tab-text-color);
 	font-size: 0.9em;
 
@@ -149,6 +156,7 @@ button.tab {
 button.tab:disabled {
 	background-color: var(--tab-color-disabled);
 	color: var(--tab-text-disabled);
+	text-shadow: var(--button-text-shadow);
 }
 
 button.tab:focus {
@@ -164,6 +172,9 @@ button.word-tile {
 	border-radius: 0em;
 	outline: none;
 
+	box-shadow: none;
+	text-shadow: none;
+
 	background-color: beige;
 	color: black;
 
@@ -171,6 +182,10 @@ button.word-tile {
 	padding: 0.25em 0.5em;
 
 	font-size: 0.9em;
+}
+
+button.word-tile:hover {
+	box-shadow: 0.2em 0.2em 0.1em rgba(0, 0, 0, 0.2);
 }
 
 button.word-tile:active {
@@ -186,6 +201,7 @@ button.room-id+button {
 button.room-id {
 	background-color: var(--tab-color);
 	color: var(--tab-text-color);
+	box-shadow: none;
 }
 
 small>button {
@@ -224,6 +240,7 @@ hr {
 	background-color: var(--input-warning-color);
 	color: var(--input-text-warning);
 	font-weight: bold;
+	text-shadow: var(--button-text-shadow);
 }
 
 .tab.warning:active {
@@ -238,6 +255,7 @@ hr {
 	background-color: var(--container-bg-color);
 	padding: 1em;
 	border-radius: 0.25em;
+	box-shadow: 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.5);
 }
 
 .container>h2 {
@@ -305,9 +323,11 @@ hr {
 .player-list {
 	display: flex;
 	flex-flow: column;
+	columns: 50%;
 	row-gap: 0.5em;
 	font-family: monospace;
 	margin-bottom: 2em;
+	white-space: preserve;
 }
 
 .player-list > span {
@@ -315,4 +335,8 @@ hr {
 	padding: 0.75em 1em 0.75em 1em;
 	cursor: pointer;
 	border-radius: 1em;
+}
+
+.player-list-owner {
+	color: orange;
 }

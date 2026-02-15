@@ -18,13 +18,19 @@ export const Lobby = (data = {}) => {
 
 	createEffect(() => {
 		const limit = RoomData.get.clientLimit();
+		const ownerID = RoomData.get.ownerID();
 		const clients = getClients();
 		const children = [];
 
 		for (let i = 0; i < limit; i++) {
 			if (i < clients.length) {
 				const { id, name } = clients[i];
-				children.push($("span", { title: id }, name));
+
+				if (id === ownerID) {
+					children.push($("span", { className: "player-list-owner", title: id }, `* ${name}`));
+				} else {
+					children.push($("span", { title: id }, `  ${name}`));
+				}
 			} else {
 				children.push($("span", "\u00A0"));
 			}

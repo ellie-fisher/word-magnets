@@ -13,17 +13,16 @@ import { deepFreeze } from "../util.js";
 
 export const RoomData = { get: {}, set: {} };
 
-const fields = [
+Object.values([
 	["id", ""],
+	["ownerID", ""],
 	["state", RoomStates.Lobby],
 	["timeLeft", 0],
 	["timeLimit", 0],
 	["round", 0],
 	["roundLimit", 0],
 	["clientLimit", 0],
-];
-
-Object.values(fields).forEach(([key, defaultValue]) => {
+]).forEach(([key, defaultValue]) => {
 	[RoomData.get[key], RoomData.set[key]] = createSignal(defaultValue);
 });
 
