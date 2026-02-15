@@ -9,7 +9,7 @@
 
 import { $, $replace, createEffect } from "../framework.js";
 import { RoomStates } from "../packets.js";
-import { getRoomData } from "./state.js";
+import { RoomData } from "./state.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
 import { Create } from "./create.js";
@@ -24,7 +24,7 @@ export const Room = (data = {}) => {
 		let view = "Unknown room view! (Ask a nerd what this means.)";
 		let titleText = "";
 
-		const { state } = getRoomData();
+		const state = RoomData.get.state();
 
 		if (state === prevState) {
 			return;

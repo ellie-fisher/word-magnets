@@ -15,6 +15,20 @@ import (
 	"word-magnets/util"
 )
 
+type roomDataFlag = uint8
+
+const (
+	roomDataFlagRoomID roomDataFlag = 1 << iota
+	roomDataFlagState
+	roomDataFlagTimeLeft
+	roomDataFlagTimeLimit
+	roomDataFlagRound
+	roomDataFlagRoundLimit
+	roomDataFlagClientLimit
+	roomDataFlagAll = roomDataFlagRoomID | roomDataFlagState | roomDataFlagTimeLeft | roomDataFlagTimeLimit |
+		roomDataFlagRound | roomDataFlagRoundLimit | roomDataFlagClientLimit
+)
+
 func (room *Room) sendRoomDestroyed(reason string) error {
 	writer := packets.NewPacketWriter(0)
 
@@ -25,23 +39,20 @@ func (room *Room) sendRoomDestroyed(reason string) error {
 	}
 }
 
-func (room *Room) sendRoomData(client *clients.Client) error {
+func (room *Room) sendRoomData(client *clients.Client, flags roomDataFlag) error {
 	writer := packets.NewPacketWriter(0)
 
-	err := writer.Write(
-		packets.RoomDataPacket,
-		room.ID,
-		room.state.tag(),
-		room.TimeLeft,
-		room.TimeLimit,
-		room.Round,
-		room.RoundLimit,
-		room.ClientLimit,
-	)
-
-	if err != nil {
+	if err := writer.Write(packets.RoomDataPacket, flags); err != nil {
 		return err
 	}
+
+	writer.WriteStringCond(room.id, (flags&roomDataFlagRoomID) != 0)
+	writer.WriteU8Cond(room.state.tag(), (flags&roomDataFlagState) != 0)
+	writer.WriteU8Cond(room.timeLeft, (flags&roomDataFlagTimeLeft) != 0)
+	writer.WriteU8Cond(room.timeLimit, (flags&roomDataFlagTimeLimit) != 0)
+	writer.WriteU8Cond(room.round, (flags&roomDataFlagRound) != 0)
+	writer.WriteU8Cond(room.roundLimit, (flags&roomDataFlagRoundLimit) != 0)
+	writer.WriteU8Cond(room.clientLimit, (flags&roomDataFlagClientLimit) != 0)
 
 	if client == nil {
 		return room.Send(writer.Bytes())
@@ -53,11 +64,11 @@ func (room *Room) sendRoomData(client *clients.Client) error {
 func (room *Room) sendClients() error {
 	writer := packets.NewPacketWriter(0)
 
-	if err := writer.Write(packets.RoomClientsPacket, uint8(len(room.Clients))); err != nil {
+	if err := writer.Write(packets.RoomClientsPacket, uint8(len(room.Clients()))); err != nil {
 		return err
 	}
 
-	for _, client := range room.Clients {
+	for _, client := range room.Clients() {
 		writer.WriteString(client.ID())
 		writer.WriteString(client.Name)
 	}
@@ -69,11 +80,11 @@ func (room *Room) sendClients() error {
 func (room *Room) sendWords(client *clients.Client) error {
 	writer := packets.NewPacketWriter(0)
 
-	if err := writer.Write(packets.RoomWordsPacket, uint8(len(room.Wordbanks))); err != nil {
+	if err := writer.Write(packets.RoomWordsPacket, uint8(len(room.wordbanks))); err != nil {
 		return err
 	}
 
-	for _, bank := range room.Wordbanks {
+	for _, bank := range room.wordbanks {
 		words := bank.Words()
 
 		writer.WriteU8(bank.Flags())
@@ -104,18 +115,18 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 	authors := util.NewSet[string]()
 
 	if target == nil {
-		clients = room.Clients
+		clients = room.Clients()
 	} else {
 		clients = append(clients, target)
 	}
 
-	for _, sentence := range room.Sentences {
+	for _, sentence := range room.sentences {
 		authors.Add(sentence.AuthorID)
 	}
 
 	for _, client := range clients {
 		writer := packets.NewPacketWriter(0)
-		length := uint8(len(room.Sentences))
+		length := uint8(len(room.sentences))
 
 		// We won't be writing the client's own sentence to them during the initial voting phase, so
 		// we must modify the length we send out.
@@ -124,7 +135,7 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 		}
 
 		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err != nil {
-			for _, sentence := range room.Sentences {
+			for _, sentence := range room.sentences {
 				if anonymous {
 					// Don't write the client's own sentence if we're sending the voting options.
 					if sentence.AuthorID == client.ID() {

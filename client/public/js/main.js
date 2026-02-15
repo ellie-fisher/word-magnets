@@ -35,7 +35,7 @@ import {
 } from "./packets.js";
 
 import { App, setAppView } from "./app.js";
-import { setRoomData, setClients, setWords, setSentences } from "./room/state.js";
+import { applyRoomData, setClients, setWords, setSentences } from "./room/state.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 			case PacketTypes.RoomDataPacket: {
 				setAppView("room", { socket });
-				setRoomData(readRoomData(reader));
+				applyRoomData(readRoomData(reader));
 				break;
 			}
 

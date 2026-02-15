@@ -14,6 +14,7 @@ import (
 	"math/rand"
 	"slices"
 	"strconv"
+	"strings"
 
 	"word-magnets/clients"
 	"word-magnets/packets"
@@ -21,25 +22,33 @@ import (
 )
 
 type Room struct {
-	ID          string
+	id          string
 	threadIndex int
-	Owner       *clients.Client
-	Clients     []*clients.Client
+	owner       *clients.Client
+	clients     []*clients.Client
 
 	state     stateMachine
-	Wordbanks []*words.Wordbank
-	Sentences []*words.Sentence
+	wordbanks []*words.Wordbank
+	sentences []*words.Sentence
 
-	TimeLeft    uint8
-	TimeLimit   uint8
-	Round       uint8
-	RoundLimit  uint8
-	ClientLimit uint8
+	timeLeft    uint8
+	timeLimit   uint8
+	round       uint8
+	roundLimit  uint8
+	clientLimit uint8
+}
+
+func (room *Room) Clients() []*clients.Client {
+	return room.clients[:]
+}
+
+func (room *Room) ClientLimit() uint8 {
+	return room.clientLimit
 }
 
 // Send transmits a binary packet to all clients in the room.
 func (room *Room) Send(bytes []byte) error {
-	for _, client := range room.Clients {
+	for _, client := range room.clients {
 		if err := client.Send(bytes); err != nil {
 			log.Printf("[Error] Failed to send packet to client: %s", err)
 		}
@@ -50,7 +59,7 @@ func (room *Room) Send(bytes []byte) error {
 
 // GetClient attempts to get the client with the ID of id, returning nil if not found.
 func (room *Room) GetClient(id string) *clients.Client {
-	for _, client := range room.Clients {
+	for _, client := range room.clients {
 		if client.ID() == id {
 			return client
 		}
@@ -61,36 +70,34 @@ func (room *Room) GetClient(id string) *clients.Client {
 
 // IsOwner checks if id is the room owner's ID.
 func (room *Room) IsOwner(id string) bool {
-	return room.Owner.ID() == id
+	return room.owner.ID() == id
 }
 
-// AddClient adds client to room, retransmits the client list to all clients, then transmits room
-// data, words (if applicable), and sentences (if applicable) to the new client.
+// AddClient adds client to room and retransmits the client list to everyone in the room.
 func (room *Room) AddClient(client *clients.Client, name string) {
 	if oldRoom := GetRoom(client.RoomID); oldRoom != nil {
 		oldRoom.RemoveClient(client)
 	}
 
-	client.RoomID = room.ID
+	client.RoomID = room.id
 	client.Name = name
 
-	room.Clients = append(room.Clients, client)
+	room.clients = append(room.clients, client)
 	room.sendClients()
-	room.sendRoomData(client)
-	room.state.clientEnter(client)
+	room.state.enter(client)
 }
 
 // RemoveClient removes client from room, destroying room if client is the owner.
 func (room *Room) RemoveClient(client *clients.Client) {
-	index := slices.IndexFunc(room.Clients, func(check *clients.Client) bool {
+	index := slices.IndexFunc(room.clients, func(check *clients.Client) bool {
 		return check.ID() == client.ID()
 	})
 
 	if index >= 0 {
-		if client.ID() == room.Owner.ID() {
+		if client.ID() == room.owner.ID() {
 			DestroyRoom(room)
 		} else {
-			room.Clients = slices.Delete(room.Clients, index, index+1)
+			room.clients = slices.Delete(room.clients, index, index+1)
 			client.RoomID = ""
 			room.sendClients()
 		}
@@ -103,14 +110,14 @@ func (room *Room) Tick() {
 
 // selectWords clears all player sentences, randomly selects words from wordbanks (except for fixed ones).
 func (room *Room) selectWords() {
-	names := make([]string, len(room.Clients))
+	names := make([]string, len(room.clients))
 
-	for i, client := range room.Clients {
+	for i, client := range room.clients {
 		names[i] = client.Name
 	}
 
-	room.Sentences = []*words.Sentence{}
-	room.Wordbanks = []*words.Wordbank{
+	room.sentences = []*words.Sentence{}
+	room.wordbanks = []*words.Wordbank{
 		words.NewWordbank(words.Noun),
 		words.NewWordbank(words.Adjective),
 		words.NewWordbank(words.Verb),
@@ -123,14 +130,14 @@ func (room *Room) selectWords() {
 }
 
 func (room *Room) addSentence(sentence *words.Sentence) {
-	index := slices.IndexFunc(room.Sentences, func(item *words.Sentence) bool {
+	index := slices.IndexFunc(room.sentences, func(item *words.Sentence) bool {
 		return item.AuthorID == sentence.AuthorID
 	})
 
 	if index >= 0 {
-		room.Sentences[index] = sentence
+		room.sentences[index] = sentence
 	} else {
-		room.Sentences = append(room.Sentences, sentence)
+		room.sentences = append(room.sentences, sentence)
 	}
 }
 
@@ -140,7 +147,7 @@ var rooms = make(map[string]*Room)
 const newRoomAttempts = 20
 const roomIDLength = 8
 
-// Only letters and numbers that can't be mistaken for each other.
+// Only letters and numbers that can't be easily mistaken for each other.
 const roomIDChars = "ACDEHJKLMNPQRTVWXY379"
 
 var NewRoomErrorMessage = ""
@@ -157,14 +164,15 @@ func init() {
 
 // generateID generates a random room ID based on roomIDChars.
 func generateID() string {
-	id := ""
+	var id strings.Builder
 	charsLen := len(roomIDChars)
+	id.Grow(charsLen)
 
 	for range roomIDLength {
-		id += string(roomIDChars[rand.Intn(charsLen)])
+		id.WriteString(string(roomIDChars[rand.Intn(charsLen)]))
 	}
 
-	return id
+	return id.String()
 }
 
 // NewRoom attempts to create a new room, returning nil if it can't generate a unique ID.
@@ -176,17 +184,17 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 
 		if _, has := rooms[id]; !has {
 			room = &Room{
-				ID:          id,
+				id:          id,
 				threadIndex: -1,
-				Owner:       owner,
-				Clients:     []*clients.Client{},
-				Wordbanks:   []*words.Wordbank{},
-				Sentences:   []*words.Sentence{},
-				TimeLeft:    data.TimeLimit,
-				TimeLimit:   data.TimeLimit,
-				Round:       1,
-				RoundLimit:  data.RoundLimit,
-				ClientLimit: data.ClientLimit,
+				owner:       owner,
+				clients:     []*clients.Client{},
+				wordbanks:   []*words.Wordbank{},
+				sentences:   []*words.Sentence{},
+				timeLeft:    data.TimeLimit,
+				timeLimit:   data.TimeLimit,
+				round:       1,
+				roundLimit:  data.RoundLimit,
+				clientLimit: data.ClientLimit,
 			}
 
 			room.state = *NewStateMachine(room)
@@ -205,15 +213,15 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 func DestroyRoom(room *Room) {
 	room.sendRoomDestroyed("The room was shut down.")
 
-	for _, client := range room.Clients {
+	for _, client := range room.clients {
 		client.RoomID = ""
 	}
 
-	delete(rooms, room.ID)
+	delete(rooms, room.id)
 	removeRoomFromPool(room)
 
-	room.ID = ""
-	room.Owner = nil
+	room.id = ""
+	room.owner = nil
 }
 
 // GetRoom attempts to get room from id, returning nil otherwise.

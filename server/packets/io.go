@@ -10,12 +10,13 @@
 package packets
 
 import (
+	"math"
 	"slices"
+	"strconv"
 	"strings"
+
 	"word-magnets/util"
 )
-
-const MaxStringLength = 255
 
 /**
  * PacketReader
@@ -86,10 +87,18 @@ func NewPacketReader(bytes []byte) *PacketReader {
  * PacketWriter
  */
 
-type PacketWriterErr struct{}
+var truncateErrMessage string = "String was truncated to " + strconv.Itoa(math.MaxUint8) + "character(s)"
+
+type PacketWriterErr struct {
+	message string
+}
 
 func (err *PacketWriterErr) Error() string {
-	return "Failed to write one or more value(s)"
+	if err.message != "" {
+		return err.message
+	} else {
+		return "Failed to write one or more value(s)"
+	}
 }
 
 type PacketWriter struct {
@@ -117,10 +126,10 @@ func (writer *PacketWriter) WriteBool(value bool) {
 
 func (writer *PacketWriter) WriteString(value string) bool {
 	bytes := []byte(value)
-	truncated := len(bytes) > MaxStringLength
+	truncated := len(bytes) > math.MaxUint8
 
 	if truncated {
-		bytes = bytes[:MaxStringLength+1]
+		bytes = bytes[:math.MaxUint8+1]
 	}
 
 	writer.WriteU8(uint8(len(bytes)))
@@ -131,6 +140,18 @@ func (writer *PacketWriter) WriteString(value string) bool {
 	return truncated
 }
 
+func (writer *PacketWriter) WriteU8Cond(value uint8, cond bool) {
+	if cond {
+		writer.WriteU8(value)
+	}
+}
+
+func (writer *PacketWriter) WriteStringCond(value string, cond bool) {
+	if cond {
+		writer.WriteString(value)
+	}
+}
+
 func (writer *PacketWriter) Write(values ...any) error {
 	for _, value := range values {
 		switch cast := value.(type) {
@@ -139,7 +160,9 @@ func (writer *PacketWriter) Write(values ...any) error {
 		case bool:
 			writer.WriteBool(cast)
 		case string:
-			writer.WriteString(cast)
+			if !writer.WriteString(cast) {
+				return &PacketWriterErr{message: truncateErrMessage}
+			}
 		default:
 			return &PacketWriterErr{}
 		}

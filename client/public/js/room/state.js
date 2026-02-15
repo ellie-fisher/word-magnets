@@ -7,18 +7,35 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { Fields } from "../fields.js";
 import { createSignal } from "../framework.js";
+import { RoomStates } from "../packets.js";
+import { deepFreeze } from "../util.js";
 
-export const [getRoomData, setRoomData] = createSignal({
-	id: "",
-	state: 0,
-	timeLeft: Fields.createRoom.find(field => field.id === "timeLimit")?.default ?? 0,
-	timeLimit: Fields.createRoom.find(field => field.id === "timeLimit")?.default ?? 0,
-	round: 1,
-	roundLimit: Fields.createRoom.find(field => field.id === "roundLimit")?.default ?? 1,
-	clientLimit: Fields.createRoom.find(field => field.id === "clientLimit")?.default ?? 2,
+export const RoomData = { get: {}, set: {} };
+
+const fields = [
+	["id", ""],
+	["state", RoomStates.Lobby],
+	["timeLeft", 0],
+	["timeLimit", 0],
+	["round", 0],
+	["roundLimit", 0],
+	["clientLimit", 0],
+];
+
+Object.values(fields).forEach(([key, defaultValue]) => {
+	[RoomData.get[key], RoomData.set[key]] = createSignal(defaultValue);
 });
+
+deepFreeze(RoomData);
+
+export const applyRoomData = (data = {}) => {
+	Object.keys(data).forEach(key => {
+		if (Object.hasOwn(RoomData.set, key)) {
+			RoomData.set[key](data[key]);
+		}
+	});
+};
 
 export const [getClients, setClients] = createSignal([]);
 export const [getWords, setWords] = createSignal([]);

@@ -7,11 +7,11 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createEffect, createSignal, $, $replace } from "../framework.js";
+import { createEffect, createSignal, $ } from "../framework.js";
 import { onPress, onRelease } from "../util.js";
 import { showYesNoPopup } from "../popup.js";
 import { RoomStates, sendLeaveRoom } from "../packets.js";
-import { getRoomData, getClients } from "./state.js";
+import { RoomData } from "./state.js";
 import { setAppView } from "../app.js";
 
 const [showID, setShowID] = createSignal(false);
@@ -64,29 +64,56 @@ export const Header = (data = {}) => {
 		),
 	];
 
-	createEffect(() => {
-		const _roomData = getRoomData();
-		const copy = { ..._roomData };
+	Object.keys(RoomData.get).forEach(key => {
+		switch (key) {
+			case "id": {
+				createEffect(() => {
+					const original = RoomData.get.id();
+					let id = original;
 
-		if (!showID()) {
-			copy.id = copy.id.replaceAll(/./g, "•");
+					if (!showID()) {
+						id = id.replaceAll(/./g, "•");
+					}
+
+					copyRoomID = () => {
+						navigator.clipboard.writeText(original);
+					};
+
+					fields.id.textContent = id;
+				});
+
+				break;
+			}
+
+			case "timeLeft": {
+				createEffect(() => {
+					const timeLeft = RoomData.get.timeLeft();
+					const state = RoomData.get.state();
+
+					if (timeLeft <= 10 && (state === RoomStates.Create || state === RoomStates.Vote)) {
+						labels.timeLeft.classList.add("danger");
+						fields.timeLeft.classList.add("danger");
+					} else {
+						labels.timeLeft.classList.remove("danger");
+						fields.timeLeft.classList.remove("danger");
+					}
+
+					fields.timeLeft.textContent = `${timeLeft}`;
+				});
+
+				break;
+			}
+
+			default: {
+				if (Object.hasOwn(fields, key)) {
+					createEffect(() => {
+						fields[key].textContent = `${RoomData.get[key]()}`;
+					});
+				}
+
+				break;
+			}
 		}
-
-		copyRoomID = () => {
-			navigator.clipboard.writeText(_roomData.id);
-		};
-
-		if (copy.timeLeft <= 10 && (copy.state === RoomStates.Create || copy.state === RoomStates.Vote)) {
-			labels.timeLeft.classList.add("danger");
-			fields.timeLeft.classList.add("danger");
-		} else {
-			labels.timeLeft.classList.remove("danger");
-			fields.timeLeft.classList.remove("danger");
-		}
-
-		Object.keys(fields).forEach(key => {
-			fields[key].textContent = `${copy[key]}`;
-		});
 	});
 
 	return $(

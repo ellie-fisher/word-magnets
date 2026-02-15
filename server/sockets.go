@@ -86,7 +86,7 @@ func handlePacket(client *clients.Client, bytes []byte) {
 				client.SendRoomConnectError(false, message)
 			} else if room := rooms.GetRoom(id); room == nil {
 				client.SendRoomConnectError(false, "Room not found.")
-			} else if len(room.Clients) >= int(room.ClientLimit) {
+			} else if len(room.Clients()) >= int(room.ClientLimit()) {
 				client.SendRoomConnectError(false, "The room is full.")
 			} else {
 				room.AddClient(client, name)

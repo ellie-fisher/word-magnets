@@ -10,18 +10,18 @@
 import { $, $replace, createEffect } from "../framework.js";
 import { RoomStates, sendStartGame, sendCancelStartGame } from "../packets.js";
 import { onRelease } from "../util.js";
-import { getClients, getRoomData } from "./state.js";
+import { getClients, RoomData } from "./state.js";
 
 export const Lobby = (data = {}) => {
 	const { socket = null, state = 0 } = data;
 	const players = $("p", { className: "player-list" });
 
 	createEffect(() => {
-		const { clientLimit } = getRoomData();
+		const limit = RoomData.get.clientLimit();
 		const clients = getClients();
 		const children = [];
 
-		for (let i = 0; i < clientLimit; i++) {
+		for (let i = 0; i < limit; i++) {
 			if (i < clients.length) {
 				const { id, name } = clients[i];
 				children.push($("span", { title: id }, name));

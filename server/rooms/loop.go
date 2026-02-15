@@ -36,7 +36,7 @@ func addRoomToPool(room *Room) {
 		room.threadIndex = index
 
 		pool.mutex.Lock()
-		pool.rooms[room.ID] = room
+		pool.rooms[room.id] = room
 		pool.mutex.Unlock()
 	}
 }
@@ -46,7 +46,7 @@ func removeRoomFromPool(room *Room) {
 		pool := threadPools[room.threadIndex]
 
 		pool.mutex.Lock()
-		delete(pool.rooms, room.ID)
+		delete(pool.rooms, room.id)
 		pool.mutex.Unlock()
 	}
 }

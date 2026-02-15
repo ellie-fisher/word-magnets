@@ -48,6 +48,22 @@ export const RoomStates = enumerate([
 const U8_MAX_VALUE = 255;
 const MAX_STRING_LENGTH = 255;
 
+const roomDataFlagRoomID = 1 << 0;
+const roomDataFlagState = 1 << 1;
+const roomDataFlagTimeLeft = 1 << 2;
+const roomDataFlagTimeLimit = 1 << 3;
+const roomDataFlagRound = 1 << 4;
+const roomDataFlagRoundLimit = 1 << 5;
+const roomDataFlagClientLimit = 1 << 6;
+const roomDataFlagAll =
+	roomDataFlagRoomID |
+	roomDataFlagState |
+	roomDataFlagTimeLeft |
+	roomDataFlagTimeLimit |
+	roomDataFlagRound |
+	roomDataFlagRoundLimit |
+	roomDataFlagClientLimit;
+
 /**
  * ByteReader is a class for reading Uint8Arrays.
  */
@@ -79,6 +95,18 @@ export class ByteReader {
 
 		return str;
 	}
+
+	readU8Cond(outObject, key, test) {
+		if (test) {
+			outObject[key] = this.readU8();
+		}
+	}
+
+	readStringCond(outObject, key, test) {
+		if (test) {
+			outObject[key] = this.readString();
+		}
+	}
 }
 
 export const readRoomConnectError = reader => {
@@ -90,15 +118,18 @@ export const readRoomDestroyed = reader => {
 };
 
 export const readRoomData = reader => {
-	return {
-		id: reader.readString(),
-		state: reader.readU8(),
-		timeLeft: reader.readU8(),
-		timeLimit: reader.readU8(),
-		round: reader.readU8(),
-		roundLimit: reader.readU8(),
-		clientLimit: reader.readU8(),
-	};
+	const data = {};
+	const flags = reader.readU8();
+
+	reader.readStringCond(data, "id", flags & roomDataFlagRoomID);
+	reader.readU8Cond(data, "state", flags & roomDataFlagState);
+	reader.readU8Cond(data, "timeLeft", flags & roomDataFlagTimeLeft);
+	reader.readU8Cond(data, "timeLimit", flags & roomDataFlagTimeLimit);
+	reader.readU8Cond(data, "round", flags & roomDataFlagRound);
+	reader.readU8Cond(data, "roundLimit", flags & roomDataFlagRoundLimit);
+	reader.readU8Cond(data, "clientLimit", flags & roomDataFlagClientLimit);
+
+	return data;
 };
 
 export const readRoomClients = reader => {

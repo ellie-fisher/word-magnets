@@ -51,19 +51,19 @@ type state struct {
 	receivePacket func(*stateMachine, *clients.Client, *packets.PacketReader)
 }
 
-func (roomState *state) enter(room *Room) {
-	room.TimeLeft = roomState.getStartTime(room)
-	room.sendRoomData(nil)
-	roomState.onEnter(room, nil)
+func (roomState *state) enter(room *Room, client *clients.Client) {
+	room.timeLeft = roomState.getStartTime(room)
+	room.sendRoomData(client, roomDataFlagAll)
+	roomState.onEnter(room, client)
 }
 
 func (roomState *state) tick(room *Room) {
 	if roomState.doesTick {
-		if room.TimeLeft <= 0 {
+		if room.timeLeft <= 0 {
 			room.state.next()
 		} else {
-			room.TimeLeft--
-			room.sendRoomData(nil)
+			room.timeLeft--
+			room.sendRoomData(nil, roomDataFlagTimeLeft)
 		}
 	}
 }
@@ -94,7 +94,7 @@ func init() {
 	/* lobbyState */
 
 	lobbyState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.ReadStartGame() && machine.room.Owner == client && client != nil {
+		if reader.ReadStartGame() && machine.room.owner == client && client != nil {
 			machine.next()
 		}
 	}
@@ -106,7 +106,7 @@ func init() {
 	}
 
 	startGameState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if reader.ReadCancelStartGame() && machine.room.Owner == client && client != nil {
+		if reader.ReadCancelStartGame() && machine.room.owner == client && client != nil {
 			machine.reset()
 		}
 	}
@@ -114,7 +114,7 @@ func init() {
 	/* createState */
 
 	createState.getStartTime = func(room *Room) uint8 {
-		return room.TimeLimit
+		return room.timeLimit
 	}
 
 	createState.onEnter = func(room *Room, client *clients.Client) {
@@ -132,7 +132,7 @@ func init() {
 	}
 
 	createSubmitState.next = func(room *Room) *state {
-		if len(room.Sentences) <= 0 {
+		if len(room.sentences) <= 0 {
 			return &resultsState
 		} else {
 			return &voteState
@@ -140,7 +140,7 @@ func init() {
 	}
 
 	createSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if matched, sentence := reader.ReadSubmitSentence(client.ID(), machine.room.Wordbanks); matched && client != nil {
+		if matched, sentence := reader.ReadSubmitSentence(client.ID(), machine.room.wordbanks); matched && client != nil {
 			machine.room.addSentence(sentence)
 		}
 	}
@@ -148,7 +148,7 @@ func init() {
 	/* voteState */
 
 	voteState.getStartTime = func(room *Room) uint8 {
-		return voteBaseTime + voteTimeMult*uint8(len(room.Sentences))
+		return voteBaseTime + voteTimeMult*uint8(len(room.sentences))
 	}
 
 	voteState.onEnter = func(room *Room, client *clients.Client) {
@@ -168,7 +168,7 @@ func init() {
 	/* resultsState */
 
 	resultsState.getStartTime = func(room *Room) uint8 {
-		return resultsBaseTime + resultsTimeMult*uint8(len(room.Sentences))
+		return resultsBaseTime + resultsTimeMult*uint8(len(room.sentences))
 	}
 
 	resultsState.onEnter = func(room *Room, client *clients.Client) {
@@ -176,8 +176,8 @@ func init() {
 	}
 
 	resultsState.next = func(room *Room) *state {
-		if room.Round < room.RoundLimit {
-			room.Round++
+		if room.round < room.roundLimit {
+			room.round++
 			return &createState
 		} else {
 			return &endState
@@ -189,21 +189,17 @@ func init() {
 	endState.getStartTime = func(*Room) uint8 { return endTime }
 }
 
-func (machine *stateMachine) tag() stateTag { return machine.state.tag }
-func (machine *stateMachine) enter()        { machine.state.enter(machine.room) }
-
-func (machine *stateMachine) clientEnter(client *clients.Client) {
-	machine.state.onEnter(machine.room, client)
-}
+func (machine *stateMachine) tag() stateTag                { return machine.state.tag }
+func (machine *stateMachine) enter(client *clients.Client) { machine.state.enter(machine.room, client) }
 
 func (machine *stateMachine) next() {
 	machine.state = machine.state.next(machine.room)
-	machine.enter()
+	machine.enter(nil)
 }
 
 func (machine *stateMachine) reset() {
 	machine.state = &lobbyState
-	machine.enter()
+	machine.enter(nil)
 }
 
 func (machine *stateMachine) tick() { machine.state.tick(machine.room) }
