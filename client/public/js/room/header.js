@@ -14,17 +14,17 @@ import { RoomData } from "./state.js";
 export const Header = createSingletonView(() => {
 	const RoomID = createState(false);
 
-	const labels = { id: $("strong", "Code: "), timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: ") };
+	const labels = { timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: "), id: $("strong", "Code: ") };
 	const fields = {
+		timeLeft: $("span"),
+		round: $("span"),
+		roundLimit: $("span"),
 		id: $("button", {
 			className: "small room-id",
 			onclick() {
 				RoomID.set(!RoomID.get());
 			},
 		}),
-		timeLeft: $("span"),
-		round: $("span"),
-		roundLimit: $("span"),
 	};
 
 	// We have this function reassignable so we can change it if its value changes.

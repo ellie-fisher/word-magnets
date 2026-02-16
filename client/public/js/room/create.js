@@ -35,7 +35,7 @@ export const Create = createSingletonView(() => {
 	const spacer = $("button", { className: "word-tile hidden" }); // Spacer so sentence maintains its height.
 	const nonfixed = $("section");
 	const sentence = $("section", { className: "sentence" }, spacer);
-	const sentenceLen = $("small");
+	const sentenceLen = $("p");
 	const fixed = $("section");
 
 	let shakeTimeout = 0;
@@ -71,7 +71,7 @@ export const Create = createSingletonView(() => {
 	});
 
 	Sentence.addHook(({ words = [], string = "\u00A0", length = 0 }) => {
-		$replace(sentenceLen, $("strong", "Length: "), `${length} / ${MAX_LENGTH}`);
+		$replace(sentenceLen, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
 			$replace(sentence, spacer, $("p", string === "" ? "\u00A0" : string));
@@ -92,5 +92,5 @@ export const Create = createSingletonView(() => {
 
 	Sentence.set(Sentence.get());
 
-	return $("section", nonfixed, sentence, $("p", sentenceLen), fixed);
+	return $("section", nonfixed, sentence, sentenceLen, fixed);
 });
