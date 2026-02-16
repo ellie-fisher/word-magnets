@@ -7,6 +7,8 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
+import { $ } from "./framework.js";
+
 export const flagFixed = 1 << 0;
 export const flagPlayer = 1 << 1;
 
@@ -75,4 +77,34 @@ export const deepFreeze = (value, visited = new Set()) => {
 
 export const hasIndex = (array, index) => {
 	return index >= 0 && index < array.length;
+};
+
+const copyTextArea = $("textarea");
+
+export const copyText = async text => {
+	let success = true;
+
+	if (typeof navigator.clipboard !== "undefined") {
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch (_) {
+			success = false;
+		}
+	} else {
+		document.body.appendChild(copyTextArea);
+
+		copyTextArea.value = text;
+		copyTextArea.focus();
+		copyTextArea.select();
+
+		try {
+			success = document.execCommand("copy");
+		} catch (_) {
+			success = false;
+		} finally {
+			document.body.removeChild(copyTextArea);
+		}
+	}
+
+	return success;
 };

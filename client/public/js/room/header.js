@@ -8,6 +8,7 @@
  */
 
 import { createState, createSingletonView, $ } from "../framework.js";
+import { copyText } from "../util.js";
 import { RoomStates } from "./state.js";
 import { RoomData } from "./state.js";
 
@@ -27,6 +28,16 @@ export const Header = createSingletonView(() => {
 		}),
 	};
 
+	const copyButton = $(
+		"button",
+		{
+			onclick() {
+				copyRoomID();
+			},
+		},
+		"Copy",
+	);
+
 	// We have this function reassignable so we can change it if its value changes.
 	let copyRoomID = () => {};
 
@@ -35,7 +46,11 @@ export const Header = createSingletonView(() => {
 			case "id": {
 				const hook = () => {
 					const id = RoomData.id.get();
-					copyRoomID = () => navigator.clipboard.writeText(id);
+					copyRoomID = async () => {
+						if (!(await copyText(id))) {
+							alert("Copying text is not supported by your browser at this time.");
+						}
+					};
 					fields.id.textContent = RoomID.get() ? id : id.replaceAll(/./g, "•");
 				};
 
@@ -96,23 +111,7 @@ export const Header = createSingletonView(() => {
 				$("div", labels.round, fields.round, " / ", fields.roundLimit),
 
 				/* Room ID */
-				$(
-					"div",
-					labels.id,
-					$(
-						"small",
-						fields.id,
-						$(
-							"button",
-							{
-								onclick() {
-									copyRoomID();
-								},
-							},
-							"Copy",
-						),
-					),
-				),
+				$("div", labels.id, $("small", fields.id, copyButton)),
 			),
 		),
 	);
