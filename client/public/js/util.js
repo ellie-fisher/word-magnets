@@ -75,19 +75,34 @@ export const deepFreeze = (value, visited = new Set()) => {
 	return Object.freeze(value);
 };
 
+/**
+ * Returns whether a value is a valid index of the specified array.
+ *
+ * @param {any[]} array
+ * @param {number} index
+ *
+ * @returns {boolean}
+ */
 export const hasIndex = (array, index) => {
-	return index >= 0 && index < array.length;
+	return Array.isArray(array) && Number.isInteger(index) && index >= 0 && index < array.length;
 };
 
 const copyTextArea = $("textarea");
 
+/**
+ * Attempts to copy text. If available, it will use the Clipboard API. Otherwise, it will fallback to
+ * the old school method of using a `textarea` with `document.execCommmand()`.
+ *
+ * @param {string} text
+ * @returns {Promise<boolean>} Whether or not it was successful.
+ */
 export const copyText = async text => {
 	let success = true;
 
 	if (typeof navigator.clipboard !== "undefined") {
 		try {
 			await navigator.clipboard.writeText(text);
-		} catch (_) {
+		} catch {
 			success = false;
 		}
 	} else {
@@ -99,7 +114,7 @@ export const copyText = async text => {
 
 		try {
 			success = document.execCommand("copy");
-		} catch (_) {
+		} catch {
 			success = false;
 		} finally {
 			document.body.removeChild(copyTextArea);
