@@ -17,7 +17,7 @@
 	--default-border-color: rgb(74, 129, 60);
 	--default-border: 0.1em solid var(--default-border-color);
 	--button-box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, 0.2);
-	--button-text-shadow: 0.05em 0.05em rgba(255, 255, 255, 0.1);
+	--button-text-shadow: 0.05em 0.05em rgba(0, 0, 0, 0.2);
 
 	--input-primary-color: rgb(221, 233, 117);
 	--input-primary-disabled: rgb(158, 163, 114);
@@ -151,7 +151,6 @@ button.tab {
 	border-bottom-right-radius: 0em;
 
 	box-shadow: 0.1rem 0rem 0.1rem rgba(0, 0, 0, 0.2);
-	text-shadow: 0.05em 0.05em rgba(0, 0, 0, 0.1);
 
 	color: var(--tab-text-color);
 	font-size: 0.9em;
@@ -162,7 +161,6 @@ button.tab {
 button.tab:disabled {
 	background-color: var(--tab-color-disabled);
 	color: var(--tab-text-disabled);
-	text-shadow: var(--button-text-shadow);
 }
 
 button.tab:focus {
@@ -253,7 +251,6 @@ hr {
 	background-color: var(--input-warning-color);
 	color: var(--input-text-warning);
 	font-weight: bold;
-	text-shadow: var(--button-text-shadow);
 }
 
 .tab.warning:active {
@@ -340,7 +337,7 @@ hr {
 }
 
 @keyframes brief-shake {
-	0% {
+	from {
 		transform: rotate(0deg);
 	}
 
@@ -360,7 +357,24 @@ hr {
 		transform: rotate(-2deg);
 	}
 
-	100% {
+	to {
 		transform: rotate(0deg);
+	}
+}
+
+@keyframes brief-scale {
+	from {
+		transform-origin: 0 0;
+		transform: scale(1);
+	}
+
+	50% {
+		transform-origin: 0 0;
+		transform: scale(1.1);
+	}
+
+	to {
+		transform-origin: 0 0;
+		transform: scale(1);
 	}
 }

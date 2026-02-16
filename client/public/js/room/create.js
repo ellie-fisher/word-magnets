@@ -56,21 +56,23 @@ export const Create = createSingletonView(() => {
 								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
 								onclick() {
 									if (!addWordToSentence({ bankIndex: bank.index, wordIndex })) {
-										/* This is kinda hacky and I apologize. */
+										if (shakeTimeout === 0) {
+											/* This is kinda hacky and I apologize. */
 
-										clearTimeout(shakeTimeout);
+											sentenceLen.style.animation = "brief-scale 0.3s linear 1";
 
-										$getAll("button.word-tile").forEach(
-											tile => (tile.style.animation = "brief-shake 0.3s"),
-										);
+											$getAll("button.word-tile").forEach(
+												tile => (tile.style.animation = "brief-shake 0.3s linear 1"),
+											);
 
-										shakeTimeout = setTimeout(
-											() =>
+											shakeTimeout = setTimeout(() => {
+												shakeTimeout = 0;
+												sentenceLen.style.animation = "";
 												$getAll("button.word-tile").forEach(
 													tile => (tile.style.animation = ""),
-												),
-											300,
-										);
+												);
+											}, 300);
+										}
 									}
 								},
 							},
