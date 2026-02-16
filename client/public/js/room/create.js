@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace, $get } from "../framework.js";
+import { createSingletonView, $, $replace, $getAll } from "../framework.js";
 import { RoomWords, Sentence } from "./state.js";
 import { flagFixed, flagPlayer } from "../util.js";
 import { MAX_LENGTH, sentenceToString } from "./sentences.js";
@@ -56,9 +56,21 @@ export const Create = createSingletonView(() => {
 								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
 								onclick() {
 									if (!addWordToSentence({ bankIndex: bank.index, wordIndex })) {
+										/* This is kinda hacky and I apologize. */
+
 										clearTimeout(shakeTimeout);
-										$get("body").style.animation = "brief-shake 0.1s";
-										shakeTimeout = setTimeout(() => ($get("body").style.animation = ""), 100);
+
+										$getAll("button.word-tile").forEach(
+											tile => (tile.style.animation = "brief-shake 0.1s"),
+										);
+
+										shakeTimeout = setTimeout(
+											() =>
+												$getAll("button.word-tile").forEach(
+													tile => (tile.style.animation = ""),
+												),
+											100,
+										);
 									}
 								},
 							},

@@ -107,6 +107,11 @@ export const $replace = (node, ...children) => {
 export const $get = selector => document.querySelector(selector);
 
 /**
+ * Wrapper for `document.querySelectorAll()`.
+ */
+export const $getAll = selector => document.querySelectorAll(selector);
+
+/**
  * Creates an element from field data.
  */
 export const $field = (field, onchange = () => {}) => {
