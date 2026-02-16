@@ -26,7 +26,7 @@ const maxLength = 120
 func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
 	str := ""
 	prev := ""
-	length := 0
+	length := int(0)
 
 	for i := 0; i < len(words) && i < maxLength; i++ {
 		entry := words[i]
@@ -48,12 +48,6 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 			length++
 		}
 
-		// We don't want players to be able to hack around the sentence length limit by setting
-		// their name to a hyphen, so we must account for that.
-		if word == "-" || word == "--" {
-			length += len(word)
-		}
-
 		prev = word
 
 		if word[0] == '-' {
@@ -69,7 +63,7 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 		}
 
 		str += word
-		length += len(word)
+		length += util.Max(1, len(word))
 	}
 
 	if length > maxLength {

@@ -27,6 +27,15 @@ func HasIndex[T any](slice []T, index int) bool {
 	return index >= 0 && index < len(slice)
 }
 
+// Max is a generic replacement for `math.Max()`.
+func Max[T Number](number1 T, number2 T) T {
+	if number1 > number2 {
+		return number1
+	} else {
+		return number2
+	}
+}
+
 // EqualFold is [strings.EqualFold], ASCII only. It reports whether s and t are equal, ASCII-case-insensitively.
 // (Taken from the "net" module.)
 func EqualFold(s, t string) bool {
