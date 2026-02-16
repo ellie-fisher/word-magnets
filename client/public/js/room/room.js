@@ -7,40 +7,30 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $, $replace, createEffect } from "../framework.js";
-import { RoomStates } from "../packets.js";
+import { createSingletonView, $, $replace } from "../framework.js";
+import { clearSentence, RoomStates, Sentence } from "./state.js";
 import { RoomData } from "./state.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
 import { Create } from "./create.js";
 
-export const Room = (data = {}) => {
-	const { socket = null } = data;
+export const Room = createSingletonView(() => {
 	const body = $("section");
 	const title = $("h2", "Lobby");
-	let prevState = null;
 
-	createEffect(() => {
+	RoomData.state.addHook(state => {
 		let view = "Unknown room view! (Ask a nerd what this means.)";
 		let titleText = "";
 
-		const state = RoomData.get.state();
-
-		if (state === prevState) {
-			return;
-		}
-
-		prevState = state;
-
 		switch (state) {
 			case RoomStates.Lobby: {
-				view = Lobby({ socket, state });
+				view = Lobby();
 				titleText = "Lobby";
 				break;
 			}
 
 			case RoomStates.StartGame: {
-				view = Lobby({ socket, state });
+				view = Lobby();
 				titleText = "Starting Game...";
 				break;
 			}
@@ -48,6 +38,7 @@ export const Room = (data = {}) => {
 			case RoomStates.Create: {
 				view = Create();
 				titleText = "Create a sentence!";
+				clearSentence();
 				break;
 			}
 
@@ -59,5 +50,5 @@ export const Room = (data = {}) => {
 		title.textContent = titleText;
 	});
 
-	return $("article", title, Header({ socket }), body);
-};
+	return $("article", title, Header(), body);
+});

@@ -14,9 +14,8 @@ export const RoomFields = (data = {}) => {
 	const {
 		fields = [],
 		title = "Default Title Text",
-		socket = null,
 		buttonText = "Default Button Text",
-		onButtonClick = (socket, userData) => {},
+		onButtonClick = userData => {},
 	} = data;
 
 	let waiting = false;
@@ -31,7 +30,7 @@ export const RoomFields = (data = {}) => {
 			onclick({ target }) {
 				waiting = true;
 				target.disabled = true;
-				onButtonClick(socket, userData);
+				onButtonClick(userData);
 			},
 		},
 		buttonText,

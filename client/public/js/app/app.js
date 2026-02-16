@@ -7,25 +7,21 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createEffect, createSignal, $, $get } from "./framework.js";
-import { $message, $error } from "./message.js";
+import { AppView } from "./state.js";
+import { Title } from "../title/title.js";
+import { Room } from "../room/room.js";
+import { createSingletonView, $, $get, $replace } from "../framework.js";
+import { $message, $error } from "../message.js";
 
-import { Title } from "./title/title.js";
-import { Room } from "./room/room.js";
-import { Popup } from "./popup.js";
-
-const [view, setView] = createSignal("loading");
-
-export const App = () => {
+export const App = createSingletonView(() => {
 	const element = $get("main");
-	const popup = Popup();
 
 	let child = "";
 
-	createEffect((payload = {}) => {
-		child = $error({ title: "Error: ", message: "Unknown view! (Ask a nerd what this means.)" });
+	AppView.addHook((value, payload = {}) => {
+		child = $error({ title: "Error: ", message: `Unknown view "${value}" (Ask a nerd what this means.)` });
 
-		switch (view()) {
+		switch (value) {
 			case "loading": {
 				child = $message($("strong", "Word Magnets"), " is loading...");
 				break;
@@ -50,10 +46,8 @@ export const App = () => {
 				break;
 		}
 
-		element.replaceChildren(popup, child);
+		$replace(element, child);
 	});
 
 	return element;
-};
-
-export const setAppView = setView;
+});

@@ -7,60 +7,55 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createEffect, createSignal, $ } from "../framework.js";
+import { createState, createSingletonView, $ } from "../framework.js";
 import { Fields } from "../fields.js";
-import { sendCreateRoom, sendJoinRoom } from "../packets.js";
+import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
+import { onRelease } from "../util.js";
 
-export const Title = (data = {}) => {
-	const [tab, setTab] = createSignal(true);
+export const Title = createSingletonView(() => {
+	const tabCreate = $(
+		"button",
+		{
+			className: "tab",
+			...onRelease(() => {
+				TabState.set(true);
+			}),
+		},
+		"Create",
+	);
 
-	const children = [
-		$(
-			"button",
-			{
-				className: "tab",
-				onclick() {
-					setTab(true);
-				},
-			},
-			"Create",
-		),
+	const tabJoin = $(
+		"button",
+		{
+			className: "tab",
+			...onRelease(() => {
+				TabState.set(false);
+			}),
+		},
+		"Join",
+	);
 
-		$(
-			"button",
-			{
-				className: "tab",
-				onclick() {
-					setTab(false);
-				},
-			},
-			"Join",
-		),
-
-		RoomFields({
-			fields: structuredClone(Fields.createRoom),
-			socket: data.socket ?? null,
-			title: "Create a Room",
-			buttonText: "Create Room",
-			onButtonClick: sendCreateRoom,
-		}),
-
-		RoomFields({
-			fields: structuredClone(Fields.joinRoom),
-			socket: data.socket ?? null,
-			title: "Join a Room",
-			buttonText: "Join Room",
-			onButtonClick: sendJoinRoom,
-		}),
-	];
-
-	createEffect(() => {
-		children[0].disabled = tab();
-		children[1].disabled = !tab();
-		children[2].hidden = !tab();
-		children[3].hidden = tab();
+	const fieldsCreate = RoomFields({
+		fields: structuredClone(Fields.createRoom),
+		title: "Create a Room",
+		buttonText: "Create Room",
+		onButtonClick: sendCreateRoom,
 	});
 
-	return $("article", $("h1", "Word Magnets"), ...children);
-};
+	const fieldsJoin = RoomFields({
+		fields: structuredClone(Fields.joinRoom),
+		title: "Join a Room",
+		buttonText: "Join Room",
+		onButtonClick: sendJoinRoom,
+	});
+
+	const TabState = createState(true, value => {
+		tabCreate.disabled = value;
+		tabJoin.disabled = !value;
+		fieldsCreate.hidden = !value;
+		fieldsJoin.hidden = value;
+	});
+
+	return $("article", $("h1", "Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin);
+});

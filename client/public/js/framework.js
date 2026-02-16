@@ -8,42 +8,52 @@
  */
 
 /**
- * Exceedingly simple frontend framework ***heavily*** inspired by SolidJS (and a lil bit of Redux).
+ * Exceedingly simple frontend framework.
  */
 
-let currentEffect = null;
+export const createState = (initialValue = null, initialHook = null) => {
+	const hooks = new Set();
+	let value = null;
 
-export function createSignal(initialValue) {
-	let value = initialValue;
-	const effects = new Set();
+	const state = {
+		get() {
+			return value;
+		},
 
-	function get() {
-		if (currentEffect !== null && !effects.has(currentEffect)) {
-			effects.add(currentEffect);
-		}
-
-		return value;
-	}
-
-	function set(newValue, payload = null) {
-		if (newValue !== value) {
+		set(newValue, payload = null) {
+			const oldValue = value;
 			value = newValue;
-			effects.forEach(func => func(payload));
+
+			for (const hook of hooks) {
+				hook(newValue, payload, oldValue);
+			}
+		},
+
+		addHook(hook) {
+			hooks.add(hook);
+		},
+	};
+
+	if (initialHook !== null && typeof initialHook === "function") {
+		state.addHook(initialHook);
+	}
+
+	state.set(initialValue);
+
+	return state;
+};
+
+export const createSingletonView = initFunc => {
+	let view = null;
+
+	return function () {
+		if (view === null) {
+			view = initFunc();
 		}
-	}
 
-	return [get, set];
-}
-
-export function createEffect(func, initialPayload = null) {
-	function effect(payload = null) {
-		currentEffect = effect;
-		func(payload);
-		currentEffect = null;
-	}
-
-	effect(initialPayload);
-}
+		return view;
+	};
+};
 
 /**
  * Creates a DOM element.

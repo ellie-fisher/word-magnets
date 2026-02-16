@@ -7,29 +7,26 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createEffect, createSignal, $ } from "../framework.js";
+import { createState, createSingletonView, $ } from "../framework.js";
 import { onPress, onRelease } from "../util.js";
-import { showYesNoPopup } from "../popup.js";
-import { RoomStates, sendLeaveRoom } from "../packets.js";
+import { RoomStates } from "./state.js";
 import { RoomData } from "./state.js";
-import { setAppView } from "../app.js";
 
-const [showID, setShowID] = createSignal(false);
+export const Header = createSingletonView(() => {
+	const RoomID = createState(false);
 
-export const Header = (data = {}) => {
-	const { socket = null } = data;
-
+	const labels = { id: $("strong", "Code: "), timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: ") };
 	const fields = {
 		id: $("button", {
 			className: "small room-id",
 			...onPress(() => {
-				setShowID(true);
+				RoomID.set(true);
 			}),
 			...onRelease(() => {
-				setShowID(false);
+				RoomID.set(false);
 			}),
 			onmouseleave() {
-				setShowID(false);
+				RoomID.set(false);
 			},
 		}),
 		timeLeft: $("span"),
@@ -37,58 +34,28 @@ export const Header = (data = {}) => {
 		roundLimit: $("span"),
 	};
 
-	const labels = { id: $("strong", "Code: "), timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: ") };
-
-	// We have these functions reassignable so we can change them when their values change.
+	// We have this function reassignable so we can change it if its value changes.
 	let copyRoomID = () => {};
 
-	const header = [
-		$("div", labels.timeLeft, fields.timeLeft),
-		$("div", labels.round, fields.round, " / ", fields.roundLimit),
-		$(
-			"div",
-			labels.id,
-			$(
-				"small",
-				fields.id,
-				$(
-					"button",
-					{
-						...onRelease(() => {
-							copyRoomID();
-						}),
-					},
-					"Copy",
-				),
-			),
-		),
-	];
-
-	Object.keys(RoomData.get).forEach(key => {
+	Object.keys(RoomData).forEach(key => {
 		switch (key) {
 			case "id": {
-				createEffect(() => {
-					const original = RoomData.get.id();
-					let id = original;
+				const hook = () => {
+					const id = RoomData.id.get();
+					copyRoomID = () => navigator.clipboard.writeText(id);
+					fields.id.textContent = RoomID.get() ? id : id.replaceAll(/./g, "•");
+				};
 
-					if (!showID()) {
-						id = id.replaceAll(/./g, "•");
-					}
-
-					copyRoomID = () => {
-						navigator.clipboard.writeText(original);
-					};
-
-					fields.id.textContent = id;
-				});
+				RoomData.id.addHook(hook);
+				RoomID.addHook(hook);
 
 				break;
 			}
 
 			case "timeLeft": {
-				createEffect(() => {
-					const timeLeft = RoomData.get.timeLeft();
-					const state = RoomData.get.state();
+				const hook = () => {
+					const state = RoomData.state.get();
+					const timeLeft = RoomData.timeLeft.get();
 
 					if (timeLeft <= 10 && (state === RoomStates.Create || state === RoomStates.Vote)) {
 						labels.timeLeft.classList.add("danger");
@@ -99,15 +66,18 @@ export const Header = (data = {}) => {
 					}
 
 					fields.timeLeft.textContent = `${timeLeft}`;
-				});
+				};
+
+				RoomData.state.addHook(hook);
+				RoomData.timeLeft.addHook(hook);
 
 				break;
 			}
 
 			default: {
 				if (Object.hasOwn(fields, key)) {
-					createEffect(() => {
-						fields[key].textContent = `${RoomData.get[key]()}`;
+					RoomData[key].addHook(value => {
+						fields[key].textContent = `${value}`;
 					});
 				}
 
@@ -118,24 +88,37 @@ export const Header = (data = {}) => {
 
 	return $(
 		"section",
-		$(
-			"button",
-			{
-				className: "tab warning",
-				...onRelease(() => {
-					showYesNoPopup("Exit Room?", "Are you sure you want to exit the room?", () => {
-						setAppView("title", { socket });
-						sendLeaveRoom(socket);
-						return true;
-					});
-				}),
-			},
-			"« Exit",
-		),
+		$("button", { className: "tab warning" }, "« Exit"),
 		$(
 			"section",
 			{ className: "container room-header" },
-			$("section", { className: "room-data-fields" }, ...header),
+			$(
+				"section",
+				{ className: "room-data-fields" },
+				/* Time */
+				$("div", labels.timeLeft, fields.timeLeft),
+
+				/* Round */
+				$("div", labels.round, fields.round, " / ", fields.roundLimit),
+				/* Room ID */
+				$(
+					"div",
+					labels.id,
+					$(
+						"small",
+						fields.id,
+						$(
+							"button",
+							{
+								...onRelease(() => {
+									copyRoomID();
+								}),
+							},
+							"Copy",
+						),
+					),
+				),
+			),
 		),
 	);
-};
+});

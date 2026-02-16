@@ -7,36 +7,72 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $, $replace, createEffect } from "../framework.js";
-import { flagFixed, flagPlayer } from "../util.js";
-import { getWords } from "./state.js";
+import { createSingletonView, $, $replace } from "../framework.js";
+import { RoomWords, Sentence } from "./state.js";
+import { flagFixed, flagPlayer, onRelease } from "../util.js";
+import { MAX_LENGTH, sentenceToString } from "./sentences.js";
 
-const Wordbank = wordbank => {
-	return $(
-		"p",
-		{ className: "wordbank" },
-		...wordbank.words.map(word =>
-			$(
-				"button",
-				{ className: "word-tile" + (wordbank.flags & flagPlayer ? " player" : "") },
-				word === " " ? "\u00A0" : word,
-			),
-		),
-	);
+const addWordToSentence = word => {
+	const oldSentence = Sentence.get();
+	const newSentence = { ...oldSentence, words: [...oldSentence.words, word] };
+	const [success, string, singleHyphens] = sentenceToString(newSentence.words, RoomWords.get());
+
+	if (success) {
+		newSentence.string = string;
+		newSentence.length = string.length + singleHyphens;
+		Sentence.set(newSentence);
+	}
 };
 
-export const Create = (data = {}) => {
-	const body = $("section");
+export const Create = createSingletonView(() => {
+	const spacer = $("button", { className: "word-tile hidden" }); // Spacer so sentence maintains its height.
+	const nonfixed = $("section");
+	const sentence = $("section", { className: "sentence" }, spacer);
+	const sentenceLen = $("small", `${Sentence.get().length} / ${MAX_LENGTH}`);
+	const fixed = $("section");
 
-	createEffect(() => {
-		const wordbanks = getWords();
-		const fixed = [];
-		const nonfixed = [];
+	RoomWords.addHook(wordbanks => {
+		$replace(fixed);
+		$replace(nonfixed);
 
-		wordbanks.forEach(bank => (bank.flags & flagFixed ? fixed : nonfixed).push(Wordbank(bank)));
-
-		$replace(body, ...nonfixed, ...fixed);
+		wordbanks.forEach(bank =>
+			(bank.flags & flagFixed ? fixed : nonfixed).append(
+				$(
+					"p",
+					{ className: "wordbank" },
+					...bank.words.map((word, wordIndex) =>
+						$(
+							"button",
+							{
+								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
+								...onRelease(() => addWordToSentence({ bankIndex: bank.index, wordIndex })),
+							},
+							word === " " ? "\u00A0" : word,
+						),
+					),
+				),
+			),
+		);
 	});
 
-	return body;
-};
+	Sentence.addHook(({ words = [], string = "", length = 0 }) => {
+		const wordbanks = RoomWords.get();
+
+		if (words.length <= 0) {
+			$replace(sentence, spacer);
+		} else {
+			$replace(sentenceLen, `${length} / ${MAX_LENGTH}`);
+			$replace(
+				sentence,
+				...words.map(({ bankIndex, wordIndex }) => {
+					const word = wordbanks[bankIndex].words[wordIndex];
+
+					return $("button", { className: "word-tile" }, word === " " ? "\u00A0" : word);
+				}),
+				$("p", Sentence.get().string),
+			);
+		}
+	});
+
+	return $("section", nonfixed, sentence, $("p", sentenceLen), fixed);
+});

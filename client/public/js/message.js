@@ -7,24 +7,14 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { setAppView } from "./app.js";
 import { $ } from "./framework.js";
-import { onRelease } from "./util.js";
 
 export const $message = (...children) => {
 	return $("div", { className: "loading" }, $("div", ...children));
 };
 
 export const $error = (data = {}, ...children) => {
-	const { title = "Error: ", message = "Unknown error", showButton = true, socket = null } = data;
+	const { title = "Error: ", message = "Unknown error" } = data;
 
-	return $message(
-		$("strong", { className: "error" }, title),
-		$("br"),
-		message,
-		...children,
-		showButton
-			? $("button", { className: "primary", ...onRelease(() => setAppView("title", { socket })) }, "Okay")
-			: "",
-	);
+	return $message($("strong", { className: "error" }, title), $("br"), message, ...children);
 };

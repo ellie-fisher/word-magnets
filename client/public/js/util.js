@@ -86,3 +86,7 @@ export const onPress = callback => {
 export const onRelease = callback => {
 	return { onmouseup: callback, ontouchend: callback };
 };
+
+export const hasIndex = (array, index) => {
+	return index >= 0 && index < array.length;
+};
