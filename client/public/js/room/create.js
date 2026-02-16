@@ -7,22 +7,28 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
+import { createSingletonView, $, $replace, $get } from "../framework.js";
 import { RoomWords, Sentence } from "./state.js";
-import { flagFixed, flagPlayer, onRelease } from "../util.js";
+import { flagFixed, flagPlayer } from "../util.js";
 import { MAX_LENGTH, sentenceToString } from "./sentences.js";
 
 const addWordToSentence = word => {
+	let success = false;
+
 	const oldSentence = Sentence.get();
 	const newSentence = { ...oldSentence, words: [...oldSentence.words, word] };
 	const [string, length] = sentenceToString(newSentence.words, RoomWords.get());
 
 	if (length <= MAX_LENGTH) {
+		success = true;
+
 		newSentence.string = string;
 		newSentence.length = length;
 
 		Sentence.set(newSentence);
 	}
+
+	return success;
 };
 
 export const Create = createSingletonView(() => {
@@ -31,6 +37,8 @@ export const Create = createSingletonView(() => {
 	const sentence = $("section", { className: "sentence" }, spacer);
 	const sentenceLen = $("small");
 	const fixed = $("section");
+
+	let shakeTimeout = 0;
 
 	RoomWords.addHook(wordbanks => {
 		$replace(fixed);
@@ -46,7 +54,13 @@ export const Create = createSingletonView(() => {
 							"button",
 							{
 								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
-								...onRelease(() => addWordToSentence({ bankIndex: bank.index, wordIndex })),
+								onclick() {
+									if (!addWordToSentence({ bankIndex: bank.index, wordIndex })) {
+										clearTimeout(shakeTimeout);
+										$get("body").style.animation = "brief-shake 0.1s";
+										shakeTimeout = setTimeout(() => ($get("body").style.animation = ""), 100);
+									}
+								},
 							},
 							word === " " ? "\u00A0" : word,
 						),

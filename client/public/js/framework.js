@@ -102,9 +102,9 @@ export const $replace = (node, ...children) => {
 };
 
 /**
- * Wrapper for `document.getElementById()`.
+ * Wrapper for `document.querySelector()`.
  */
-export const $get = id => document.getElementById(id);
+export const $get = selector => document.querySelector(selector);
 
 /**
  * Creates an element from field data.
@@ -113,13 +113,19 @@ export const $field = (field, onchange = () => {}) => {
 	switch (field.type) {
 		case "STRING":
 		case "string": {
-			return $("input", {
+			const textbox = $("input", {
 				type: "text",
 				minLength: field.min,
 				maxLength: field.max,
 				onchange,
 				oninput: onchange,
 			});
+
+			if (field.type === "STRING") {
+				textbox.autocapitalize = "characters";
+			}
+
+			return textbox;
 		}
 
 		case "int": {

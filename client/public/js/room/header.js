@@ -8,7 +8,6 @@
  */
 
 import { createState, createSingletonView, $ } from "../framework.js";
-import { onPress, onRelease } from "../util.js";
 import { RoomStates } from "./state.js";
 import { RoomData } from "./state.js";
 
@@ -19,14 +18,8 @@ export const Header = createSingletonView(() => {
 	const fields = {
 		id: $("button", {
 			className: "small room-id",
-			...onPress(() => {
-				RoomID.set(true);
-			}),
-			...onRelease(() => {
-				RoomID.set(false);
-			}),
-			onmouseleave() {
-				RoomID.set(false);
+			onclick() {
+				RoomID.set(!RoomID.get());
 			},
 		}),
 		timeLeft: $("span"),
@@ -95,11 +88,13 @@ export const Header = createSingletonView(() => {
 			$(
 				"section",
 				{ className: "room-data-fields" },
+
 				/* Time */
 				$("div", labels.timeLeft, fields.timeLeft),
 
 				/* Round */
 				$("div", labels.round, fields.round, " / ", fields.roundLimit),
+
 				/* Room ID */
 				$(
 					"div",
@@ -110,9 +105,9 @@ export const Header = createSingletonView(() => {
 						$(
 							"button",
 							{
-								...onRelease(() => {
+								onclick() {
 									copyRoomID();
-								}),
+								},
 							},
 							"Copy",
 						),

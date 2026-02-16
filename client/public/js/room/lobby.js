@@ -10,7 +10,6 @@
 import { createSingletonView, $, $replace } from "../framework.js";
 import { RoomStates, RoomData, RoomClients } from "./state.js";
 import { sendStartGame, sendCancelStartGame } from "../packets/send.js";
-import { onRelease } from "../util.js";
 
 export const Lobby = createSingletonView(() => {
 	const players = $("p", { className: "player-list" });
@@ -44,13 +43,13 @@ export const Lobby = createSingletonView(() => {
 
 	const button = $("button", {
 		className: "primary",
-		...onRelease(() => {
+		onclick() {
 			if (RoomData.state.get() === RoomStates.Lobby) {
 				sendStartGame();
 			} else {
 				sendCancelStartGame();
 			}
-		}),
+		},
 	});
 
 	RoomData.state.addHook(state => {

@@ -13,10 +13,10 @@
 	--body-text-color: aliceblue;
 	--body-font-family: Arial, sans-serif;
 	--body-font-size: clamp(1rem, 0.5vw + 0.55rem, 2rem);
-	--body-text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.9);
+	--body-text-shadow: 0.1em 0.1em rgba(0, 0, 0, 0.9);
 	--default-border-color: rgb(74, 129, 60);
 	--default-border: 0.1em solid var(--default-border-color);
-	--button-box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
+	--button-box-shadow: 0.1em 0.1em 0.1em rgba(0, 0, 0, 0.2);
 	--button-text-shadow: 0.05em 0.05em rgba(255, 255, 255, 0.1);
 
 	--input-primary-color: rgb(221, 233, 117);
@@ -178,10 +178,10 @@ button.word-tile {
 	background-color: beige;
 	color: black;
 
-	margin: 0.25em;
-	padding: 0.25em 0.5em;
+	margin: 0.2em;
+	padding: 0.2em 0.5em;
 
-	font-size: 0.9em;
+	font-size: 100%;
 }
 
 button.word-tile:hover {
@@ -205,7 +205,7 @@ button.room-id {
 }
 
 small>button {
-	padding: 0.2em 0.4em;
+	padding: 0.2em 0.5em;
 	margin: 0em 0.15em 0em 0.15em;
 	font-size: 1em;
 }
@@ -312,12 +312,6 @@ hr {
 	row-gap: 0.2em;
 }
 
-@media only screen and (max-width: 800px) {
-	.room-header {
-		font-size: 0.8em;
-	}
-}
-
 .player-list {
 	display: flex;
 	flex-flow: column;
@@ -328,7 +322,7 @@ hr {
 	white-space: preserve;
 }
 
-.player-list > span {
+.player-list>span {
 	background: rgba(0, 0, 0, 0.2);
 	padding: 0.75em 1em 0.75em 1em;
 	cursor: pointer;
@@ -337,4 +331,32 @@ hr {
 
 .player-list-owner {
 	color: orange;
+}
+
+@media only screen and (max-width: 1000px) {
+	* {
+		font-weight: bold;
+	}
+
+	strong {
+		font-weight: bolder;
+	}
+}
+
+@keyframes brief-shake {
+	0% {
+		transform: translateX(0em);
+	}
+
+	33% {
+		transform: translateX(0.075em);
+	}
+
+	67% {
+		transform: translateX(-0.075em);
+	}
+
+	100% {
+		transform: translateX(0em);
+	}
 }

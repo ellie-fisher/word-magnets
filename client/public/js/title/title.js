@@ -11,16 +11,15 @@ import { createState, createSingletonView, $ } from "../framework.js";
 import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
-import { onRelease } from "../util.js";
 
 export const Title = createSingletonView(() => {
 	const tabCreate = $(
 		"button",
 		{
 			className: "tab",
-			...onRelease(() => {
+			onclick() {
 				TabState.set(true);
-			}),
+			},
 		},
 		"Create",
 	);
@@ -29,9 +28,9 @@ export const Title = createSingletonView(() => {
 		"button",
 		{
 			className: "tab",
-			...onRelease(() => {
+			onclick() {
 				TabState.set(false);
-			}),
+			},
 		},
 		"Join",
 	);
