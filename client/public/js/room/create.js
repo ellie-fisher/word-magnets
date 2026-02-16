@@ -15,11 +15,12 @@ import { MAX_LENGTH, sentenceToString } from "./sentences.js";
 const addWordToSentence = word => {
 	const oldSentence = Sentence.get();
 	const newSentence = { ...oldSentence, words: [...oldSentence.words, word] };
-	const [success, string, singleHyphens] = sentenceToString(newSentence.words, RoomWords.get());
+	const [string, length] = sentenceToString(newSentence.words, RoomWords.get());
 
-	if (success) {
+	if (length <= MAX_LENGTH) {
 		newSentence.string = string;
-		newSentence.length = string.length + singleHyphens;
+		newSentence.length = length;
+
 		Sentence.set(newSentence);
 	}
 };
@@ -28,7 +29,7 @@ export const Create = createSingletonView(() => {
 	const spacer = $("button", { className: "word-tile hidden" }); // Spacer so sentence maintains its height.
 	const nonfixed = $("section");
 	const sentence = $("section", { className: "sentence" }, spacer);
-	const sentenceLen = $("small", `${Sentence.get().length} / ${MAX_LENGTH}`);
+	const sentenceLen = $("small");
 	const fixed = $("section");
 
 	RoomWords.addHook(wordbanks => {
@@ -55,13 +56,14 @@ export const Create = createSingletonView(() => {
 		);
 	});
 
-	Sentence.addHook(({ words = [], string = "", length = 0 }) => {
-		const wordbanks = RoomWords.get();
+	Sentence.addHook(({ words = [], string = "\u00A0", length = 0 }) => {
+		$replace(sentenceLen, $("strong", "Length: "), `${length} / ${MAX_LENGTH}`);
 
 		if (words.length <= 0) {
-			$replace(sentence, spacer);
+			$replace(sentence, spacer, $("p", string === "" ? "\u00A0" : string));
 		} else {
-			$replace(sentenceLen, `${length} / ${MAX_LENGTH}`);
+			const wordbanks = RoomWords.get();
+
 			$replace(
 				sentence,
 				...words.map(({ bankIndex, wordIndex }) => {
@@ -69,10 +71,12 @@ export const Create = createSingletonView(() => {
 
 					return $("button", { className: "word-tile" }, word === " " ? "\u00A0" : word);
 				}),
-				$("p", Sentence.get().string),
+				$("p", string === "" ? "\u00A0" : string),
 			);
 		}
 	});
+
+	Sentence.set(Sentence.get());
 
 	return $("section", nonfixed, sentence, $("p", sentenceLen), fixed);
 });

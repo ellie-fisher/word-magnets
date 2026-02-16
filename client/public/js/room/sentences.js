@@ -9,36 +9,35 @@
 
 import { hasIndex } from "../util.js";
 
-export const MAX_LENGTH = 150;
+export const MAX_LENGTH = 120;
 
 export const sentenceToString = (sentence = [], wordbanks = []) => {
 	let str = "";
 	let prev = "";
-	let singleHyphens = 0;
+	let length = 0;
 
-	for (let i = 0; i < sentence.length; i++) {
-		const entry = sentence[i];
-
+	sentence.forEach((entry, index) => {
 		if (!hasIndex(wordbanks, entry.bankIndex)) {
-			return [false, "", 0];
+			return ["", 0];
 		}
 
 		const { words } = wordbanks[entry.bankIndex];
 
 		if (!hasIndex(words, entry.wordIndex)) {
-			return [false, "", 0];
+			return ["", 0];
 		}
 
 		let word = words[entry.wordIndex];
 
-		if (i > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
+		if (index > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
 			str += " ";
+			length++;
 		}
 
 		// We don't want players to be able to hack around the sentence length limit by setting
 		// their name to a hyphen, so we must account for that.
 		if (word === "-") {
-			singleHyphens++;
+			length++;
 		}
 
 		prev = word;
@@ -52,7 +51,8 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 		}
 
 		str += word;
-	}
+		length += word.length;
+	});
 
-	return [str.length + singleHyphens <= MAX_LENGTH, str, singleHyphens];
+	return [str, length];
 };

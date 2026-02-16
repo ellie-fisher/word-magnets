@@ -228,6 +228,7 @@ small>button {
 	border: 0.2em double orange;
 	margin-top: 1em;
 	padding: 0.5em;
+	white-space: preserve;
 }
 
 select {

@@ -21,14 +21,14 @@ type Sentence struct {
 	Value    string
 }
 
-const maxLength = 100
+const maxLength = 120
 
 func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
 	str := ""
-	length := len(str)
-	prevHyphen := false
+	prev := ""
+	length := 0
 
-	for i := 0; i < len(wordbanks) && i < maxLength && length < maxLength; i++ {
+	for i := 0; i < len(words) && i < maxLength; i++ {
 		entry := words[i]
 
 		if !util.HasIndex(wordbanks, int(entry.BankIndex)) {
@@ -43,38 +43,35 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 
 		word := words[entry.WordIndex]
 
-		if word[0] != '-' && !prevHyphen {
-			str += " "
+		if i > 0 {
+			if prev[len(prev)-1] != '-' && word[0] != '-' {
+				str += " "
+				length++
+			}
 		}
-
-		start := 0
-		end := len(word)
-		prevHyphen = false
-
-		if word[0] == '-' {
-			start++
-		}
-
-		if word[len(word)-1] == '-' {
-			end--
-			prevHyphen = true
-		}
-
-		wordSlice := word[start:end]
-		sliceLen := len(wordSlice)
 
 		// We don't want players to be able to hack around the sentence length limit by setting
 		// their name to a hyphen, so we must account for that.
-		if sliceLen <= 0 {
-			sliceLen = 1
+		if word == "-" {
+			length++
 		}
 
-		if length+sliceLen > maxLength {
+		prev = word
+
+		if word[0] == '-' {
+			word = word[1:]
+		}
+
+		if word[len(word)-1] == '-' {
+			word = word[:len(word)-1]
+		}
+
+		if length+len(word) > maxLength {
 			break
 		}
 
-		str += wordSlice
-		length += sliceLen
+		str += word
+		length += len(word)
 	}
 
 	if length > maxLength {
