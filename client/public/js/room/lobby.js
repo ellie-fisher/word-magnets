@@ -49,11 +49,14 @@ export const Lobby = createSingletonView(() => {
 			} else {
 				sendCancelStartGame();
 			}
+
+			button.disabled = true;
 		},
 	});
 
 	RoomData.state.addHook(state => {
 		button.textContent = state === RoomStates.Lobby ? "Start Game" : "Cancel";
+		button.disabled = false;
 	});
 
 	return $("section", $("p", $("strong", "Players:"), players), $("p", button));
