@@ -59,15 +59,12 @@ export const Create = createSingletonView(() => {
 										if (shakeTimeout === 0) {
 											/* This is kinda hacky and I apologize. */
 
-											sentenceLen.style.animation = "brief-scale 0.3s linear 1";
-
 											$getAll("button.word-tile").forEach(
 												tile => (tile.style.animation = "brief-shake 0.3s linear 1"),
 											);
 
 											shakeTimeout = setTimeout(() => {
 												shakeTimeout = 0;
-												sentenceLen.style.animation = "";
 												$getAll("button.word-tile").forEach(
 													tile => (tile.style.animation = ""),
 												);

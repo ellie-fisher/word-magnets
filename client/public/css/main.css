@@ -361,20 +361,3 @@ hr {
 		transform: rotate(0deg);
 	}
 }
-
-@keyframes brief-scale {
-	from {
-		transform-origin: 0 0;
-		transform: scale(1);
-	}
-
-	50% {
-		transform-origin: 0 0;
-		transform: scale(1.1);
-	}
-
-	to {
-		transform-origin: 0 0;
-		transform: scale(1);
-	}
-}
