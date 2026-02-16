@@ -52,7 +52,10 @@ type state struct {
 }
 
 func (roomState *state) enter(room *Room, client *clients.Client) {
-	room.timeLeft = roomState.getStartTime(room)
+	if client == nil {
+		room.timeLeft = roomState.getStartTime(room)
+	}
+
 	room.sendRoomData(client, roomDataFlagAll)
 	roomState.onEnter(room, client)
 }
