@@ -9,6 +9,7 @@
 
 import { createState } from "../framework.js";
 import { deepFreeze, enumerate } from "../util.js";
+import { MAX_LENGTH, sentenceToString } from "./sentences.js";
 
 export const RoomStates = enumerate([
 	"Lobby",
@@ -46,6 +47,20 @@ export const RoomClients = createState([]);
 export const RoomWords = createState([]);
 export const Sentence = createState({ words: [], string: "", length: 0 });
 
-export const clearSentence = () => {
-	Sentence.set({ words: [], string: "", length: 0 });
+export const setSentence = sentence => {
+	let success = false;
+	const [string, length] = sentenceToString(sentence.words, RoomWords.get());
+
+	if (length <= MAX_LENGTH) {
+		success = true;
+
+		sentence.string = string;
+		sentence.length = length;
+
+		Sentence.set(sentence);
+	}
+
+	return success;
 };
+
+export const clearSentence = () => setSentence({ words: [], string: "", length: 0 });

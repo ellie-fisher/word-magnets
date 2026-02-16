@@ -8,27 +8,18 @@
  */
 
 import { createSingletonView, $, $replace, $getAll } from "../framework.js";
-import { RoomWords, Sentence } from "./state.js";
+import { RoomWords, Sentence, setSentence } from "./state.js";
 import { flagFixed, flagPlayer } from "../util.js";
-import { MAX_LENGTH, sentenceToString } from "./sentences.js";
+import { MAX_LENGTH } from "./sentences.js";
 
-const addWordToSentence = word => {
-	let success = false;
+const addWord = word => setSentence({ ...Sentence.get(), words: [...Sentence.get().words, word] });
 
-	const oldSentence = Sentence.get();
-	const newSentence = { ...oldSentence, words: [...oldSentence.words, word] };
-	const [string, length] = sentenceToString(newSentence.words, RoomWords.get());
+const removeWord = index => {
+	const sentence = { ...Sentence.get(), words: [...Sentence.get().words] };
 
-	if (length <= MAX_LENGTH) {
-		success = true;
+	sentence.words.splice(index, 1);
 
-		newSentence.string = string;
-		newSentence.length = length;
-
-		Sentence.set(newSentence);
-	}
-
-	return success;
+	return setSentence(sentence);
 };
 
 export const Create = createSingletonView(() => {
@@ -55,7 +46,7 @@ export const Create = createSingletonView(() => {
 							{
 								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
 								onclick() {
-									if (!addWordToSentence({ bankIndex: bank.index, wordIndex })) {
+									if (!addWord({ bankIndex: bank.index, wordIndex })) {
 										if (shakeTimeout === 0) {
 											/* This is kinda hacky and I apologize. */
 
@@ -91,10 +82,19 @@ export const Create = createSingletonView(() => {
 
 			$replace(
 				sentence,
-				...words.map(({ bankIndex, wordIndex }) => {
+				...words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 					const word = wordbanks[bankIndex].words[wordIndex];
 
-					return $("button", { className: "word-tile" }, word === " " ? "\u00A0" : word);
+					return $(
+						"button",
+						{
+							className: "word-tile",
+							onclick() {
+								removeWord(sentenceIndex);
+							},
+						},
+						word === " " ? "\u00A0" : word,
+					);
 				}),
 				$("p", string === "" ? "\u00A0" : string),
 			);
