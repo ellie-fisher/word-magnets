@@ -61,7 +61,7 @@ export const Create = createSingletonView(() => {
 										clearTimeout(shakeTimeout);
 
 										$getAll("button.word-tile").forEach(
-											tile => (tile.style.animation = "brief-shake 0.1s"),
+											tile => (tile.style.animation = "brief-shake 0.3s"),
 										);
 
 										shakeTimeout = setTimeout(
@@ -69,7 +69,7 @@ export const Create = createSingletonView(() => {
 												$getAll("button.word-tile").forEach(
 													tile => (tile.style.animation = ""),
 												),
-											100,
+											300,
 										);
 									}
 								},
