@@ -36,8 +36,8 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 
 		// We don't want players to be able to hack around the sentence length limit by setting
 		// their name to a hyphen, so we must account for that.
-		if (word === "-") {
-			length++;
+		if (word === "-" || word === "--") {
+			length += word.length;
 		}
 
 		prev = word;

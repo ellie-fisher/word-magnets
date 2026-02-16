@@ -43,17 +43,15 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 
 		word := words[entry.WordIndex]
 
-		if i > 0 {
-			if prev[len(prev)-1] != '-' && word[0] != '-' {
-				str += " "
-				length++
-			}
+		if i > 0 && prev[len(prev)-1] != '-' && word[0] != '-' {
+			str += " "
+			length++
 		}
 
 		// We don't want players to be able to hack around the sentence length limit by setting
 		// their name to a hyphen, so we must account for that.
-		if word == "-" {
-			length++
+		if word == "-" || word == "--" {
+			length += len(word)
 		}
 
 		prev = word
