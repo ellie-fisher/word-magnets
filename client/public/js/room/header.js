@@ -7,55 +7,64 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createState, createSingletonView, $ } from "../framework.js";
+import { createState, createSingletonView, $, $button } from "../framework.js";
 import { copyText } from "../util.js";
-import { RoomStates } from "./state.js";
-import { RoomData } from "./state.js";
+import { RoomStates, RoomData } from "./state.js";
 
 export const Header = createSingletonView(() => {
-	const RoomID = createState(false);
+	const ShowRoomID = createState(false);
 
 	const labels = { timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: "), id: $("strong", "Code: ") };
 	const fields = {
 		timeLeft: $("span"),
 		round: $("span"),
 		roundLimit: $("span"),
-		id: $("button", {
-			className: "small room-id",
-			onclick() {
-				RoomID.set(!RoomID.get());
-			},
-		}),
+		id: $button("", "room-id", () => ShowRoomID.set(!ShowRoomID.get())),
 	};
 
-	const copyButton = $(
-		"button",
-		{
-			onclick() {
-				copyRoomID();
-			},
-		},
-		"Copy",
-	);
+	const copyButton = $button("Copy", async () => {
+		if (!(await copyText(RoomData.id.get()))) {
+			alert("Copying text is not supported by your browser at this time.");
+		}
+	});
 
-	// We have this function reassignable so we can change it if its value changes.
-	let copyRoomID = () => {};
+	const containers = {
+		time: $("div", labels.timeLeft, fields.timeLeft),
+		round: $("div", labels.round, fields.round, " / ", fields.roundLimit),
+		id: $("div", labels.id, $("small", fields.id, copyButton)),
+	};
 
 	Object.keys(RoomData).forEach(key => {
 		switch (key) {
 			case "id": {
 				const hook = () => {
-					const id = RoomData.id.get();
-					copyRoomID = async () => {
-						if (!(await copyText(id))) {
-							alert("Copying text is not supported by your browser at this time.");
-						}
-					};
-					fields.id.textContent = RoomID.get() ? id : id.replaceAll(/./g, "•");
+					fields.id.textContent = ShowRoomID.get()
+						? RoomData.id.get()
+						: RoomData.id.get().replaceAll(/./g, "•");
 				};
 
 				RoomData.id.addHook(hook);
-				RoomID.addHook(hook);
+				ShowRoomID.addHook(hook);
+
+				break;
+			}
+
+			case "state": {
+				RoomData.state.addHook(state => {
+					const { time, round } = containers;
+
+					if (state === RoomStates.Lobby || state === RoomStates.StartGame) {
+						round.classList.add("hidden");
+					} else {
+						round.classList.remove("hidden");
+					}
+
+					if (state === RoomStates.Lobby) {
+						time.classList.add("hidden");
+					} else {
+						time.classList.remove("hidden");
+					}
+				});
 
 				break;
 			}
@@ -73,6 +82,7 @@ export const Header = createSingletonView(() => {
 						fields.timeLeft.classList.remove("danger");
 					}
 
+					labels.timeLeft.textContent = state === RoomStates.StartGame ? "Starting game in " : "Time Left: ";
 					fields.timeLeft.textContent = `${timeLeft}`;
 				};
 
@@ -96,7 +106,7 @@ export const Header = createSingletonView(() => {
 
 	return $(
 		"section",
-		$("button", { className: "tab warning" }, "« Exit"),
+		$button("« Exit", "tab warning"),
 		$(
 			"section",
 			{ className: "container room-header" },
@@ -104,14 +114,9 @@ export const Header = createSingletonView(() => {
 				"section",
 				{ className: "room-data-fields" },
 
-				/* Time */
-				$("div", labels.timeLeft, fields.timeLeft),
-
-				/* Round */
-				$("div", labels.round, fields.round, " / ", fields.roundLimit),
-
-				/* Room ID */
-				$("div", labels.id, $("small", fields.id, copyButton)),
+				containers.time,
+				containers.round,
+				containers.id,
 			),
 		),
 	);

@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
+import { createSingletonView, $, $button, $replace } from "../framework.js";
 import { RoomStates, RoomData, RoomClients } from "./state.js";
 import { sendStartGame, sendCancelStartGame } from "../packets/send.js";
 
@@ -41,17 +41,14 @@ export const Lobby = createSingletonView(() => {
 	RoomData.ownerID.addHook(hook);
 	RoomClients.addHook(hook);
 
-	const button = $("button", {
-		className: "primary",
-		onclick() {
-			if (RoomData.state.get() === RoomStates.Lobby) {
-				sendStartGame();
-			} else {
-				sendCancelStartGame();
-			}
+	const button = $button("", "primary", () => {
+		if (RoomData.state.get() === RoomStates.Lobby) {
+			sendStartGame();
+		} else {
+			sendCancelStartGame();
+		}
 
-			button.disabled = true;
-		},
+		button.disabled = true;
 	});
 
 	RoomData.state.addHook(state => {

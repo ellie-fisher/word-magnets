@@ -148,3 +148,25 @@ export const $field = (field, onchange = () => {}) => {
 			return null;
 	}
 };
+
+/**
+ * @param {string} text
+ * @param {...} args
+ *
+ * @returns {HTMLButtonElement}
+ */
+export const $button = (text, ...args) => {
+	if (args.length < 1) {
+		return $("button", text);
+	}
+
+	if (args.length === 1) {
+		if (typeof args[0] === "function") {
+			return $("button", { onclick: args[0] }, text);
+		}
+
+		return $("button", { className: args[0] }, text);
+	}
+
+	return $("button", { className: args[0], onclick: args[1] }, text);
+};

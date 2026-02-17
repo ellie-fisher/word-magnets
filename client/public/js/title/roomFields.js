@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $, $field } from "../framework.js";
+import { $, $button, $field } from "../framework.js";
 import { validateField } from "../util.js";
 
 export const RoomFields = (data = {}) => {
@@ -21,20 +21,18 @@ export const RoomFields = (data = {}) => {
 	let waiting = false;
 
 	const userData = {};
+	const button = $button(buttonText, "primary", ({ target }) => {
+		waiting = true;
+		target.disabled = true;
+		onButtonClick(userData);
+	});
 
-	const button = $(
-		"button",
-		{
-			className: "primary",
-			disabled: true,
-			onclick({ target }) {
-				waiting = true;
-				target.disabled = true;
-				onButtonClick(userData);
-			},
-		},
-		buttonText,
-	);
+	const updateButton = () => {
+		button.disabled =
+			waiting || !fields.every(field => validateField(field, userData[field.id] ?? field.default ?? ""));
+	};
+
+	updateButton();
 
 	return $(
 		"section",
@@ -61,7 +59,7 @@ export const RoomFields = (data = {}) => {
 					}
 
 					userData[field.id] = target.value;
-					button.disabled = waiting || !fields.every(field => validateField(field, userData[field.id]));
+					updateButton();
 				}),
 			);
 		}),

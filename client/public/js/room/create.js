@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace, $getAll } from "../framework.js";
+import { createSingletonView, $, $button, $replace, $getAll } from "../framework.js";
 import { RoomWords, Sentence, setSentence } from "./state.js";
 import { flagFixed, flagPlayer } from "../util.js";
 import { MAX_LENGTH } from "./sentences.js";
@@ -23,7 +23,7 @@ const removeWord = index => {
 };
 
 export const Create = createSingletonView(() => {
-	const spacer = $("button", { className: "word-tile hidden" }); // Spacer so sentence maintains its height.
+	const spacer = $button("\u00A0", "word-tile hidden"); // Spacer so sentence maintains its height.
 	const nonfixed = $("section");
 	const sentence = $("section", { className: "sentence" }, spacer);
 	const sentenceLen = $("p");
@@ -41,30 +41,25 @@ export const Create = createSingletonView(() => {
 					"p",
 					{ className: "wordbank" },
 					...bank.words.map((word, wordIndex) =>
-						$(
-							"button",
-							{
-								className: "word-tile" + (bank.flags & flagPlayer ? " player" : ""),
-								onclick() {
-									if (!addWord({ bankIndex: bank.index, wordIndex })) {
-										if (shakeTimeout === 0) {
-											/* This is kinda hacky and I apologize. */
-
-											$getAll("button.word-tile").forEach(
-												tile => (tile.style.animation = "brief-shake 0.3s linear 1"),
-											);
-
-											shakeTimeout = setTimeout(() => {
-												shakeTimeout = 0;
-												$getAll("button.word-tile").forEach(
-													tile => (tile.style.animation = ""),
-												);
-											}, 300);
-										}
-									}
-								},
-							},
+						$button(
 							word === " " ? "\u00A0" : word,
+							"word-tile" + (bank.flags & flagPlayer ? " player" : ""),
+							() => {
+								if (!addWord({ bankIndex: bank.index, wordIndex })) {
+									if (shakeTimeout === 0) {
+										/* This is kinda hacky and I apologize. */
+
+										$getAll("button.word-tile").forEach(
+											tile => (tile.style.animation = "brief-shake 0.3s linear 1"),
+										);
+
+										shakeTimeout = setTimeout(() => {
+											shakeTimeout = 0;
+											$getAll("button.word-tile").forEach(tile => (tile.style.animation = ""));
+										}, 300);
+									}
+								}
+							},
 						),
 					),
 				),
@@ -84,17 +79,7 @@ export const Create = createSingletonView(() => {
 				sentence,
 				...words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 					const word = wordbanks[bankIndex].words[wordIndex];
-
-					return $(
-						"button",
-						{
-							className: "word-tile",
-							onclick() {
-								removeWord(sentenceIndex);
-							},
-						},
-						word === " " ? "\u00A0" : word,
-					);
+					return $button(word === " " ? "\u00A0" : word, "word-tile", () => removeWord(sentenceIndex));
 				}),
 				$("p", string === "" ? "\u00A0" : string),
 			);
