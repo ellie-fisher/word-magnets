@@ -29,7 +29,8 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 
 		let word = words[entry.wordIndex];
 
-		if (index > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
+		// Account for hyphens and also not insert extra spaces for space tiles.
+		if (word !== " " && index > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
 			str += " ";
 			length++;
 		}

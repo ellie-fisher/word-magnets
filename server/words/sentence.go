@@ -43,7 +43,8 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 
 		word := words[entry.WordIndex]
 
-		if i > 0 && prev[len(prev)-1] != '-' && word[0] != '-' {
+		// Account for hyphens and also not insert extra spaces for space tiles.
+		if word != " " && i > 0 && prev[len(prev)-1] != '-' && word[0] != '-' {
 			str += " "
 			length++
 		}
