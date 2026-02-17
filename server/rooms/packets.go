@@ -12,7 +12,6 @@ package rooms
 import (
 	"word-magnets/clients"
 	"word-magnets/packets"
-	"word-magnets/util"
 )
 
 type roomDataFlag = uint8
@@ -114,7 +113,6 @@ func (room *Room) sendWords(client *clients.Client) error {
 // as well as the numbers of votes.
 func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 	clients := []*clients.Client{}
-	authors := util.NewSet[string]()
 
 	if target == nil {
 		clients = room.Clients()
@@ -122,32 +120,22 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 		clients = append(clients, target)
 	}
 
-	for _, sentence := range room.sentences {
-		authors.Add(sentence.AuthorID)
-	}
-
 	for _, client := range clients {
 		writer := packets.NewPacketWriter(0)
 		length := uint8(len(room.sentences))
 
-		// We won't be writing the client's own sentence to them during the initial voting phase, so
-		// we must modify the length we send out.
-		if authors.Has(client.ID()) && anonymous && length > 0 {
-			length--
-		}
-
 		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err != nil {
 			for _, sentence := range room.sentences {
-				if anonymous {
-					// Don't write the client's own sentence if we're sending the voting options.
-					if sentence.AuthorID == client.ID() {
-						continue
-					}
-				} else {
+				if !anonymous {
 					writer.WriteString(sentence.AuthorID)
 				}
 
-				writer.WriteString(sentence.Value)
+				// Don't write the client's own sentence if we're sending the voting options.
+				if anonymous && sentence.AuthorID == client.ID() {
+					writer.WriteString("")
+				} else {
+					writer.WriteString(sentence.Value)
+				}
 			}
 
 			client.Send(writer.Bytes())

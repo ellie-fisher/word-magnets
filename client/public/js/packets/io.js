@@ -14,6 +14,7 @@ export const PacketTypes = enumerate([
 
 	/* Client=>Server */
 
+	"RequestServerInfoPacket",
 	"CreateRoomPacket",
 	"JoinRoomPacket",
 	"LeaveRoomPacket",
@@ -25,6 +26,7 @@ export const PacketTypes = enumerate([
 
 	/* Server=>Client */
 
+	"ClientInfoPacket",
 	"ServerInfoPacket",
 	"RoomConnectErrorPacket",
 	"RoomDestroyedPacket",
@@ -34,8 +36,8 @@ export const PacketTypes = enumerate([
 	"RoomSentencesPacket",
 ]);
 
-const U8_MAX_VALUE = 255;
-const MAX_STRING_LENGTH = 255;
+export const U8_MAX_VALUE = 255;
+export const MAX_STRING_LENGTH = U8_MAX_VALUE;
 
 /**
  * PacketReader is a class for reading Uint8Arrays.
@@ -52,6 +54,17 @@ export class PacketReader {
 
 	readU8() {
 		return this.isAtEnd() ? 0 : this._array[this._index++];
+	}
+
+	readU32() {
+		let value = 0;
+
+		try {
+			value = new DataView(this._array.buffer).getUint32(this._index, true);
+			this._index += 4;
+		} catch {}
+
+		return value;
 	}
 
 	readBool() {

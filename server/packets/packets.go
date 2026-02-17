@@ -22,6 +22,7 @@ const (
 
 	/* Client=>Server */
 
+	RequestServerInfoPacket
 	CreateRoomPacket
 	JoinRoomPacket
 	LeaveRoomPacket
@@ -33,6 +34,7 @@ const (
 
 	/* Server=>Client */
 
+	ClientInfoPacket
 	ServerInfoPacket
 	RoomConnectErrorPacket
 	RoomDestroyedPacket
@@ -52,6 +54,10 @@ type UserRoomData struct {
 	TimeLimit   uint8
 	RoundLimit  uint8
 	ClientLimit uint8
+}
+
+func (reader *PacketReader) ReadRequestServerInfo() bool {
+	return reader.MatchU8(RequestServerInfoPacket)
 }
 
 func (reader *PacketReader) ReadCreateRoom() (bool, *UserRoomData) {

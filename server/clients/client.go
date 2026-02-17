@@ -34,11 +34,30 @@ func (client *Client) Send(bytes []byte) error {
 	return client.Socket.WriteMessage(websocket.BinaryMessage, bytes)
 }
 
+func (client *Client) SendClientInfo() error {
+	writer := packets.NewPacketWriter(0)
+
+	if err := writer.Write(packets.ClientInfoPacket, client.id); err != nil {
+		return err
+	} else {
+		return client.Send(writer.Bytes())
+	}
+}
+
+func (client *Client) SendServerInfo(clientCount uint32, roomCount uint32) error {
+	writer := packets.NewPacketWriter(0)
+
+	if err := writer.Write(packets.ServerInfoPacket, clientCount, roomCount); err != nil {
+		return err
+	} else {
+		return client.Send(writer.Bytes())
+	}
+}
+
 func (client *Client) SendRoomConnectError(wasCreating bool, message string) error {
 	writer := packets.NewPacketWriter(0)
-	packetType := packets.RoomConnectErrorPacket
 
-	if err := writer.Write(packetType, wasCreating, message); err != nil {
+	if err := writer.Write(packets.RoomConnectErrorPacket, wasCreating, message); err != nil {
 		return err
 	} else {
 		return client.Send(writer.Bytes())

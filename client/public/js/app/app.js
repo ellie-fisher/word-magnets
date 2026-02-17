@@ -12,6 +12,7 @@ import { Title } from "../title/title.js";
 import { Room } from "../room/room.js";
 import { createSingletonView, $, $get, $replace } from "../framework.js";
 import { $message, $error } from "../message.js";
+import { sendRequestServerInfo } from "../packets/send.js";
 
 export const App = createSingletonView(() => {
 	const element = $get("main");
@@ -34,6 +35,7 @@ export const App = createSingletonView(() => {
 
 			case "title": {
 				child = Title(payload);
+				sendRequestServerInfo();
 				break;
 			}
 

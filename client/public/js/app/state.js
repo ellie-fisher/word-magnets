@@ -10,3 +10,4 @@
 import { createState } from "../framework.js";
 
 export const AppView = createState("loading");
+export const ClientID = createState("");

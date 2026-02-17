@@ -20,6 +20,22 @@ const roomDataFlagClientLimit = 1 << 7;
  * @param {PacketReader} reader
  * @returns {object}
  */
+export const readClientInfo = reader => {
+	return { clientID: reader.readString() };
+};
+
+/**
+ * @param {PacketReader} reader
+ * @returns {object}
+ */
+export const readServerInfo = reader => {
+	return { clientCount: reader.readU32(), roomCount: reader.readU32() };
+};
+
+/**
+ * @param {PacketReader} reader
+ * @returns {object}
+ */
 export const readRoomConnectError = reader => {
 	return { wasCreating: !!reader.readU8(), message: reader.readString() };
 };

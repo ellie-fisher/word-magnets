@@ -7,18 +7,21 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { AppView } from "./app/state.js";
+import { AppView, ClientID } from "./app/state.js";
 import { PacketTypes, PacketReader } from "./packets/io.js";
 
 import {
+	readClientInfo,
+	readServerInfo,
 	readRoomConnectError,
 	readRoomData,
 	readRoomClients,
 	readRoomWords,
 	readRoomDestroyed,
+	readRoomSentences,
 } from "./packets/receive.js";
 
-import { applyRoomData, RoomClients, RoomWords } from "./room/state.js";
+import { applyRoomData, RoomClients, RoomWords, RoomSentences } from "./room/state.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -65,6 +68,17 @@ socket.onmessage = async event => {
 	console.log(packet);
 
 	switch (reader.readU8()) {
+		case PacketTypes.ClientInfoPacket: {
+			const { clientID = "" } = readClientInfo(reader);
+			ClientID.set(clientID);
+			break;
+		}
+
+		case PacketTypes.ServerInfoPacket: {
+			console.log("Server Info:", readServerInfo(reader));
+			break;
+		}
+
 		case PacketTypes.RoomConnectErrorPacket: {
 			const { wasCreating, message } = readRoomConnectError(reader);
 			AppView.set("error", { title: wasCreating ? "Could not create room: " : "Could not join room: ", message });
@@ -92,10 +106,10 @@ socket.onmessage = async event => {
 			break;
 		}
 
-		// case PacketTypes.RoomSentencesPacket: {
-		// 	RoomSentences.set(readRoomSentences(reader));
-		// 	break;
-		// }
+		case PacketTypes.RoomSentencesPacket: {
+			RoomSentences.set(readRoomSentences(reader));
+			break;
+		}
 
 		default: {
 			break;

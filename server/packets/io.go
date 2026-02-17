@@ -10,8 +10,9 @@
 package packets
 
 import (
+	"bytes"
+	"encoding/binary"
 	"math"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -23,19 +24,18 @@ import (
  */
 
 type PacketReader struct {
-	index int
-	bytes []byte
+	buffer bytes.Buffer
 }
 
 func (reader *PacketReader) IsAtEnd() bool {
-	return reader.index >= len(reader.bytes)
+	return reader.buffer.Len() <= 0
 }
 
 func (reader *PacketReader) PeekU8() uint8 {
 	var value uint8
 
 	if !reader.IsAtEnd() {
-		value = reader.bytes[reader.index]
+		value = reader.buffer.Bytes()[0]
 	}
 
 	return value
@@ -45,8 +45,7 @@ func (reader *PacketReader) ReadU8() uint8 {
 	var value uint8
 
 	if !reader.IsAtEnd() {
-		value = reader.bytes[reader.index]
-		reader.index++
+		value, _ = reader.buffer.ReadByte()
 	}
 
 	return value
@@ -79,8 +78,8 @@ func (reader *PacketReader) MatchU8(value uint8) bool {
 	return matches
 }
 
-func NewPacketReader(bytes []byte) *PacketReader {
-	return &PacketReader{0, bytes}
+func NewPacketReader(packet []byte) *PacketReader {
+	return &PacketReader{*bytes.NewBuffer(packet)}
 }
 
 /**
@@ -102,22 +101,19 @@ func (err *PacketWriterErr) Error() string {
 }
 
 type PacketWriter struct {
-	index int
-	bytes []byte
+	buffer bytes.Buffer
 }
 
 func (writer *PacketWriter) Bytes() []byte {
-	return writer.bytes
+	return writer.buffer.Bytes()
 }
 
-func (writer *PacketWriter) WriteU8(value uint8) {
-	if writer.index < len(writer.bytes) {
-		writer.bytes[writer.index] = value
-	} else {
-		writer.bytes = append(writer.bytes, value)
-	}
+func (writer *PacketWriter) WriteU8(value uint8) error {
+	return writer.buffer.WriteByte(value)
+}
 
-	writer.index++
+func (writer *PacketWriter) WriteU32(value uint32) error {
+	return binary.Write(&writer.buffer, binary.LittleEndian, value)
 }
 
 func (writer *PacketWriter) WriteBool(value bool) {
@@ -133,9 +129,7 @@ func (writer *PacketWriter) WriteString(value string) bool {
 	}
 
 	writer.WriteU8(uint8(len(bytes)))
-
-	writer.bytes = slices.Concat(writer.bytes, bytes)
-	writer.index += len(bytes)
+	writer.buffer.Write(bytes)
 
 	return success
 }
@@ -157,6 +151,8 @@ func (writer *PacketWriter) Write(values ...any) error {
 		switch cast := value.(type) {
 		case uint8:
 			writer.WriteU8(cast)
+		case uint32:
+			writer.WriteU32(cast)
 		case bool:
 			writer.WriteBool(cast)
 		case string:
@@ -172,5 +168,5 @@ func (writer *PacketWriter) Write(values ...any) error {
 }
 
 func NewPacketWriter(size int) *PacketWriter {
-	return &PacketWriter{0, make([]byte, size)}
+	return &PacketWriter{}
 }

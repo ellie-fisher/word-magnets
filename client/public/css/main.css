@@ -100,6 +100,11 @@ select {
 	margin-left: 0em;
 }
 
+input,
+select {
+	border: 0.05em solid rgba(255, 255, 255, 0.2);
+}
+
 button:active {
 	background-color: var(--input-secondary-pressed);
 }
@@ -194,6 +199,16 @@ button.word-tile:hover {
 
 button.word-tile:active {
 	border-style: inset;
+}
+
+button.word-tile:disabled {
+	color: rgba(0, 0, 0, 0.6);
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+button.word-tile:active {
+	border-style: revert;
 }
 
 button.room-id,

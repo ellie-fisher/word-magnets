@@ -49,5 +49,5 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 		length += Math.max(1, word.length);
 	});
 
-	return [str, length];
+	return [str.trim(), length];
 };

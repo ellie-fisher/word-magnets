@@ -12,6 +12,7 @@ package rooms
 import (
 	"word-magnets/clients"
 	"word-magnets/packets"
+	"word-magnets/words"
 )
 
 const defaultTime = uint8(0)
@@ -123,6 +124,7 @@ func init() {
 	createState.onEnter = func(room *Room, client *clients.Client) {
 		if client == nil {
 			room.selectWords()
+			room.sentences = []*words.Sentence{}
 		}
 
 		room.sendWords(client)
@@ -144,7 +146,14 @@ func init() {
 
 	createSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
 		if matched, sentence := reader.ReadSubmitSentence(client.ID(), machine.room.wordbanks); matched && client != nil {
-			machine.room.addSentence(sentence)
+			if sentence.Value != "" {
+				machine.room.addSentence(sentence)
+
+				// No point in waiting around if we've already received everyone's sentences.
+				if len(machine.room.sentences) >= len(machine.room.clients) {
+					machine.next()
+				}
+			}
 		}
 	}
 
@@ -155,6 +164,10 @@ func init() {
 	}
 
 	voteState.onEnter = func(room *Room, client *clients.Client) {
+		if client == nil {
+			room.shuffleSentences()
+		}
+
 		room.sendSentences(client, true)
 	}
 

@@ -8,7 +8,7 @@
  */
 
 import { createSingletonView, $, $button, $replace, $getAll } from "../framework.js";
-import { RoomWords, Sentence, setSentence } from "./state.js";
+import { RoomStates, RoomData, RoomWords, Sentence, setSentence } from "./state.js";
 import { flagFixed, flagPlayer } from "../util.js";
 import { MAX_LENGTH } from "./sentences.js";
 
@@ -31,11 +31,11 @@ export const Create = createSingletonView(() => {
 
 	let shakeTimeout = 0;
 
-	RoomWords.addHook(wordbanks => {
+	RoomWords.addHook(() => {
 		$replace(fixed);
 		$replace(nonfixed);
 
-		wordbanks.forEach(bank =>
+		RoomWords.get().forEach(bank =>
 			(bank.flags & flagFixed ? fixed : nonfixed).append(
 				$(
 					"p",
@@ -67,6 +67,10 @@ export const Create = createSingletonView(() => {
 		);
 	});
 
+	RoomData.state.addHook(state => {
+		$getAll("button.word-tile").forEach(tile => (tile.disabled = state === RoomStates.CreateSubmit));
+	});
+
 	Sentence.addHook(({ words = [], string = "\u00A0", length = 0 }) => {
 		$replace(sentenceLen, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
 
@@ -85,6 +89,8 @@ export const Create = createSingletonView(() => {
 			);
 		}
 	});
+
+	RoomData.state.addHook(state => {});
 
 	Sentence.set(Sentence.get());
 

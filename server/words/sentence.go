@@ -9,7 +9,10 @@
 
 package words
 
-import "word-magnets/util"
+import (
+	"strings"
+	"word-magnets/util"
+)
 
 type WordEntry struct {
 	BankIndex uint8
@@ -66,6 +69,8 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 		str += word
 		length += util.Max(1, len(word))
 	}
+
+	str = strings.TrimSpace(str)
 
 	if length > maxLength {
 		str = str[:maxLength]

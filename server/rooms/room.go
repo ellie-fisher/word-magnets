@@ -141,6 +141,12 @@ func (room *Room) addSentence(sentence *words.Sentence) {
 	}
 }
 
+func (room *Room) shuffleSentences() {
+	rand.Shuffle(len(room.sentences), func(i int, j int) {
+		room.sentences[i], room.sentences[j] = room.sentences[j], room.sentences[i]
+	})
+}
+
 // Rooms are stored by ID=>Room
 var rooms = make(map[string]*Room)
 
@@ -231,4 +237,8 @@ func GetRoom(id string) *Room {
 	} else {
 		return nil
 	}
+}
+
+func RoomCount() int {
+	return len(rooms)
 }

@@ -64,3 +64,5 @@ export const setSentence = sentence => {
 };
 
 export const clearSentence = () => setSentence({ words: [], string: "", length: 0 });
+
+export const RoomSentences = createState([]);

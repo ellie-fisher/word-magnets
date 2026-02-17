@@ -42,8 +42,8 @@ func main() {
 
 	waitGroup.Add(2)
 
-	go listen("localhost:"+httpPort, httpHandler, &waitGroup)
-	go listen("localhost:"+socketPort, socketHandler, &waitGroup)
+	go listen("192.168.1.11:"+httpPort, httpHandler, &waitGroup)
+	go listen("192.168.1.11:"+socketPort, socketHandler, &waitGroup)
 
 	waitGroup.Wait()
 }

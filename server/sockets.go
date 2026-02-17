@@ -37,6 +37,8 @@ var upgrader = websocket.Upgrader{
 	Subprotocols:    []string{PROTOCOL_NAME + "#" + strconv.Itoa(PROTOCOL_VERSION)},
 }
 
+var clientCount uint32 = 0
+
 // checkOrigin validates the origin and request URLs to make sure they match. The hostnames must be
 // the same, but the ports must match the configured port settings.
 func checkOrigin(req *http.Request) bool {
@@ -69,6 +71,11 @@ func handlePacket(client *clients.Client, bytes []byte) {
 	reader := packets.NewPacketReader(bytes)
 
 	switch reader.PeekU8() {
+	case packets.RequestServerInfoPacket:
+		if matched := reader.ReadRequestServerInfo(); matched {
+			client.SendServerInfo(clientCount, uint32(rooms.RoomCount()))
+		}
+
 	case packets.CreateRoomPacket:
 		if matched, data := reader.ReadCreateRoom(); matched {
 			if success, message := rooms.ValidateRoomData(data); !success {
@@ -131,6 +138,8 @@ func closeHandler(client *clients.Client, _ int, _ string) error {
 		room.RemoveClient(client)
 	}
 
+	clientCount--
+
 	log.Printf("Disconnected: %s", client.Socket.RemoteAddr())
 
 	return nil
@@ -171,7 +180,9 @@ func socketHandler(writer http.ResponseWriter, req *http.Request) {
 			log.Printf("[Error] Failed to create client for socket: %s", err)
 			conn.Close()
 		} else {
+			clientCount++
 			conn.SetCloseHandler(func(code int, text string) error { return closeHandler(client, code, text) })
+			client.SendClientInfo()
 
 			for {
 				if msgType, message, err := conn.ReadMessage(); err != nil {
