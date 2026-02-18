@@ -120,25 +120,35 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 		clients = append(clients, target)
 	}
 
-	for _, client := range clients {
+	length := uint8(len(room.sentences))
+
+	if anonymous {
+		for _, client := range clients {
+			writer := packets.NewPacketWriter(0)
+
+			if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err == nil {
+				for _, sentence := range room.sentences {
+					// Don't write the client's own sentence if we're sending the voting options.
+					if sentence.AuthorID == client.ID() {
+						writer.WriteString("")
+					} else {
+						writer.WriteString(sentence.Value)
+					}
+				}
+
+				client.Send(writer.Bytes())
+			}
+		}
+	} else {
 		writer := packets.NewPacketWriter(0)
-		length := uint8(len(room.sentences))
 
-		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err != nil {
+		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err == nil {
 			for _, sentence := range room.sentences {
-				if !anonymous {
-					writer.WriteString(sentence.AuthorID)
-				}
-
-				// Don't write the client's own sentence if we're sending the voting options.
-				if anonymous && sentence.AuthorID == client.ID() {
-					writer.WriteString("")
-				} else {
-					writer.WriteString(sentence.Value)
-				}
+				writer.WriteString(sentence.AuthorID)
+				writer.WriteString(sentence.Value)
 			}
 
-			client.Send(writer.Bytes())
+			room.Send(writer.Bytes())
 		}
 	}
 }
