@@ -330,24 +330,55 @@ hr {
 	row-gap: 0.3em;
 }
 
-.player-list {
-	display: flex;
-	flex-flow: column;
-	columns: 50%;
-	row-gap: 0.5em;
+.table {
+	border-spacing: 0.2em;
+
 	font-family: monospace;
-	margin-bottom: 2em;
 	white-space: preserve;
+
+	margin-top: 1em;
+	margin-bottom: 2em;
+
+	width: 100%;
+
+	text-align: left;
 }
 
-.player-list > span {
+.table-entry {
 	background: rgba(0, 0, 0, 0.2);
-	padding: 0.75em 1em 0.75em 1em;
-	cursor: pointer;
 	border-radius: 1em;
+
+	padding: 0.75em 1em 0.75em 1em;
+
+	margin-left: 1em;
+	margin-right: 1em;
 }
 
-.player-list-owner {
+.table-entry.clickable,
+.clickable > .table-entry {
+	cursor: pointer;
+}
+
+.table-entry.disabled,
+.disabled > .table-entry {
+	cursor: not-allowed;
+	background: rgba(64, 64, 64, 0.2);
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.table-entry.selected,
+.selected > .table-entry {
+	background: rgba(255, 255, 255, 0.2);
+	cursor: default;
+}
+
+.table-entry.selected.disabled,
+.selected.disabled > .table-entry {
+	background: rgba(255, 255, 255, 0.4);
+	cursor: not-allowed;
+}
+
+.room-owner {
 	color: orange;
 }
 

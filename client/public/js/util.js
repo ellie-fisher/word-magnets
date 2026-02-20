@@ -69,7 +69,7 @@ export const validateField = (field, value) => {
 export const deepFreeze = (value, visited = new Set()) => {
 	if (!visited.has(value) && typeof value === "object") {
 		visited.add(value);
-		Object.keys(value).forEach(key => (value[key] = deepFreeze(value[key])));
+		Object.keys(value).forEach(key => deepFreeze(value[key]));
 	}
 
 	return Object.freeze(value);
@@ -85,41 +85,4 @@ export const deepFreeze = (value, visited = new Set()) => {
  */
 export const hasIndex = (array, index) => {
 	return Array.isArray(array) && Number.isInteger(index) && index >= 0 && index < array.length;
-};
-
-const copyTextArea = $("textarea");
-
-/**
- * Attempts to copy text. If available, it will use the Clipboard API. Otherwise, it will fallback to
- * the old school method of using a `textarea` with `document.execCommmand()`.
- *
- * @param {string} text
- * @returns {Promise<boolean>} Whether or not it was successful.
- */
-export const copyText = async text => {
-	let success = true;
-
-	if (typeof navigator.clipboard !== "undefined") {
-		try {
-			await navigator.clipboard.writeText(text);
-		} catch {
-			success = false;
-		}
-	} else {
-		document.body.appendChild(copyTextArea);
-
-		copyTextArea.value = text;
-		copyTextArea.focus();
-		copyTextArea.select();
-
-		try {
-			success = document.execCommand("copy");
-		} catch {
-			success = false;
-		} finally {
-			document.body.removeChild(copyTextArea);
-		}
-	}
-
-	return success;
 };

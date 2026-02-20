@@ -8,11 +8,14 @@
  */
 
 import { createSingletonView, $, $replace } from "../framework.js";
-import { RoomStates, RoomData, Sentence, clearSentence } from "./state.js";
-import { sendSubmitSentence } from "../packets/send.js";
+import { RoomStates, RoomData, Sentence, RoomSentences, clearRoomSentences } from "./state.js";
+import { sendSubmitSentence, sendSubmitVote } from "../packets/send.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
 import { Create } from "./create.js";
+import { Vote } from "./vote.js";
+import { Results } from "./results.js";
+import { End } from "./end.js";
 
 export const Room = createSingletonView(() => {
 	const body = $("section");
@@ -38,7 +41,9 @@ export const Room = createSingletonView(() => {
 			case RoomStates.Create: {
 				view = Create();
 				titleText = "Create a sentence!";
-				clearSentence();
+
+				Sentence.reset();
+				clearRoomSentences();
 
 				break;
 			}
@@ -51,6 +56,35 @@ export const Room = createSingletonView(() => {
 					sendSubmitSentence(Sentence.get());
 				}
 
+				break;
+			}
+
+			case RoomStates.Vote: {
+				view = Vote();
+				titleText = "Choose your favorite sentence!";
+				break;
+			}
+
+			case RoomStates.VoteSubmit: {
+				view = Vote();
+				titleText = "Please wait...";
+
+				if (RoomSentences.vote.get() >= 0) {
+					sendSubmitVote(RoomSentences.vote.get());
+				}
+
+				break;
+			}
+
+			case RoomStates.Results: {
+				view = Results();
+				titleText = "Results";
+				break;
+			}
+
+			case RoomStates.End: {
+				view = End();
+				titleText = "Game is over!";
 				break;
 			}
 

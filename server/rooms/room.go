@@ -81,6 +81,8 @@ func (room *Room) AddClient(client *clients.Client, name string) {
 
 	client.RoomID = room.id
 	client.Name = name
+	client.Vote = -1
+	client.Score = 0
 
 	room.clients = append(room.clients, client)
 	room.sendClients()
@@ -97,8 +99,11 @@ func (room *Room) RemoveClient(client *clients.Client) {
 		if client.ID() == room.owner.ID() {
 			DestroyRoom(room)
 		} else {
+			room.state.leave(client)
+
 			room.clients = slices.Delete(room.clients, index, index+1)
 			client.RoomID = ""
+
 			room.sendClients()
 		}
 	}
@@ -198,7 +203,7 @@ func NewRoom(owner *clients.Client, data *packets.UserRoomData) *Room {
 				sentences:   []*words.Sentence{},
 				timeLeft:    data.TimeLimit,
 				timeLimit:   data.TimeLimit,
-				round:       1,
+				round:       0,
 				roundLimit:  data.RoundLimit,
 				clientLimit: data.ClientLimit,
 			}

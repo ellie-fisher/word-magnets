@@ -18,7 +18,7 @@ var nameValidator = util.FieldValidator{
 	Min:        1,
 	Max:        16,
 	SpaceError: "Name cannot have trailing whitespace",
-	CharError:  "Name contains one or more invalid character(s)",
+	CharError:  "Name contains one or more illegal character(s)",
 }
 
 func init() {

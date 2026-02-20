@@ -20,13 +20,15 @@ type WordEntry struct {
 }
 
 type Sentence struct {
-	AuthorID string
-	Value    string
+	AuthorID   string
+	AuthorName string
+	Value      string
+	Votes      uint8
 }
 
-const maxLength = 120
+const maxLength = 100
 
-func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
+func NewSentence(authorID string, authorName string, words []WordEntry, wordbanks []*Wordbank) *Sentence {
 	str := ""
 	prev := ""
 	length := int(0)
@@ -76,5 +78,5 @@ func NewSentence(authorID string, words []WordEntry, wordbanks []*Wordbank) *Sen
 		str = str[:maxLength]
 	}
 
-	return &Sentence{authorID, str}
+	return &Sentence{authorID, authorName, str, 0}
 }

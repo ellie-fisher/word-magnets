@@ -101,7 +101,7 @@ func (reader *PacketReader) ReadCancelStartGame() bool {
 	return reader.MatchU8(CancelStartGamePacket)
 }
 
-func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []*words.Wordbank) (bool, *words.Sentence) {
+func (reader *PacketReader) ReadSubmitSentence(authorID string, authorName string, wordbanks []*words.Wordbank) (bool, *words.Sentence) {
 	if reader.MatchU8(SubmitSentencePacket) {
 		entries := []words.WordEntry{}
 		length := reader.ReadU8()
@@ -110,15 +110,15 @@ func (reader *PacketReader) ReadSubmitSentence(authorID string, wordbanks []*wor
 			entries = append(entries, words.WordEntry{BankIndex: reader.ReadU8(), WordIndex: reader.ReadU8()})
 		}
 
-		return true, words.NewSentence(authorID, entries, wordbanks)
+		return true, words.NewSentence(authorID, authorName, entries, wordbanks)
 	}
 
 	return false, nil
 }
 
-func (reader *PacketReader) ReadSubmitVote() (bool, uint8) {
+func (reader *PacketReader) ReadSubmitVote() (bool, int8) {
 	if reader.MatchU8(SubmitVotePacket) {
-		return true, reader.ReadU8()
+		return true, reader.ReadI8()
 	}
 
 	return false, 0

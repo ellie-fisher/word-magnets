@@ -77,7 +77,7 @@ export const readRoomClients = reader => {
 	const count = reader.readU8();
 
 	for (let i = 0; i < count; i++) {
-		clients.push({ id: reader.readString(), name: reader.readString() });
+		clients.push({ id: reader.readString(), name: reader.readString(), score: reader.readU8() });
 	}
 
 	return clients;
@@ -116,7 +116,12 @@ export const readRoomSentences = reader => {
 	const sentenceCount = reader.readU8();
 
 	for (let i = 0; i < sentenceCount; i++) {
-		sentences.push({ authorID: anonymous ? "" : reader.readString(), value: reader.readString() });
+		sentences.push({
+			author: anonymous ? "" : reader.readString(),
+			value: reader.readString(),
+			votes: anonymous ? 0 : reader.readU8(),
+			index: i,
+		});
 	}
 
 	return sentences;

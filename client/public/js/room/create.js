@@ -90,9 +90,13 @@ export const Create = createSingletonView(() => {
 		}
 	});
 
-	RoomData.state.addHook(state => {});
-
-	Sentence.set(Sentence.get());
-
-	return $("section", nonfixed, sentence, sentenceLen, fixed);
+	return $(
+		"section",
+		nonfixed,
+		// $("p", "(Tip: You can type on your keyboard to quickly search for words.)"),
+		// TODO: ^^^ Implement this ^^^
+		sentence,
+		sentenceLen,
+		fixed,
+	);
 });

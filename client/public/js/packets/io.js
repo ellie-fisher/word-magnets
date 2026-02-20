@@ -37,6 +37,10 @@ export const PacketTypes = enumerate([
 ]);
 
 export const U8_MAX_VALUE = 255;
+
+export const I8_MIN_VALUE = -128;
+export const I8_MAX_VALUE = 127;
+
 export const MAX_STRING_LENGTH = U8_MAX_VALUE;
 
 /**
@@ -45,6 +49,7 @@ export const MAX_STRING_LENGTH = U8_MAX_VALUE;
 export class PacketReader {
 	constructor(array) {
 		this._array = array;
+		this._view = new DataView(this._array.buffer);
 		this._index = 0;
 	}
 
@@ -53,18 +58,22 @@ export class PacketReader {
 	}
 
 	readU8() {
-		return this.isAtEnd() ? 0 : this._array[this._index++];
+		return this.isAtEnd() ? 0 : this._view.getUint8(this._index++);
 	}
 
 	readU32() {
 		let value = 0;
 
 		try {
-			value = new DataView(this._array.buffer).getUint32(this._index, true);
+			value = this._view.getUint32(this._index, true);
 			this._index += 4;
 		} catch {}
 
 		return value;
+	}
+
+	readI8() {
+		return this.isAtEnd() ? 0 : this._view.getInt8(this._index++);
 	}
 
 	readBool() {
@@ -110,6 +119,18 @@ export class PacketWriter {
 
 	writeU8(value) {
 		value = clamp(value, 0, U8_MAX_VALUE);
+
+		if (this._index < this._array.length) {
+			this._array[this._index] = value;
+		} else {
+			this._array.push(value);
+		}
+
+		this._index++;
+	}
+
+	writeI8(value) {
+		value = clamp(value, I8_MIN_VALUE, I8_MAX_VALUE);
 
 		if (this._index < this._array.length) {
 			this._array[this._index] = value;

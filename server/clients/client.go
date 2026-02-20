@@ -21,7 +21,7 @@ type Client struct {
 	Socket *websocket.Conn
 	RoomID string
 	Name   string
-	Vote   string
+	Vote   int8
 	Score  uint8
 }
 
@@ -69,6 +69,6 @@ func NewClient(conn *websocket.Conn) (*Client, error) {
 	if uuid, err := uuid.NewRandom(); err != nil {
 		return nil, err
 	} else {
-		return &Client{id: uuid.String(), Socket: conn}, nil
+		return &Client{uuid.String(), conn, "", "", -1, 0}, nil
 	}
 }

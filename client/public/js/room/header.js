@@ -7,8 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createState, createSingletonView, $, $button } from "../framework.js";
-import { copyText } from "../util.js";
+import { createState, createSingletonView, $, $button, copyText } from "../framework.js";
 import { RoomStates, RoomData } from "./state.js";
 
 export const Header = createSingletonView(() => {
@@ -106,7 +105,7 @@ export const Header = createSingletonView(() => {
 
 	return $(
 		"section",
-		$button("« Exit", "tab warning"),
+		$button("« Exit", "tab warning", () => alert("Not implemented yet!")),
 		$(
 			"section",
 			{ className: "container room-header" },

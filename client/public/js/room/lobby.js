@@ -10,32 +10,43 @@
 import { createSingletonView, $, $button, $replace } from "../framework.js";
 import { RoomStates, RoomData, RoomClients } from "./state.js";
 import { sendStartGame, sendCancelStartGame } from "../packets/send.js";
-import { ClientID } from "../app/state.js";
+import { ClientInfo } from "../app/state.js";
+import { Table } from "./table.js";
 
 export const Lobby = createSingletonView(() => {
-	const players = $("p", { className: "player-list" });
+	const players = $("p");
 
 	const hook = () => {
 		const limit = RoomData.clientLimit.get();
 		const ownerID = RoomData.ownerID.get();
 		const clients = RoomClients.get();
-		const children = [];
+		const { clientID } = ClientInfo.get();
+		const rows = [];
 
 		for (let i = 0; i < limit; i++) {
-			if (i < clients.length) {
+			if (i >= clients.length) {
+				rows.push(["\u00A0", "\u00A0"]);
+			} else {
 				const { id, name } = clients[i];
 
 				if (id === ownerID) {
-					children.push($("span", { className: "player-list-owner", title: id }, `* ${name}`));
+					rows.push([{ className: "room-owner" }, [id === clientID ? "Owner (You)" : "Owner", name]]);
 				} else {
-					children.push($("span", { title: id }, `  ${name}`));
+					rows.push([id === clientID ? "You" : "\u00A0", name]);
 				}
-			} else {
-				children.push($("span", "\u00A0"));
 			}
 		}
 
-		$replace(players, ...children);
+		$replace(
+			players,
+			Table(
+				[
+					["Role", "15%"],
+					["Name", "85%"],
+				],
+				...rows,
+			),
+		);
 	};
 
 	RoomData.clientLimit.addHook(hook);
@@ -56,7 +67,7 @@ export const Lobby = createSingletonView(() => {
 		button.textContent = state === RoomStates.Lobby ? "Start Game" : "Cancel";
 		button.disabled = false;
 
-		if (RoomData.ownerID.get() === ClientID.get()) {
+		if (RoomData.ownerID.get() === ClientInfo.get().clientID) {
 			button.classList.remove("hidden");
 		} else {
 			button.classList.add("hidden");

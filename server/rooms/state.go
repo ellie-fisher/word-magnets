@@ -10,6 +10,7 @@
 package rooms
 
 import (
+	"slices"
 	"word-magnets/clients"
 	"word-magnets/packets"
 	"word-magnets/words"
@@ -48,6 +49,7 @@ type state struct {
 	doesTick      bool
 	getStartTime  func(*Room) uint8
 	onEnter       func(*Room, *clients.Client)
+	onLeave       func(*Room, *clients.Client)
 	next          func(*Room) *state
 	receivePacket func(*stateMachine, *clients.Client, *packets.PacketReader)
 }
@@ -57,8 +59,12 @@ func (roomState *state) enter(room *Room, client *clients.Client) {
 		room.timeLeft = roomState.getStartTime(room)
 	}
 
-	room.sendRoomData(client, roomDataFlagAll)
 	roomState.onEnter(room, client)
+	room.sendRoomData(client, roomDataFlagAll)
+}
+
+func (roomState *state) leave(room *Room, client *clients.Client) {
+	roomState.onLeave(room, client)
 }
 
 func (roomState *state) tick(room *Room) {
@@ -78,6 +84,7 @@ func newStateWithDefaults(tag stateTag, doesTick bool, next *state) state {
 		doesTick:      doesTick,
 		getStartTime:  func(*Room) uint8 { return 0 },
 		onEnter:       func(*Room, *clients.Client) {},
+		onLeave:       func(*Room, *clients.Client) {},
 		next:          func(*Room) *state { return next },
 		receivePacket: func(*stateMachine, *clients.Client, *packets.PacketReader) {},
 	}
@@ -87,7 +94,7 @@ var lobbyState state = newStateWithDefaults(lobbyTag, false, &startGameState)
 var startGameState state = newStateWithDefaults(startGameTag, true, &createState)
 var createState state = newStateWithDefaults(createTag, true, &createSubmitState)
 var createSubmitState state = newStateWithDefaults(createSubmitTag, true, nil)
-var voteState state = newStateWithDefaults(voteTag, true, &voteSubmitState)
+var voteState state = newStateWithDefaults(voteTag, true, nil)
 var voteSubmitState state = newStateWithDefaults(voteSubmitTag, true, &resultsState)
 var resultsState state = newStateWithDefaults(resultsTag, true, nil)
 var endState state = newStateWithDefaults(endTag, true, &lobbyState)
@@ -125,6 +132,14 @@ func init() {
 		if client == nil {
 			room.selectWords()
 			room.sentences = []*words.Sentence{}
+
+			for _, cl := range room.clients {
+				cl.Vote = -1
+			}
+
+			if room.round < room.roundLimit {
+				room.round++
+			}
 		}
 
 		room.sendWords(client)
@@ -145,7 +160,7 @@ func init() {
 	}
 
 	createSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		if matched, sentence := reader.ReadSubmitSentence(client.ID(), machine.room.wordbanks); matched && client != nil {
+		if matched, sentence := reader.ReadSubmitSentence(client.ID(), client.Name, machine.room.wordbanks); matched && client != nil {
 			if sentence.Value != "" {
 				machine.room.addSentence(sentence)
 
@@ -171,15 +186,50 @@ func init() {
 		room.sendSentences(client, true)
 	}
 
+	voteState.next = func(room *Room) *state {
+		votes := 0
+
+		for _, client := range room.clients {
+			if client.Vote >= 0 && int(client.Vote) < len(room.sentences) {
+				votes++
+			}
+		}
+
+		// If we've already received all of the votes, we can just skip ahead to the results.
+		if votes >= len(room.clients) {
+			return &resultsState
+		}
+
+		return &voteSubmitState
+	}
+
+	voteState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
+		if matched, vote := reader.ReadSubmitVote(); matched {
+			if client.Vote < 0 && vote >= 0 && int(vote) < len(machine.room.sentences) {
+				client.Vote = vote
+				votes := 0
+
+				for _, client := range machine.room.clients {
+					if client.Vote >= 0 && int(client.Vote) < len(machine.room.sentences) {
+						votes++
+					}
+				}
+
+				// No point in waiting around if we've already received everyone's votes.
+				if votes >= len(machine.room.clients) {
+					machine.next()
+				}
+			}
+		}
+	}
+
 	/* voteSubmitState */
 
 	voteSubmitState.getStartTime = func(room *Room) uint8 {
 		return voteSubmitTime
 	}
 
-	voteSubmitState.receivePacket = func(machine *stateMachine, client *clients.Client, reader *packets.PacketReader) {
-		// TODO: Tally votes
-	}
+	voteSubmitState.receivePacket = voteState.receivePacket
 
 	/* resultsState */
 
@@ -188,12 +238,31 @@ func init() {
 	}
 
 	resultsState.onEnter = func(room *Room, client *clients.Client) {
+		if client == nil {
+			// Tally votes.
+			for _, client := range room.clients {
+				if vote := client.Vote; vote >= 0 && int(vote) < len(room.sentences) {
+					if sentence := room.sentences[vote]; sentence != nil && sentence.AuthorID != client.ID() {
+						sentence.Votes++
+					}
+				}
+			}
+
+			// Update client scores.
+			for _, sentence := range room.sentences {
+				index := slices.IndexFunc(room.clients, func(client *clients.Client) bool { return client.ID() == sentence.AuthorID })
+
+				if index >= 0 {
+					room.clients[index].Score += sentence.Votes
+				}
+			}
+		}
+
 		room.sendSentences(client, false)
 	}
 
 	resultsState.next = func(room *Room) *state {
 		if room.round < room.roundLimit {
-			room.round++
 			return &createState
 		} else {
 			return &endState
@@ -203,17 +272,36 @@ func init() {
 	/* endState */
 
 	endState.getStartTime = func(*Room) uint8 { return endTime }
+
+	endState.onEnter = func(room *Room, client *clients.Client) {
+		if client == nil {
+			room.sendClients()
+		}
+	}
+
+	endState.onLeave = func(room *Room, client *clients.Client) {
+		if client == nil {
+			room.round = 0
+
+			for _, cl := range room.clients {
+				cl.Score = 0
+			}
+		}
+	}
 }
 
 func (machine *stateMachine) tag() stateTag                { return machine.state.tag }
 func (machine *stateMachine) enter(client *clients.Client) { machine.state.enter(machine.room, client) }
+func (machine *stateMachine) leave(client *clients.Client) { machine.state.leave(machine.room, client) }
 
 func (machine *stateMachine) next() {
+	machine.leave(nil)
 	machine.state = machine.state.next(machine.room)
 	machine.enter(nil)
 }
 
 func (machine *stateMachine) reset() {
+	machine.leave(nil)
 	machine.state = &lobbyState
 	machine.enter(nil)
 }

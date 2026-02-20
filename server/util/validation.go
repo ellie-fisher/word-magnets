@@ -36,11 +36,13 @@ func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
 }
 
 func (validator *FieldValidator) ValidateString(value string) (bool, string) {
+	// This is the most we can do here. Trailing spaces should be trimmed by the client first.
 	if len(strings.TrimSpace(value)) != len(value) {
 		return false, validator.SpaceError
 	}
 
-	if matched, err := regexp.MatchString("[^ -)+-~]", value); matched || err != nil {
+	// Detect illegal characters.
+	if matched, err := regexp.MatchString("[^ -~]", value); matched || err != nil {
 		return false, validator.CharError
 	}
 

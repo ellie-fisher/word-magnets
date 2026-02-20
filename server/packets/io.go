@@ -51,6 +51,10 @@ func (reader *PacketReader) ReadU8() uint8 {
 	return value
 }
 
+func (reader *PacketReader) ReadI8() int8 {
+	return int8(reader.ReadU8())
+}
+
 func (reader *PacketReader) ReadBool() bool {
 	return reader.ReadU8() != 0
 }
@@ -116,6 +120,10 @@ func (writer *PacketWriter) WriteU32(value uint32) error {
 	return binary.Write(&writer.buffer, binary.LittleEndian, value)
 }
 
+func (writer *PacketWriter) WriteI8(value int8) error {
+	return writer.WriteU8(uint8(value))
+}
+
 func (writer *PacketWriter) WriteBool(value bool) {
 	writer.WriteU8(util.BoolToU8(value))
 }
@@ -153,6 +161,8 @@ func (writer *PacketWriter) Write(values ...any) error {
 			writer.WriteU8(cast)
 		case uint32:
 			writer.WriteU32(cast)
+		case int8:
+			writer.WriteI8(cast)
 		case bool:
 			writer.WriteBool(cast)
 		case string:

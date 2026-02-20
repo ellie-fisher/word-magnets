@@ -22,7 +22,7 @@ export const RoomStates = enumerate([
 	"End",
 ]);
 
-export const RoomData = {
+export const RoomData = deepFreeze({
 	id: createState(""),
 	ownerID: createState(""),
 	state: createState(RoomStates.Lobby),
@@ -31,9 +31,7 @@ export const RoomData = {
 	round: createState(0),
 	roundLimit: createState(0),
 	clientLimit: createState(0),
-};
-
-deepFreeze(RoomData);
+});
 
 export const applyRoomData = (data = {}) => {
 	Object.keys(data).forEach(key => {
@@ -63,6 +61,14 @@ export const setSentence = sentence => {
 	return success;
 };
 
-export const clearSentence = () => setSentence({ words: [], string: "", length: 0 });
+export const RoomSentences = deepFreeze({
+	sentences: createState([]),
+	vote: createState(-1),
+	voteSubmitted: createState(false),
+});
 
-export const RoomSentences = createState([]);
+export const clearRoomSentences = () => {
+	RoomSentences.sentences.reset();
+	RoomSentences.vote.reset();
+	RoomSentences.voteSubmitted.reset();
+};

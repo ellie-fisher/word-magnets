@@ -11,6 +11,7 @@ import { createState, createSingletonView, $, $button } from "../framework.js";
 import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
+import { ServerInfo } from "../app/state.js";
 
 export const Title = createSingletonView(() => {
 	const tabCreate = $button("Create", "tab", () => TabState.set(true));
@@ -23,6 +24,7 @@ export const Title = createSingletonView(() => {
 		onButtonClick: sendCreateRoom,
 	});
 
+	// TODO: Make room code private.
 	const fieldsJoin = RoomFields({
 		fields: structuredClone(Fields.joinRoom),
 		title: "Join a Room",
@@ -37,5 +39,19 @@ export const Title = createSingletonView(() => {
 		fieldsJoin.hidden = value;
 	});
 
-	return $("article", $("h1", "Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin);
+	const stats = $("p", "");
+
+	ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
+		let message = "There ";
+
+		if (clientCount === 1) {
+			message += `is 1 player`;
+		} else {
+			message += `are ${clientCount} players`;
+		}
+
+		stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
+	});
+
+	return $("article", $("h1", "Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, $("section", stats));
 });

@@ -9,7 +9,7 @@
 
 import { hasIndex } from "../util.js";
 
-export const MAX_LENGTH = 120;
+export const MAX_LENGTH = 100;
 
 export const sentenceToString = (sentence = [], wordbanks = []) => {
 	let str = "";

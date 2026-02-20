@@ -72,6 +72,7 @@ func (room *Room) sendClients() error {
 	for _, client := range room.Clients() {
 		writer.WriteString(client.ID())
 		writer.WriteString(client.Name)
+		writer.WriteU8(client.Score)
 	}
 
 	return room.Send(writer.Bytes())
@@ -106,11 +107,11 @@ func (room *Room) sendWords(client *clients.Client) error {
 // sendSentences sends the sentences either to a specific client or the whole room. It's used
 // during the various voting phases.
 //
-// The first time it's anonymized, which means that author IDs are *not* included, and the clients'
-// own sentences aren't sent to them.
+// The first time it's anonymized, which means that authors are *not* included, and the clients' own
+// sentences aren't sent to them.
 //
-// The second time is during the voting results phase, which means that author IDs *are* included,
-// as well as the numbers of votes.
+// The second time is during the voting results phase, which means that authors *are* included, as
+// well as the numbers of votes.
 func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 	clients := []*clients.Client{}
 
@@ -144,8 +145,7 @@ func (room *Room) sendSentences(target *clients.Client, anonymous bool) {
 
 		if err := writer.Write(packets.RoomSentencesPacket, anonymous, length); err == nil {
 			for _, sentence := range room.sentences {
-				writer.WriteString(sentence.AuthorID)
-				writer.WriteString(sentence.Value)
+				writer.Write(sentence.AuthorName, sentence.Value, sentence.Votes)
 			}
 
 			room.Send(writer.Bytes())

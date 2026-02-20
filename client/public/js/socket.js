@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { AppView, ClientID } from "./app/state.js";
+import { AppView, ClientInfo, ServerInfo } from "./app/state.js";
 import { PacketTypes, PacketReader } from "./packets/io.js";
 
 import {
@@ -69,13 +69,12 @@ socket.onmessage = async event => {
 
 	switch (reader.readU8()) {
 		case PacketTypes.ClientInfoPacket: {
-			const { clientID = "" } = readClientInfo(reader);
-			ClientID.set(clientID);
+			ClientInfo.set(readClientInfo(reader));
 			break;
 		}
 
 		case PacketTypes.ServerInfoPacket: {
-			console.log("Server Info:", readServerInfo(reader));
+			ServerInfo.set(readServerInfo(reader));
 			break;
 		}
 
@@ -107,7 +106,7 @@ socket.onmessage = async event => {
 		}
 
 		case PacketTypes.RoomSentencesPacket: {
-			RoomSentences.set(readRoomSentences(reader));
+			RoomSentences.sentences.set(readRoomSentences(reader));
 			break;
 		}
 

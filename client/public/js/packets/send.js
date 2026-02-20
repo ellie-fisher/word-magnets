@@ -64,7 +64,7 @@ export const sendLeaveRoom = () => {
 	socket.send(writer.bytes());
 };
 
-export const sendSubmitSentence = ({ words }) => {
+export const sendSubmitSentence = ({ words = [] }) => {
 	const writer = new PacketWriter();
 	const length = Math.min(words.length, U8_MAX_VALUE);
 
@@ -73,6 +73,15 @@ export const sendSubmitSentence = ({ words }) => {
 	for (let i = 0; i < length; i++) {
 		writer.write(words[i].bankIndex, words[i].wordIndex);
 	}
+
+	socket.send(writer.bytes());
+};
+
+export const sendSubmitVote = vote => {
+	const writer = new PacketWriter();
+
+	writer.writeU8(PacketTypes.SubmitVotePacket);
+	writer.writeI8(vote);
 
 	socket.send(writer.bytes());
 };

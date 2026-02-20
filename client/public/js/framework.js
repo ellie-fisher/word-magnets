@@ -7,6 +7,8 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
+import { deepFreeze } from "./util.js";
+
 /**
  * Exceedingly simple frontend framework.
  */
@@ -29,8 +31,16 @@ export const createState = (initialValue = null, initialHook = null) => {
 			}
 		},
 
-		addHook(hook) {
+		reset() {
+			state.set(deepFreeze(initialValue));
+		},
+
+		addHook(hook, initTrigger = true) {
 			hooks.add(hook);
+
+			if (initTrigger) {
+				hook(value, null, value);
+			}
 		},
 	};
 
@@ -39,6 +49,7 @@ export const createState = (initialValue = null, initialHook = null) => {
 	}
 
 	state.set(initialValue);
+	initialValue = deepFreeze(initialValue);
 
 	return state;
 };
@@ -75,7 +86,18 @@ export const $ = (tag, ...args) => {
 	// Check whether second argument is an attributes object.
 	if (args.length >= i && typeof args[i] === "object" && !(args[i] instanceof Node)) {
 		const attributes = args[i];
-		Object.keys(attributes).forEach(key => (element[key] = attributes[key]));
+
+		Object.keys(attributes).forEach(key => {
+			const attr = attributes[key];
+
+			// The `style` attribute can only be set per-field so we have to do this.
+			if (key === "style") {
+				Object.keys(attr).forEach(styleKey => (element.style[styleKey] = attr[styleKey]));
+			} else {
+				element[key] = attr;
+			}
+		});
+
 		i++;
 	}
 
@@ -169,4 +191,41 @@ export const $button = (text, ...args) => {
 	}
 
 	return $("button", { className: args[0], onclick: args[1] }, text);
+};
+
+const copyTextArea = $("textarea");
+
+/**
+ * Attempts to copy text. If available, it will use the Clipboard API. Otherwise, it will fallback to
+ * the old school method of using a `textarea` with `document.execCommmand()`.
+ *
+ * @param {string} text
+ * @returns {Promise<boolean>} Whether or not it was successful.
+ */
+export const copyText = async text => {
+	let success = true;
+
+	if (typeof navigator.clipboard !== "undefined") {
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch {
+			success = false;
+		}
+	} else {
+		document.body.appendChild(copyTextArea);
+
+		copyTextArea.value = text;
+		copyTextArea.focus();
+		copyTextArea.select();
+
+		try {
+			success = document.execCommand("copy");
+		} catch {
+			success = false;
+		} finally {
+			document.body.removeChild(copyTextArea);
+		}
+	}
+
+	return success;
 };

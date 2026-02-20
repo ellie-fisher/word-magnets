@@ -14,6 +14,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -95,6 +96,8 @@ func handlePacket(client *clients.Client, bytes []byte) {
 				client.SendRoomConnectError(false, "Room not found.")
 			} else if len(room.Clients()) >= int(room.ClientLimit()) {
 				client.SendRoomConnectError(false, "The room is full.")
+			} else if slices.ContainsFunc(room.Clients(), func(client *clients.Client) bool { return name == client.Name }) {
+				client.SendRoomConnectError(false, "Name is already in use in that room.")
 			} else {
 				room.AddClient(client, name)
 			}
