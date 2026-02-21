@@ -72,9 +72,12 @@ func init() {
 					return
 				case <-pool.ticker.C:
 					pool.mutex.Lock()
+					var wg sync.WaitGroup
 					for _, room := range pool.rooms {
-						room.Tick()
+						wg.Add(1)
+						go room.tick(&wg)
 					}
+					wg.Wait()
 					pool.mutex.Unlock()
 				}
 			}

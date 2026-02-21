@@ -15,6 +15,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 
 	"word-magnets/clients"
 	"word-magnets/packets"
@@ -109,7 +110,8 @@ func (room *Room) RemoveClient(client *clients.Client) {
 	}
 }
 
-func (room *Room) Tick() {
+func (room *Room) tick(wg *sync.WaitGroup) {
+	defer wg.Done()
 	room.state.tick()
 }
 
@@ -231,7 +233,6 @@ func DestroyRoom(room *Room) {
 	delete(rooms, room.id)
 	removeRoomFromPool(room)
 
-	room.id = ""
 	room.owner = nil
 }
 
