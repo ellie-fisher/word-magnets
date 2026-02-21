@@ -30,8 +30,10 @@ export const Vote = createSingletonView(() => {
 		const sentences = RoomSentences.sentences.get();
 
 		if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
+			submit.style.visibility = "hidden";
 			$replace(container, $("p", $("em", "No sentences to show!")));
 		} else {
+			submit.style.visibility = "visible";
 			sentences.forEach(({ value = "" }, index) => {
 				if (value !== "") {
 					const selected = vote === index;
