@@ -178,19 +178,62 @@ export const $field = (field, onchange = () => {}) => {
  * @returns {HTMLButtonElement}
  */
 export const $button = (text, ...args) => {
-	if (args.length < 1) {
-		return $("button", text);
+	let attributes = {};
+
+	args.forEach((arg, i) => {
+		if (typeof arg === "function") {
+			attributes.onclick = arg;
+		} else if (typeof arg === "string") {
+			attributes.className = arg;
+		} else if (typeof arg === "object") {
+			attributes = { ...attributes, ...arg };
+		}
+	});
+
+	return $("button", attributes, text);
+};
+
+export const getElementCenter = element => {
+	const { left, top, width, height } = element.getBoundingClientRect();
+
+	return { x: left + width / 2, y: top + height / 2 };
+};
+
+export const isWithinBounds = (...args) => {
+	if (args.length <= 1) {
+		return true;
 	}
 
-	if (args.length === 1) {
-		if (typeof args[0] === "function") {
-			return $("button", { onclick: args[0] }, text);
+	if (args.length === 2) {
+		let boundsA = args[0];
+		let boundsB = args[1];
+
+		if (boundsA instanceof HTMLElement) {
+			boundsA = boundsA.getBoundingClientRect();
 		}
 
-		return $("button", { className: args[0] }, text);
+		if (boundsB instanceof HTMLElement) {
+			boundsB = boundsB.getBoundingClientRect();
+		}
+
+		const { left: leftA = 0, right: rightA = 0, top: topA = 0, bottom: bottomA = 0 } = boundsA;
+		const { left: leftB = 0, right: rightB = 0, top: topB = 0, bottom: bottomB = 0 } = boundsB;
+
+		return leftA >= leftB && rightA <= rightB && topA >= topB && bottomA <= bottomB;
 	}
 
-	return $("button", { className: args[0], onclick: args[1] }, text);
+	let bounds = args[2];
+
+	if (bounds instanceof HTMLElement) {
+		bounds = bounds.getBoundingClientRect();
+	}
+
+	const { left, right, top, bottom } = bounds;
+
+	const x = args[0];
+	const y = args[1];
+
+	return x >= left && x <= right && y >= top && y <= bottom;
 };
 
 const copyTextArea = $("textarea");

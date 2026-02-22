@@ -8,7 +8,7 @@
  */
 
 import { createSingletonView, $, $replace } from "../framework.js";
-import { RoomStates, RoomData, Sentence, RoomSentences, clearRoomSentences } from "./state.js";
+import { RoomStates, RoomData, UserSentence, RoomSentences, clearRoomSentences } from "./state.js";
 import { sendSubmitSentence, sendSubmitVote } from "../packets/send.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
@@ -42,7 +42,7 @@ export const Room = createSingletonView(() => {
 				view = Create();
 				titleText = "Create a sentence!";
 
-				Sentence.reset();
+				UserSentence.reset();
 				clearRoomSentences();
 
 				break;
@@ -52,8 +52,8 @@ export const Room = createSingletonView(() => {
 				view = Create();
 				titleText = "Please wait...";
 
-				if (Sentence.get().length > 0) {
-					sendSubmitSentence(Sentence.get());
+				if (UserSentence.get().length > 0) {
+					sendSubmitSentence(UserSentence.get());
 				}
 
 				break;

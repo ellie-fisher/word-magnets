@@ -16,7 +16,9 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 	let prev = "";
 	let length = 0;
 
-	sentence.forEach((entry, index) => {
+	for (let i = 0; i < sentence.length; i++) {
+		const entry = sentence[i];
+
 		if (!hasIndex(wordbanks, entry.bankIndex)) {
 			return ["", 0];
 		}
@@ -30,7 +32,7 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 		let word = words[entry.wordIndex];
 
 		// Account for hyphens and also not insert extra spaces for space tiles.
-		if (word !== " " && index > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
+		if (word !== " " && i > 0 && prev.at(-1) !== "-" && word.at(0) !== "-") {
 			str += " ";
 			length++;
 		}
@@ -47,7 +49,7 @@ export const sentenceToString = (sentence = [], wordbanks = []) => {
 
 		str += word;
 		length += Math.max(1, word.length);
-	});
+	}
 
 	return [str.trim(), length];
 };

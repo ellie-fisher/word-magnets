@@ -43,7 +43,7 @@ export const applyRoomData = (data = {}) => {
 
 export const RoomClients = createState([]);
 export const RoomWords = createState([]);
-export const Sentence = createState({ words: [], string: "", length: 0 });
+export const UserSentence = createState({ words: [], string: "", length: 0 });
 
 export const setSentence = sentence => {
 	let success = false;
@@ -55,7 +55,7 @@ export const setSentence = sentence => {
 		sentence.string = string;
 		sentence.length = length;
 
-		Sentence.set(sentence);
+		UserSentence.set(sentence);
 	}
 
 	return success;
