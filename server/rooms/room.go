@@ -157,7 +157,7 @@ func (room *Room) shuffleSentences() {
 // Rooms are stored by ID=>Room
 var rooms = make(map[string]*Room)
 
-const newRoomAttempts = 20
+const newRoomAttempts = 5
 const roomIDLength = 8
 
 // Only letters and numbers that can't be easily mistaken for each other.
