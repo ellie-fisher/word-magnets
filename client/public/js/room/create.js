@@ -25,7 +25,7 @@ import { MAX_LENGTH } from "./sentences.js";
 export const Create = createSingletonView(() => {
 	const MOUSE_LEFT = 1 << 0;
 
-	const sentence = {
+	const Sentence = {
 		body: $("section", { className: "sentence" }),
 		length: $("p"),
 		spacer: $button("\u00A0", "word-tile hidden"),
@@ -53,24 +53,24 @@ export const Create = createSingletonView(() => {
 
 		// Shake tiles when you cannot add a new word to the sentence. This is kinda hacky but oh well.
 		shakeTiles() {
-			if (sentence.shakeTimeout === 0) {
+			if (Sentence.shakeTimeout === 0) {
 				$getAll("button.word-tile").forEach(tile => (tile.style.animation = "brief-shake 0.3s linear 1"));
 
-				sentence.shakeTimeout = setTimeout(() => {
-					sentence.shakeTimeout = 0;
+				Sentence.shakeTimeout = setTimeout(() => {
+					Sentence.shakeTimeout = 0;
 					$getAll("button.word-tile").forEach(tile => (tile.style.animation = ""));
 				}, 300);
 			}
 		},
 	};
 
-	const wordbanks = { nonfixed: $("section"), fixed: $("section") };
+	const Wordbanks = { nonfixed: $("section"), fixed: $("section") };
 
 	// Everything related to dragging tiles.
-	const drag = {
+	const Drag = {
 		tiles: [],
-		firstPressed: { x: 0, y: 0, tile: null },
-		selected: { bankIndex: -1, wordIndex: -1, tile: null },
+		dragging: false,
+		selected: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0, pressY: 0 },
 
 		// The gap that appears between tiles when dragging a tile in(to) a sentence.
 		spacer: createState({ bankIndex: -1, wordIndex: -1, sentenceIndex: -1 }),
@@ -80,55 +80,59 @@ export const Create = createSingletonView(() => {
 			style: { position: "absolute", "z-index": 10, left: "0px", top: "0px" },
 		}),
 
-		start(bankIndex, wordIndex, tile) {
-			drag.tile.textContent = tile.textContent;
-			drag.tile.style.transition = "";
-			drag.tile.classList.remove("hidden");
-			drag.selected = { bankIndex, wordIndex, tile };
+		start() {
+			Drag.tile.textContent = Drag.selected.tile.textContent;
+			Drag.tile.style.transition = "";
+			Drag.tile.classList.remove("hidden");
+			Drag.dragging = true;
+
+			if (Drag.selected.sentenceIndex >= 0) {
+				Sentence.removeWord(Drag.selected.sentenceIndex);
+			}
 		},
 
 		stop() {
-			const { sentenceIndex } = drag.spacer.get();
+			const { sentenceIndex } = Drag.spacer.get();
 			let fade = 0;
 
 			if (sentenceIndex >= 0) {
-				const { bankIndex, wordIndex } = drag.selected;
+				const { bankIndex, wordIndex } = Drag.selected;
 
-				if (!sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
+				if (!Sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
 					fade = 0.5;
-					sentence.shakeTiles();
+					Sentence.shakeTiles();
 				}
 			} else {
 				fade = 0.25;
 			}
 
 			if (fade > 0) {
-				drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
+				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
 			}
 
-			drag.spacer.reset();
-			drag.selected = { bankIndex: -1, wordIndex: -1, tile: null };
-			drag.firstPressed = { x: 0, y: 0, tile: null };
-			drag.tile.classList.add("hidden");
+			Drag.spacer.reset();
+			Drag.selected = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0, pressY: 0 };
+			Drag.dragging = false;
+			Drag.tile.classList.add("hidden");
 		},
 
 		move(x, y) {
-			const { tile } = drag;
+			const { tile } = Drag;
 
-			tile.style.left = `${x - drag.firstPressed.x}px`;
-			tile.style.top = `${y - drag.firstPressed.y}px`;
+			tile.style.left = `${x - Drag.selected.pressX}px`;
+			tile.style.top = `${y - Drag.selected.pressY}px`;
 
-			const { left, right, top, bottom } = sentence.body.getBoundingClientRect();
+			const { left, right, top, bottom } = Sentence.body.getBoundingClientRect();
 			const bounds = { left: left - tile.offsetWidth, right: right + tile.offsetWidth, top, bottom };
 
 			if (!isWithinBounds(tile, bounds)) {
-				drag.spacer.reset();
+				Drag.spacer.reset();
 			} else {
 				let right = null;
 				let sentenceIndex = Infinity;
 
-				for (let i = 0; i < drag.tiles.length && right === null; i++) {
-					const sentenceTile = drag.tiles[i];
+				for (let i = 0; i < Drag.tiles.length && right === null; i++) {
+					const sentenceTile = Drag.tiles[i];
 					const center = getElementCenter(sentenceTile);
 
 					if (center.x >= x) {
@@ -139,24 +143,34 @@ export const Create = createSingletonView(() => {
 					// TODO: Account for Y coord as well
 				}
 
-				drag.spacer.set({
-					bankIndex: drag.selected.bankIndex,
-					wordIndex: drag.selected.wordIndex,
+				Drag.spacer.set({
+					bankIndex: Drag.selected.bankIndex,
+					wordIndex: Drag.selected.wordIndex,
 					sentenceIndex,
 				});
 			}
 		},
 	};
 
-	document.addEventListener("pointermove", event => {
-		if (drag.selected.tile !== null) {
-			drag.move(event.pageX, event.pageY, true);
+	document.addEventListener("pointermove", ({ buttons, offsetX, offsetY, pageX, pageY }) => {
+		const { tile, pressX, pressY } = Drag.selected;
+
+		if (tile !== null && buttons & MOUSE_LEFT) {
+			const distance = Math.sqrt((offsetX - pressX) ** 2 + (offsetY - pressY) ** 2);
+
+			if (Drag.dragging || (!Drag.dragging && distance >= 10)) {
+				if (!Drag.dragging) {
+					Drag.start();
+				}
+
+				Drag.move(pageX, pageY, true);
+			}
 		}
 	});
 
 	document.addEventListener("pointerup", event => {
-		if (drag.selected.tile !== null) {
-			drag.stop(event.pageX, event.pageY);
+		if (Drag.dragging) {
+			Drag.stop(event.pageX, event.pageY);
 		}
 	});
 
@@ -169,24 +183,21 @@ export const Create = createSingletonView(() => {
 			"word-tile",
 			() => {
 				if (sentenceIndex >= 0) {
-					sentence.removeWord(sentenceIndex);
-				} else if (!sentence.addWord({ bankIndex, wordIndex })) {
-					sentence.shakeTiles();
+					Sentence.removeWord(sentenceIndex);
+				} else if (!Sentence.addWord({ bankIndex, wordIndex })) {
+					Sentence.shakeTiles();
 				}
 			},
 			{
 				onpointerdown({ offsetX, offsetY, target }) {
-					drag.firstPressed = { x: offsetX, y: offsetY, tile: target };
-				},
-
-				onpointermove({ target, buttons }) {
-					if (target === drag.firstPressed.tile && buttons & MOUSE_LEFT) {
-						drag.start(bankIndex, wordIndex, target);
-
-						if (sentenceIndex >= 0) {
-							sentence.removeWord(sentenceIndex);
-						}
-					}
+					Drag.selected = {
+						bankIndex,
+						wordIndex,
+						sentenceIndex,
+						tile: target,
+						pressX: offsetX,
+						pressY: offsetY,
+					};
 				},
 			},
 		);
@@ -201,7 +212,7 @@ export const Create = createSingletonView(() => {
 	};
 
 	RoomWords.addHook(() => {
-		const { fixed, nonfixed } = wordbanks;
+		const { fixed, nonfixed } = Wordbanks;
 
 		$replace(fixed);
 		$replace(nonfixed);
@@ -220,37 +231,37 @@ export const Create = createSingletonView(() => {
 	const updateSentenceHook = () => {
 		const { words = [], string = "\u00A0", length = 0 } = UserSentence.get();
 
-		$replace(sentence.length, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
+		$replace(Sentence.length, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
-			$replace(sentence.body, sentence.spacer, $("p", string === "" ? "\u00A0" : string));
+			$replace(Sentence.body, Sentence.spacer, $("p", string === "" ? "\u00A0" : string));
 		} else {
-			drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
+			Drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 				return Tile(bankIndex, wordIndex, sentenceIndex);
 			});
 
-			const tiles = [...drag.tiles];
-			const dragSpacer = drag.spacer.get();
+			const tiles = [...Drag.tiles];
+			const dragSpacer = Drag.spacer.get();
 
 			if (dragSpacer.sentenceIndex >= 0) {
 				tiles.splice(dragSpacer.sentenceIndex, 0, Spacer(dragSpacer.bankIndex, dragSpacer.wordIndex));
 			}
 
-			$replace(sentence.body, ...tiles, $("p", string === "" ? "\u00A0" : string));
+			$replace(Sentence.body, ...tiles, $("p", string === "" ? "\u00A0" : string));
 		}
 	};
 
 	UserSentence.addHook(updateSentenceHook);
-	drag.spacer.addHook(updateSentenceHook);
+	Drag.spacer.addHook(updateSentenceHook);
 
 	return $(
 		"section",
-		drag.tile,
-		wordbanks.nonfixed,
+		Drag.tile,
+		Wordbanks.nonfixed,
 		// $("p", "(Tip: You can type on your keyboard to quickly search for words.)"),
 		// TODO: ^^^ Implement this ^^^
-		sentence.body,
-		sentence.length,
-		wordbanks.fixed,
+		Sentence.body,
+		Sentence.length,
+		Wordbanks.fixed,
 	);
 });
