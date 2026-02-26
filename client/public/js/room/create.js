@@ -36,6 +36,10 @@ export const Create = createSingletonView(() => {
 		// The timeout ID of the tile shake animation that plays when failing to add a word to a sentence.
 		shakeTimeout: 0,
 
+		/* Modifier keys for special functions. */
+		ctrlKey: false,
+		shiftKey: false,
+
 		// Adds a word to the sentence.
 		addWord(word, index = Infinity) {
 			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
@@ -44,6 +48,33 @@ export const Create = createSingletonView(() => {
 				sentence.words.push(word);
 			} else if (hasIndex(sentence.words, index)) {
 				sentence.words.splice(index, 0, word);
+			}
+
+			return setSentence(sentence);
+		},
+
+		// Move a word in a sentence.
+		moveWord(fromIndex, toIndex) {
+			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
+
+			fromIndex = fromIndex === Infinity ? sentence.words.length - 1 : fromIndex;
+
+			if (!hasIndex(sentence.words, fromIndex) || (!hasIndex(sentence.words, toIndex) && toIndex !== Infinity)) {
+				return false;
+			}
+
+			if (fromIndex !== toIndex) {
+				if (toIndex === Infinity) {
+					sentence.words.push(sentence.words[fromIndex]);
+				} else {
+					sentence.words.splice(toIndex, 0, sentence.words[fromIndex]);
+				}
+
+				if (fromIndex > toIndex) {
+					fromIndex++;
+				}
+
+				sentence.words.splice(fromIndex, 1);
 			}
 
 			return setSentence(sentence);
@@ -225,6 +256,16 @@ export const Create = createSingletonView(() => {
 		}
 	});
 
+	document.addEventListener("keydown", event => {
+		Sentence.ctrlKey = event.ctrlKey;
+		Sentence.shiftKey = event.shiftKey;
+	});
+
+	document.addEventListener("keyup", event => {
+		Sentence.ctrlKey = event.ctrlKey;
+		Sentence.shiftKey = event.shiftKey;
+	});
+
 	// A tile in a wordbank or a sentence.
 	const Tile = (bankIndex, wordIndex, sentenceIndex = -1) => {
 		const bank = RoomWords.get()[bankIndex];
@@ -235,12 +276,29 @@ export const Create = createSingletonView(() => {
 			"word-tile",
 			() => {
 				if (sentenceIndex >= 0) {
-					// We are a sentence tile, so we get removed if we're clicked on.
-					Sentence.removeWord(sentenceIndex);
-				} else if (!Sentence.addWord({ bankIndex, wordIndex })) {
-					// We are NOT a sentence tile so we were supposed to add a word to the sentence when we're clicked
-					// on, but that failed so we play the shake animation.
-					Sentence.shakeTiles();
+					/* We are a sentence tile. */
+
+					if (Sentence.ctrlKey) {
+						// If a control key is being held, the word gets sent to the beginning of the sentence.
+						Sentence.moveWord(sentenceIndex, 0);
+					} else if (Sentence.shiftKey) {
+						// If a shift key is being held, the word gets sent to the end of the sentence.
+						Sentence.moveWord(sentenceIndex, Infinity);
+					} else {
+						// Otherwise, we're trying to remove the word from the sentence.
+						Sentence.removeWord(sentenceIndex);
+					}
+				} else {
+					/* We are a wordbank tile, so we're trying to be added to the sentence. */
+
+					// If a control key is being held, the word gets added to the beginning of the
+					// sentence instead of the end.
+					const sentenceIndex = Sentence.ctrlKey ? 0 : Infinity;
+
+					if (!Sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
+						// We could not be added to the sentence, so play the shake animation.
+						Sentence.shakeTiles();
+					}
 				}
 			},
 			{
