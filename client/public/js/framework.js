@@ -199,43 +199,6 @@ export const getElementCenter = element => {
 	return { x: left + width / 2, y: top + height / 2 };
 };
 
-export const isWithinBounds = (...args) => {
-	if (args.length <= 1) {
-		return true;
-	}
-
-	if (args.length === 2) {
-		let boundsA = args[0];
-		let boundsB = args[1];
-
-		if (boundsA instanceof HTMLElement) {
-			boundsA = boundsA.getBoundingClientRect();
-		}
-
-		if (boundsB instanceof HTMLElement) {
-			boundsB = boundsB.getBoundingClientRect();
-		}
-
-		const { left: leftA = 0, right: rightA = 0, top: topA = 0, bottom: bottomA = 0 } = boundsA;
-		const { left: leftB = 0, right: rightB = 0, top: topB = 0, bottom: bottomB = 0 } = boundsB;
-
-		return leftA >= leftB && rightA <= rightB && topA >= topB && bottomA <= bottomB;
-	}
-
-	let bounds = args[2];
-
-	if (bounds instanceof HTMLElement) {
-		bounds = bounds.getBoundingClientRect();
-	}
-
-	const { left, right, top, bottom } = bounds;
-
-	const x = args[0];
-	const y = args[1];
-
-	return x >= left && x <= right && y >= top && y <= bottom;
-};
-
 const copyTextArea = $("textarea");
 
 /**

@@ -7,16 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import {
-	createSingletonView,
-	$,
-	$button,
-	$replace,
-	$getAll,
-	getElementCenter,
-	isWithinBounds,
-	createState,
-} from "../framework.js";
+import { createSingletonView, $, $button, $replace, $getAll, getElementCenter, createState } from "../framework.js";
 
 import { RoomStates, RoomData, RoomWords, UserSentence, setSentence } from "./state.js";
 import { flagFixed, hasIndex } from "../util.js";
@@ -95,15 +86,15 @@ export const Create = createSingletonView(() => {
 			const { sentenceIndex } = Drag.spacer.get();
 			let fade = 0;
 
-			if (sentenceIndex >= 0) {
+			if (sentenceIndex < 0) {
+				fade = 0.25;
+			} else {
 				const { bankIndex, wordIndex } = Drag.selected;
 
 				if (!Sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
 					fade = 0.5;
 					Sentence.shakeTiles();
 				}
-			} else {
-				fade = 0.25;
 			}
 
 			if (fade > 0) {
@@ -117,37 +108,52 @@ export const Create = createSingletonView(() => {
 		},
 
 		move(x, y) {
-			const { tile } = Drag;
+			const { tile, tiles, selected } = Drag;
 
-			tile.style.left = `${x - Drag.selected.pressX}px`;
-			tile.style.top = `${y - Drag.selected.pressY}px`;
+			tile.style.left = `${x - selected.pressX}px`;
+			tile.style.top = `${y - selected.pressY}px`;
 
-			const { left, right, top, bottom } = Sentence.body.getBoundingClientRect();
-			const bounds = { left: left - tile.offsetWidth, right: right + tile.offsetWidth, top, bottom };
+			const { top, bottom, left, right } = tile.getBoundingClientRect();
+			const center = getElementCenter(tile);
+			const bodyBounds = Sentence.body.getBoundingClientRect();
 
-			if (!isWithinBounds(tile, bounds)) {
+			if (
+				bottom < bodyBounds.top ||
+				top > bodyBounds.bottom ||
+				right < bodyBounds.left ||
+				left > bodyBounds.right
+			) {
 				Drag.spacer.reset();
 			} else {
-				let right = null;
+				let insertTile = tiles.length <= 0;
 				let sentenceIndex = Infinity;
 
-				for (let i = 0; i < Drag.tiles.length && right === null; i++) {
-					const sentenceTile = Drag.tiles[i];
-					const center = getElementCenter(sentenceTile);
+				for (let i = 0; i < tiles.length && !insertTile; i++) {
+					const testTile = tiles[i];
+					const testBounds = testTile.getBoundingClientRect();
+					const testCenter = getElementCenter(testTile);
 
-					if (center.x >= x) {
-						right = sentenceTile;
-						sentenceIndex = i;
+					if (bottom >= testBounds.top && top <= testBounds.bottom) {
+						if (testCenter.x >= center.x) {
+							sentenceIndex = i;
+							insertTile = true;
+						} else if (testCenter.x < center.x && i === tiles.length - 1) {
+							sentenceIndex = Infinity;
+							insertTile = true;
+						} else if (i < tiles.length - 1) {
+							const nextBounds = tiles.at(i + 1).getBoundingClientRect();
+
+							if (center.y < nextBounds.top && testBounds.top < nextBounds.top) {
+								sentenceIndex = i + 1;
+								insertTile = true;
+							}
+						}
 					}
-
-					// TODO: Account for Y coord as well
 				}
 
-				Drag.spacer.set({
-					bankIndex: Drag.selected.bankIndex,
-					wordIndex: Drag.selected.wordIndex,
-					sentenceIndex,
-				});
+				if (insertTile) {
+					Drag.spacer.set({ bankIndex: selected.bankIndex, wordIndex: selected.wordIndex, sentenceIndex });
+				}
 			}
 		},
 	};
@@ -230,11 +236,12 @@ export const Create = createSingletonView(() => {
 
 	const updateSentenceHook = () => {
 		const { words = [], string = "\u00A0", length = 0 } = UserSentence.get();
+		const preview = $("p", { className: "sentence-preview" }, string === "" ? "\u00A0" : string);
 
 		$replace(Sentence.length, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
-			$replace(Sentence.body, Sentence.spacer, $("p", string === "" ? "\u00A0" : string));
+			$replace(Sentence.body, Sentence.spacer, preview);
 		} else {
 			Drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 				return Tile(bankIndex, wordIndex, sentenceIndex);
@@ -247,7 +254,7 @@ export const Create = createSingletonView(() => {
 				tiles.splice(dragSpacer.sentenceIndex, 0, Spacer(dragSpacer.bankIndex, dragSpacer.wordIndex));
 			}
 
-			$replace(Sentence.body, ...tiles, $("p", string === "" ? "\u00A0" : string));
+			$replace(Sentence.body, ...tiles, preview);
 		}
 	};
 

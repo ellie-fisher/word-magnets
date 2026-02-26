@@ -250,6 +250,18 @@ small > button {
 	white-space: preserve;
 }
 
+.sentence-preview {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 1em;
+
+	font-family: monospace;
+
+	box-sizing: border-box;
+	padding: 0.75em 1em 0.75em 1em;
+	margin-bottom: 0px;
+	width: 100%;
+}
+
 select {
 	font-size: 1em;
 }
