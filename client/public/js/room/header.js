@@ -8,18 +8,18 @@
  */
 
 import { createState, createSingletonView, $ } from "../framework.js";
-import { Button } from "../util/components.js";
+import { Button, Div, Section, Span, Strong } from "../util/components.js";
 import { copyText } from "../util/util.js";
 import { RoomStates, RoomData } from "./state.js";
 
 export const Header = createSingletonView(() => {
 	const ShowRoomID = createState(false);
 
-	const labels = { timeLeft: $("strong", "Time Left: "), round: $("strong", "Round: "), id: $("strong", "Code: ") };
+	const labels = { timeLeft: Strong("Time Left: "), round: Strong("Round: "), id: Strong("Code: ") };
 	const fields = {
-		timeLeft: $("span"),
-		round: $("span"),
-		roundLimit: $("span"),
+		timeLeft: Span(),
+		round: Span(),
+		roundLimit: Span(),
 		id: Button("", "room-id", () => ShowRoomID.set(!ShowRoomID.get())),
 	};
 
@@ -30,9 +30,9 @@ export const Header = createSingletonView(() => {
 	});
 
 	const containers = {
-		time: $("div", labels.timeLeft, fields.timeLeft),
-		round: $("div", labels.round, fields.round, " / ", fields.roundLimit),
-		id: $("div", labels.id, $("small", fields.id, copyButton)),
+		time: Div(labels.timeLeft, fields.timeLeft),
+		round: Div(labels.round, fields.round, " / ", fields.roundLimit),
+		id: Div(labels.id, $("small", fields.id, copyButton)),
 	};
 
 	Object.keys(RoomData).forEach(key => {
@@ -105,20 +105,11 @@ export const Header = createSingletonView(() => {
 		}
 	});
 
-	return $(
-		"section",
+	return Section(
 		Button("« Exit", "tab warning", () => alert("Not implemented yet!")),
-		$(
-			"section",
+		Section(
 			{ className: "container room-header" },
-			$(
-				"section",
-				{ className: "room-data-fields" },
-
-				containers.time,
-				containers.round,
-				containers.id,
-			),
+			Section({ className: "room-data-fields" }, containers.time, containers.round, containers.id),
 		),
 	);
 });

@@ -9,7 +9,7 @@
 
 import { createSingletonView, $, $replace, $getAll, $center, createState } from "../framework.js";
 import { RoomStates, RoomData, RoomWords, UserSentence, setSentence } from "./state.js";
-import { Button } from "../util/components.js";
+import { Button, P, Section, Span, Strong } from "../util/components.js";
 import { flagFixed, hasIndex } from "../util/util.js";
 import { MAX_LENGTH } from "./sentences.js";
 
@@ -25,10 +25,10 @@ export const Create = createSingletonView(() => {
 	 */
 	const Sentence = {
 		// The main body of the sentence. It contains the tiles and the sentence preview.
-		body: $("section", { className: "sentence" }),
+		body: Section({ className: "sentence" }),
 
 		// The sentence length element.
-		length: $("p"),
+		length: P(),
 
 		// The spacer is how we insert gaps in between sentence tiles when dragging a tile into it. It's actually a
 		// hidden tile that gets its contents set to whatever word we're currently dragging.
@@ -106,10 +106,10 @@ export const Create = createSingletonView(() => {
 	 */
 	const Wordbanks = {
 		// Words that change per round (nouns, adjectives, verbs, player names).
-		nonfixed: $("section"),
+		nonfixed: Section(),
 
 		// Words that don't change per round (pronouns, auxiliaries, prepositions, miscellaneous utility tiles).
-		fixed: $("section"),
+		fixed: Section(),
 	};
 
 	/**
@@ -251,14 +251,20 @@ export const Create = createSingletonView(() => {
 		}
 	});
 
-	document.addEventListener("pointerup", event => {
+	document.addEventListener("pointerup", () => {
 		if (Drag.dragging) {
 			Drag.stop();
 		}
 	});
 
-	document.addEventListener("pointerleave", () => Drag.stop());
-	document.addEventListener("pointercancel", () => Drag.stop());
+	const cancelInput = () => {
+		Drag.stop();
+		Sentence.ctrlKey = false;
+		Sentence.shiftKey = false;
+	};
+
+	document.addEventListener("pointerleave", cancelInput);
+	document.addEventListener("pointercancel", cancelInput);
 
 	document.addEventListener("keydown", event => {
 		Sentence.ctrlKey = event.ctrlKey;
@@ -336,7 +342,7 @@ export const Create = createSingletonView(() => {
 
 		RoomWords.get().forEach(bank =>
 			(bank.flags & flagFixed ? fixed : nonfixed).append(
-				$("p", { className: "wordbank" }, ...bank.words.map((_, wordIndex) => Tile(bank.index, wordIndex))),
+				P({ className: "wordbank" }, ...bank.words.map((_, wordIndex) => Tile(bank.index, wordIndex))),
 			),
 		);
 	});
@@ -347,9 +353,9 @@ export const Create = createSingletonView(() => {
 
 	const updateSentenceHook = () => {
 		const { words = [], string = "\u00A0", length = 0 } = UserSentence.get();
-		const preview = $("p", { className: "sentence-preview" }, string === "" ? "\u00A0" : string);
+		const preview = P({ className: "sentence-preview" }, string === "" ? "\u00A0" : string);
 
-		$replace(Sentence.length, $("span", $("strong", "Length: "), `${length} / ${MAX_LENGTH}`));
+		$replace(Sentence.length, Span(Strong("Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
 			$replace(Sentence.body, Sentence.spacer, preview);
@@ -373,11 +379,10 @@ export const Create = createSingletonView(() => {
 	UserSentence.addHook(updateSentenceHook);
 	Drag.spacer.addHook(updateSentenceHook);
 
-	return $(
-		"section",
+	return Section(
 		Drag.tile,
 		Wordbanks.nonfixed,
-		// $("p", "(Tip: You can type on your keyboard to quickly search for words.)"),
+		// P("(Tip: You can type on your keyboard to quickly search for words.)"),
 		// TODO: ^^^ Implement this ^^^
 		Sentence.body,
 		Sentence.length,

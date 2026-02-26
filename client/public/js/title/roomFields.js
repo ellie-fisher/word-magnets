@@ -8,7 +8,7 @@
  */
 
 import { $ } from "../framework.js";
-import { Button, Field } from "../util/components.js";
+import { Button, Div, Field, H2, Section, Strong } from "../util/components.js";
 import { validateField } from "../util/util.js";
 
 export const RoomFields = (data = {}) => {
@@ -35,19 +35,17 @@ export const RoomFields = (data = {}) => {
 
 	updateButton();
 
-	return $(
-		"section",
+	return Section(
 		{ className: "container" },
 
-		$("h2", title),
+		H2(title),
 
 		...fields.map(field => {
 			userData[field.id] = field.default ?? "";
 
-			return $(
-				"div",
+			return Div(
 				{ className: "field-row" },
-				$("div", $("strong", `${field.label}`)),
+				Div(Strong(`${field.label}`)),
 				" ",
 				Field(field, ({ target }) => {
 					if (field.type === "STRING") {

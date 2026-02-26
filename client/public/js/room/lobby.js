@@ -12,10 +12,10 @@ import { RoomStates, RoomData, RoomClients } from "./state.js";
 import { sendStartGame, sendCancelStartGame } from "../packets/send.js";
 import { ClientInfo } from "../app/state.js";
 import { Table } from "./table.js";
-import { Button } from "../util/components.js";
+import { Button, P, Section, Strong } from "../util/components.js";
 
 export const Lobby = createSingletonView(() => {
-	const players = $("p");
+	const players = P();
 
 	const hook = () => {
 		const limit = RoomData.clientLimit.get();
@@ -75,5 +75,5 @@ export const Lobby = createSingletonView(() => {
 		}
 	});
 
-	return $("section", $("p", $("strong", "Players:"), players), $("p", button));
+	return Section(P(Strong("Players:"), players), P(button));
 });

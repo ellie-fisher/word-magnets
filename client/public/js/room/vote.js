@@ -9,12 +9,12 @@
 
 import { createSingletonView, $, $replace } from "../framework.js";
 import { sendSubmitVote } from "../packets/send.js";
-import { Button } from "../util/components.js";
+import { Button, Em, P, Section } from "../util/components.js";
 import { RoomData, RoomSentences, RoomStates } from "./state.js";
 import { Table } from "./table.js";
 
 export const Vote = createSingletonView(() => {
-	const container = $("p");
+	const container = P();
 	const submit = Button("Submit Vote", "primary", () => {
 		if (!RoomSentences.voteSubmitted.get()) {
 			sendSubmitVote(RoomSentences.vote.get());
@@ -32,7 +32,7 @@ export const Vote = createSingletonView(() => {
 
 		if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
 			submit.style.visibility = "hidden";
-			$replace(container, $("p", $("em", "No sentences to show!")));
+			$replace(container, P(Em("No sentences to show!")));
 		} else {
 			submit.style.visibility = "visible";
 			sentences.forEach(({ value = "" }, index) => {
@@ -62,5 +62,5 @@ export const Vote = createSingletonView(() => {
 	RoomSentences.sentences.addHook(hook);
 	RoomSentences.vote.addHook(hook);
 
-	return $("section", container, submit);
+	return Section(container, submit);
 });

@@ -11,8 +11,9 @@ import { AppView } from "./state.js";
 import { Title } from "../title/title.js";
 import { Room } from "../room/room.js";
 import { createSingletonView, $, $get, $replace } from "../framework.js";
-import { $message, $error } from "../message.js";
+import { Message, Error } from "../message.js";
 import { sendRequestServerInfo } from "../packets/send.js";
+import { Strong } from "../util/components.js";
 
 export const App = createSingletonView(() => {
 	const element = $get("main");
@@ -20,16 +21,16 @@ export const App = createSingletonView(() => {
 	let child = "";
 
 	AppView.addHook((value, payload = {}) => {
-		child = $error({ title: "Error: ", message: `Unknown view "${value}" (Ask a nerd what this means.)` });
+		child = Error({ title: "Error: ", message: `Unknown view "${value}" (Ask a nerd what this means.)` });
 
 		switch (value) {
 			case "loading": {
-				child = $message($("strong", "Word Magnets"), " is loading...");
+				child = Message(Strong("Word Magnets"), " is loading...");
 				break;
 			}
 
 			case "error": {
-				child = $error(payload);
+				child = Error(payload);
 				break;
 			}
 

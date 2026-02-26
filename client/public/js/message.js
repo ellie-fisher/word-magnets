@@ -8,13 +8,14 @@
  */
 
 import { $ } from "./framework.js";
+import { Div, Strong } from "./util/components.js";
 
-export const $message = (...children) => {
-	return $("div", { className: "loading" }, $("div", ...children));
+export const Message = (...children) => {
+	return Div({ className: "loading" }, Div(...children));
 };
 
-export const $error = (data = {}, ...children) => {
+export const Error = (data = {}, ...children) => {
 	const { title = "Error: ", message = "Unknown error" } = data;
 
-	return $message($("strong", { className: "error" }, title), $("br"), message, ...children);
+	return Message(Strong({ className: "error" }, title), $("br"), message, ...children);
 };

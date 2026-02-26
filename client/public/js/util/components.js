@@ -9,6 +9,16 @@
 
 import { $ } from "../framework.js";
 
+export const Article = (...args) => $("article", ...args);
+export const Section = (...args) => $("section", ...args);
+export const H1 = (...args) => $("h1", ...args);
+export const H2 = (...args) => $("h2", ...args);
+export const P = (...args) => $("p", ...args);
+export const Div = (...args) => $("div", ...args);
+export const Span = (...args) => $("span", ...args);
+export const Strong = (...args) => $("strong", ...args);
+export const Em = (...args) => $("em", ...args);
+
 /**
  * Creates an element from field data.
  */

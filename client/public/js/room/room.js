@@ -10,6 +10,7 @@
 import { createSingletonView, $, $replace } from "../framework.js";
 import { RoomStates, RoomData, UserSentence, RoomSentences, clearRoomSentences } from "./state.js";
 import { sendSubmitSentence, sendSubmitVote } from "../packets/send.js";
+import { Article, H2, Section } from "../util/components.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
 import { Create } from "./create.js";
@@ -18,8 +19,8 @@ import { Results } from "./results.js";
 import { End } from "./end.js";
 
 export const Room = createSingletonView(() => {
-	const body = $("section");
-	const title = $("h2", "Lobby");
+	const body = Section();
+	const title = H2("Lobby");
 
 	RoomData.state.addHook(state => {
 		let view = "Unknown room view! (Ask a nerd what this means.)";
@@ -96,5 +97,5 @@ export const Room = createSingletonView(() => {
 		title.textContent = titleText;
 	});
 
-	return $("article", title, Header(), body);
+	return Article(title, Header(), body);
 });

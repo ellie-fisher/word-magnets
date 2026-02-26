@@ -12,7 +12,7 @@ import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
 import { ServerInfo } from "../app/state.js";
-import { Button } from "../util/components.js";
+import { Article, Button, H1, P, Section } from "../util/components.js";
 
 export const Title = createSingletonView(() => {
 	const tabCreate = Button("Create", "tab", () => TabState.set(true));
@@ -40,7 +40,7 @@ export const Title = createSingletonView(() => {
 		fieldsJoin.hidden = value;
 	});
 
-	const stats = $("p", "");
+	const stats = P();
 
 	ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
 		let message = "There ";
@@ -54,5 +54,5 @@ export const Title = createSingletonView(() => {
 		stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
 	});
 
-	return $("article", $("h1", "Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, $("section", stats));
+	return Article(H1("Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, Section(stats));
 });

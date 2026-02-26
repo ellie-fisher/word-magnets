@@ -8,11 +8,12 @@
  */
 
 import { createSingletonView, $, $replace } from "../framework.js";
+import { Em, P, Section } from "../util/components.js";
 import { RoomSentences } from "./state.js";
 import { Table } from "./table.js";
 
 export const Results = createSingletonView(() => {
-	const container = $("p");
+	const container = P();
 
 	RoomSentences.sentences.addHook(() => {
 		const rows = [];
@@ -33,7 +34,7 @@ export const Results = createSingletonView(() => {
 		});
 
 		if (sentences.length <= 0) {
-			$replace(container, $("p", $("em", "No valid sentences were submitted!")));
+			$replace(container, P(Em("No valid sentences were submitted!")));
 		} else {
 			sentences.forEach(({ author = "\u00A0", value = "\u00A0", votes = 0, index = -1 }) => {
 				if (value !== "") {
@@ -67,5 +68,5 @@ export const Results = createSingletonView(() => {
 		}
 	});
 
-	return $("section", container);
+	return Section(container);
 });

@@ -11,9 +11,10 @@ import { createSingletonView, $, $replace } from "../framework.js";
 import { RoomData, RoomClients } from "./state.js";
 import { ClientInfo } from "../app/state.js";
 import { Table } from "./table.js";
+import { P, Section, Strong } from "../util/components.js";
 
 export const End = createSingletonView(() => {
-	const scores = $("p");
+	const scores = P();
 
 	const hook = () => {
 		const clients = structuredClone(RoomClients.get());
@@ -60,5 +61,5 @@ export const End = createSingletonView(() => {
 	RoomData.state.addHook(hook);
 	RoomClients.addHook(hook);
 
-	return $("section", $("p", $("strong", "Final Scores:"), scores));
+	return Section(P(Strong("Final Scores:"), scores));
 });
