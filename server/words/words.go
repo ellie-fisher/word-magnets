@@ -10,7 +10,7 @@
 package words
 
 /**
- * Edited version of SCOWL's alternate 12Dict wordlist.
+ * Modified version of SCOWL's alternate 12Dicts wordlist.
  */
 
 var nouns = []string{
@@ -6737,8 +6737,6 @@ var nouns = []string{
 	"etymology",
 	"eucalyptus",
 	"euchre",
-	"eugenicist",
-	"eugenics",
 	"eulogist",
 	"eulogizer",
 	"eulogy",
@@ -9370,7 +9368,6 @@ var nouns = []string{
 	"homogenization",
 	"homograph",
 	"homonym",
-	"homophobia",
 	"homophone",
 	"homosexuality",
 	"hon",
@@ -15631,7 +15628,6 @@ var nouns = []string{
 	"racialism",
 	"raciness",
 	"racing",
-	"racism",
 	"rack",
 	"racket",
 	"racketeer",
@@ -17382,7 +17378,6 @@ var nouns = []string{
 	"sewerage",
 	"sewing",
 	"sex",
-	"sexism",
 	"sexologist",
 	"sexology",
 	"sexpot",
@@ -25350,8 +25345,6 @@ var adjectives = []string{
 	"etymological",
 	"etymologically",
 	"euclidean",
-	"eugenic",
-	"eugenically",
 	"eulogistic",
 	"euphemistic",
 	"euphemistically",
@@ -26683,7 +26676,6 @@ var adjectives = []string{
 	"homogeneous",
 	"homogeneously",
 	"homologous",
-	"homophobic",
 	"homosexual",
 	"homosexually",
 	"homy",
@@ -29307,7 +29299,6 @@ var adjectives = []string{
 	"nonsensical",
 	"nonsensically",
 	"nonsensitive",
-	"nonsexist",
 	"nonsexual",
 	"nonskid",
 	"nonslip",
@@ -30888,7 +30879,6 @@ var adjectives = []string{
 	"racialist",
 	"racially",
 	"racily",
-	"racist",
 	"racy",
 	"rad",
 	"radial",
@@ -31754,7 +31744,6 @@ var adjectives = []string{
 	"severely",
 	"sexagenarian",
 	"sexily",
-	"sexist",
 	"sexless",
 	"sexual",
 	"sexually",
@@ -33126,6 +33115,7 @@ var adjectives = []string{
 	"traitorously",
 	"tranquil",
 	"tranquilly",
+	"trans-",
 	"trans",
 	"transatlantic",
 	"transcendent",
@@ -33473,6 +33463,7 @@ var adjectives = []string{
 	"unchecked",
 	"unchristian",
 	"uncial",
+	"uncircumcised",
 	"uncivil",
 	"uncivilized",
 	"uncivilly",
@@ -34926,7 +34917,6 @@ var adjectives = []string{
 }
 
 var verbs = []string{
-	"¯\\_(ツ)_/¯",
 	"abandon",
 	"abase",
 	"abash",
