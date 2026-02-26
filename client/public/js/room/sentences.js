@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { hasIndex } from "../util.js";
+import { hasIndex } from "../util/util.js";
 
 export const MAX_LENGTH = 100;
 

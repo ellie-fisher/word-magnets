@@ -7,15 +7,16 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createState, createSingletonView, $, $button } from "../framework.js";
+import { createState, createSingletonView, $ } from "../framework.js";
 import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
 import { ServerInfo } from "../app/state.js";
+import { Button } from "../util/components.js";
 
 export const Title = createSingletonView(() => {
-	const tabCreate = $button("Create", "tab", () => TabState.set(true));
-	const tabJoin = $button("Join", "tab", () => TabState.set(false));
+	const tabCreate = Button("Create", "tab", () => TabState.set(true));
+	const tabJoin = Button("Join", "tab", () => TabState.set(false));
 
 	const fieldsCreate = RoomFields({
 		fields: structuredClone(Fields.createRoom),

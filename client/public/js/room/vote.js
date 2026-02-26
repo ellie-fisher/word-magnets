@@ -7,14 +7,15 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace, $button } from "../framework.js";
+import { createSingletonView, $, $replace } from "../framework.js";
 import { sendSubmitVote } from "../packets/send.js";
+import { Button } from "../util/components.js";
 import { RoomData, RoomSentences, RoomStates } from "./state.js";
 import { Table } from "./table.js";
 
 export const Vote = createSingletonView(() => {
 	const container = $("p");
-	const submit = $button("Submit Vote", "primary", () => {
+	const submit = Button("Submit Vote", "primary", () => {
 		if (!RoomSentences.voteSubmitted.get()) {
 			sendSubmitVote(RoomSentences.vote.get());
 			RoomSentences.voteSubmitted.set(true);

@@ -7,8 +7,9 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $, $button, $field } from "../framework.js";
-import { validateField } from "../util.js";
+import { $ } from "../framework.js";
+import { Button, Field } from "../util/components.js";
+import { validateField } from "../util/util.js";
 
 export const RoomFields = (data = {}) => {
 	const {
@@ -21,7 +22,7 @@ export const RoomFields = (data = {}) => {
 	let waiting = false;
 
 	const userData = {};
-	const button = $button(buttonText, "primary", ({ target }) => {
+	const button = Button(buttonText, "primary", ({ target }) => {
 		waiting = true;
 		target.disabled = true;
 		onButtonClick(userData);
@@ -48,7 +49,7 @@ export const RoomFields = (data = {}) => {
 				{ className: "field-row" },
 				$("div", $("strong", `${field.label}`)),
 				" ",
-				$field(field, ({ target }) => {
+				Field(field, ({ target }) => {
 					if (field.type === "STRING") {
 						target.value = target.value.toUpperCase();
 					}

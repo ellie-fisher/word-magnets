@@ -7,8 +7,6 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $ } from "./framework.js";
-
 export const flagFixed = 1 << 0;
 export const flagPlayer = 1 << 1;
 
@@ -85,4 +83,41 @@ export const deepFreeze = (value, visited = new Set()) => {
  */
 export const hasIndex = (array, index) => {
 	return Array.isArray(array) && Number.isInteger(index) && index >= 0 && index < array.length;
+};
+
+const copyTextArea = document.createElement("textarea");
+
+/**
+ * Attempts to copy text. If available, it will use the Clipboard API. Otherwise, it will fallback to
+ * the old school method of using a `textarea` with `document.execCommmand()`.
+ *
+ * @param {string} text
+ * @returns {Promise<boolean>} Whether or not it was successful.
+ */
+export const copyText = async text => {
+	let success = true;
+
+	if (typeof navigator.clipboard !== "undefined") {
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch {
+			success = false;
+		}
+	} else {
+		document.body.appendChild(copyTextArea);
+
+		copyTextArea.value = text;
+		copyTextArea.focus();
+		copyTextArea.select();
+
+		try {
+			success = document.execCommand("copy");
+		} catch {
+			success = false;
+		} finally {
+			document.body.removeChild(copyTextArea);
+		}
+	}
+
+	return success;
 };

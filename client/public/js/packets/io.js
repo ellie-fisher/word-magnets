@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { clamp, enumerate } from "../util.js";
+import { clamp, enumerate } from "../util/util.js";
 
 export const PacketTypes = enumerate([
 	"InvalidPacket",

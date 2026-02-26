@@ -8,7 +8,7 @@
  */
 
 import { createState } from "../framework.js";
-import { deepFreeze, enumerate } from "../util.js";
+import { deepFreeze, enumerate } from "../util/util.js";
 import { MAX_LENGTH, sentenceToString } from "./sentences.js";
 
 export const RoomStates = enumerate([

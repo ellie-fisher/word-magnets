@@ -7,7 +7,7 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { deepFreeze } from "./util.js";
+import { deepFreeze } from "./util/util.js";
 
 /**
  * Exceedingly simple frontend framework.
@@ -134,104 +134,14 @@ export const $get = selector => document.querySelector(selector);
 export const $getAll = selector => document.querySelectorAll(selector);
 
 /**
- * Creates an element from field data.
- */
-export const $field = (field, onchange = () => {}) => {
-	switch (field.type) {
-		case "STRING":
-		case "string": {
-			const textbox = $("input", {
-				type: "text",
-				minLength: field.min,
-				maxLength: field.max,
-				onchange,
-				oninput: onchange,
-			});
-
-			if (field.type === "STRING") {
-				textbox.autocapitalize = "characters";
-			}
-
-			return textbox;
-		}
-
-		case "int": {
-			const increments = field.increments ?? 1;
-			const dropdown = $("select", { onchange });
-
-			for (let i = field.min; i <= field.max; i += increments) {
-				dropdown.append($("option", { value: i, selected: i === field.default }, i));
-			}
-
-			return dropdown;
-		}
-
-		default:
-			return null;
-	}
-};
-
-/**
- * @param {string} text
- * @param {...} args
+ * Returns the center coordinate of an element.
  *
- * @returns {HTMLButtonElement}
+ * @param {HTMLElement} element
+ *
+ * @returns {{x: number, y: number}}
  */
-export const $button = (text, ...args) => {
-	let attributes = {};
-
-	args.forEach((arg, i) => {
-		if (typeof arg === "function") {
-			attributes.onclick = arg;
-		} else if (typeof arg === "string") {
-			attributes.className = arg;
-		} else if (typeof arg === "object") {
-			attributes = { ...attributes, ...arg };
-		}
-	});
-
-	return $("button", attributes, text);
-};
-
-export const getElementCenter = element => {
+export const $center = element => {
 	const { left, top, width, height } = element.getBoundingClientRect();
 
 	return { x: left + width / 2, y: top + height / 2 };
-};
-
-const copyTextArea = $("textarea");
-
-/**
- * Attempts to copy text. If available, it will use the Clipboard API. Otherwise, it will fallback to
- * the old school method of using a `textarea` with `document.execCommmand()`.
- *
- * @param {string} text
- * @returns {Promise<boolean>} Whether or not it was successful.
- */
-export const copyText = async text => {
-	let success = true;
-
-	if (typeof navigator.clipboard !== "undefined") {
-		try {
-			await navigator.clipboard.writeText(text);
-		} catch {
-			success = false;
-		}
-	} else {
-		document.body.appendChild(copyTextArea);
-
-		copyTextArea.value = text;
-		copyTextArea.focus();
-		copyTextArea.select();
-
-		try {
-			success = document.execCommand("copy");
-		} catch {
-			success = false;
-		} finally {
-			document.body.removeChild(copyTextArea);
-		}
-	}
-
-	return success;
 };

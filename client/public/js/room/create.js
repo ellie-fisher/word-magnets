@@ -7,9 +7,10 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $button, $replace, $getAll, getElementCenter, createState } from "../framework.js";
+import { createSingletonView, $, $replace, $getAll, $center, createState } from "../framework.js";
 import { RoomStates, RoomData, RoomWords, UserSentence, setSentence } from "./state.js";
-import { flagFixed, hasIndex } from "../util.js";
+import { Button } from "../util/components.js";
+import { flagFixed, hasIndex } from "../util/util.js";
 import { MAX_LENGTH } from "./sentences.js";
 
 /**
@@ -31,7 +32,7 @@ export const Create = createSingletonView(() => {
 
 		// The spacer is how we insert gaps in between sentence tiles when dragging a tile into it. It's actually a
 		// hidden tile that gets its contents set to whatever word we're currently dragging.
-		spacer: $button("\u00A0", "word-tile hidden"),
+		spacer: Button("\u00A0", "word-tile hidden"),
 
 		// The timeout ID of the tile shake animation that plays when failing to add a word to a sentence.
 		shakeTimeout: 0,
@@ -123,7 +124,7 @@ export const Create = createSingletonView(() => {
 
 		// This is the element that actually gets moved when dragging a word tile. It just copies its contents from the
 		// selected tile.
-		tile: $button("", "word-tile hidden", {
+		tile: Button("", "word-tile hidden", {
 			style: { position: "absolute", "z-index": 10, left: "0px", top: "0px" },
 		}),
 
@@ -181,7 +182,7 @@ export const Create = createSingletonView(() => {
 			tile.style.top = `${y - reference.pressY}px`;
 
 			const { top, bottom, left, right } = tile.getBoundingClientRect();
-			const center = getElementCenter(tile);
+			const center = $center(tile);
 			const bodyBounds = Sentence.body.getBoundingClientRect();
 
 			if (
@@ -201,7 +202,7 @@ export const Create = createSingletonView(() => {
 				for (let i = 0; i < tiles.length && !insertSpacer; i++) {
 					const testTile = tiles[i];
 					const testBounds = testTile.getBoundingClientRect();
-					const testCenter = getElementCenter(testTile);
+					const testCenter = $center(testTile);
 
 					if (bottom >= testBounds.top && top <= testBounds.bottom) {
 						if (testCenter.x >= center.x) {
@@ -271,7 +272,7 @@ export const Create = createSingletonView(() => {
 		const bank = RoomWords.get()[bankIndex];
 		const word = bank.words[wordIndex];
 
-		return $button(
+		return Button(
 			word === " " ? "\u00A0" : word,
 			"word-tile",
 			() => {
@@ -321,7 +322,7 @@ export const Create = createSingletonView(() => {
 		const bank = RoomWords.get()[bankIndex];
 		const word = bank.words[wordIndex];
 
-		return $button(word === " " ? "\u00A0" : word, "word-tile hidden");
+		return Button(word === " " ? "\u00A0" : word, "word-tile hidden");
 	};
 
 	RoomWords.addHook(() => {

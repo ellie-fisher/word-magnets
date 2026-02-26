@@ -7,7 +7,9 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createState, createSingletonView, $, $button, copyText } from "../framework.js";
+import { createState, createSingletonView, $ } from "../framework.js";
+import { Button } from "../util/components.js";
+import { copyText } from "../util/util.js";
 import { RoomStates, RoomData } from "./state.js";
 
 export const Header = createSingletonView(() => {
@@ -18,10 +20,10 @@ export const Header = createSingletonView(() => {
 		timeLeft: $("span"),
 		round: $("span"),
 		roundLimit: $("span"),
-		id: $button("", "room-id", () => ShowRoomID.set(!ShowRoomID.get())),
+		id: Button("", "room-id", () => ShowRoomID.set(!ShowRoomID.get())),
 	};
 
-	const copyButton = $button("Copy", async () => {
+	const copyButton = Button("Copy", async () => {
 		if (!(await copyText(RoomData.id.get()))) {
 			alert("Copying text is not supported by your browser at this time.");
 		}
@@ -105,7 +107,7 @@ export const Header = createSingletonView(() => {
 
 	return $(
 		"section",
-		$button("« Exit", "tab warning", () => alert("Not implemented yet!")),
+		Button("« Exit", "tab warning", () => alert("Not implemented yet!")),
 		$(
 			"section",
 			{ className: "container room-header" },
