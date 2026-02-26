@@ -257,6 +257,9 @@ export const Create = createSingletonView(() => {
 		}
 	});
 
+	document.addEventListener("pointerleave", () => Drag.stop());
+	document.addEventListener("pointercancel", () => Drag.stop());
+
 	document.addEventListener("keydown", event => {
 		Sentence.ctrlKey = event.ctrlKey;
 		Sentence.shiftKey = event.shiftKey;
