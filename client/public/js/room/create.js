@@ -26,10 +26,8 @@ export const Create = createSingletonView(() => {
 	const Sentence = {
 		// The main body of the sentence. It contains the tiles and the sentence preview.
 		body: Section({ className: "sentence" }),
-
 		// The sentence length element.
 		length: P(),
-
 		// The spacer is how we insert gaps in between sentence tiles when dragging a tile into it. It's actually a
 		// hidden tile that gets its contents set to whatever word we're currently dragging.
 		spacer: Button("\u00A0", "word-tile hidden"),
@@ -41,7 +39,7 @@ export const Create = createSingletonView(() => {
 		ctrlKey: false,
 		shiftKey: false,
 
-		// Adds a word to the sentence.
+		// Adds a word to the sentence. Infinity for the index means "at the end of the sentence".
 		addWord(word, index = Infinity) {
 			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
 
@@ -54,7 +52,7 @@ export const Create = createSingletonView(() => {
 			return setSentence(sentence);
 		},
 
-		// Move a word in a sentence.
+		// Move a word in a sentence. Infinity for either index means "at the end of the sentence".
 		moveWord(fromIndex, toIndex) {
 			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
 
@@ -107,7 +105,6 @@ export const Create = createSingletonView(() => {
 	const Wordbanks = {
 		// Words that change per round (nouns, adjectives, verbs, player names).
 		nonfixed: Section(),
-
 		// Words that don't change per round (pronouns, auxiliaries, prepositions, miscellaneous utility tiles).
 		fixed: Section(),
 	};
@@ -118,7 +115,6 @@ export const Create = createSingletonView(() => {
 	const Drag = {
 		// The actual sentence tile elements.
 		tiles: [],
-
 		// Are we currently dragging a tile?
 		dragging: false,
 
@@ -130,7 +126,6 @@ export const Create = createSingletonView(() => {
 
 		// The gap that appears between tiles when dragging a tile in(to) a sentence.
 		spacer: createState({ bankIndex: -1, wordIndex: -1, sentenceIndex: -1 }),
-
 		// Since we're not actually dragging the wordbank/sentence tile itself, we have to maintain a reference to its data.
 		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0, pressY: 0 },
 
@@ -310,6 +305,8 @@ export const Create = createSingletonView(() => {
 						Sentence.shakeTiles();
 					}
 				}
+
+				Drag.stop();
 			},
 			{
 				onpointerdown({ offsetX, offsetY, target }) {
@@ -353,12 +350,16 @@ export const Create = createSingletonView(() => {
 
 	const updateSentenceHook = () => {
 		const { words = [], string = "\u00A0", length = 0 } = UserSentence.get();
+		// The plaintext sentence preview. We use a special whitespace character when it's empty to maintain its height.
 		const preview = P({ className: "sentence-preview" }, string === "" ? "\u00A0" : string);
+		// The red X button that clears the entire sentence.
+		const clearButton = Button("\u2716", { className: "clear-sentence", onclick: () => UserSentence.reset() });
 
+		// Display current sentence length out of max.
 		$replace(Sentence.length, Span(Strong("Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
-			$replace(Sentence.body, Sentence.spacer, preview);
+			$replace(Sentence.body, Sentence.spacer, clearButton, preview);
 		} else {
 			Drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 				return Tile(bankIndex, wordIndex, sentenceIndex);
@@ -372,7 +373,7 @@ export const Create = createSingletonView(() => {
 				tiles.splice(dragSpacer.sentenceIndex, 0, Spacer(dragSpacer.bankIndex, dragSpacer.wordIndex));
 			}
 
-			$replace(Sentence.body, ...tiles, preview);
+			$replace(Sentence.body, clearButton, ...tiles, preview);
 		}
 	};
 

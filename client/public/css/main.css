@@ -78,7 +78,7 @@ body {
 	}
 }
 
-@media only screen and (max-width: 800px), screen and (max-height: 600px) {
+@media only screen and (max-width: 500px) and (max-height: 1000px) {
 	* {
 		font-weight: bold;
 	}
@@ -220,6 +220,40 @@ button.room-id + button {
 button.room-id {
 	background-color: var(--tab-color);
 	color: var(--tab-text-color);
+	box-shadow: none;
+}
+
+button.clear-sentence {
+	font-family: monospace;
+	font-weight: bold;
+	font-size: 1em;
+	color: crimson;
+
+	background: none;
+
+	padding: 0px;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+
+	margin: 0px;
+	margin-left: 1em;
+
+	float: right;
+
+	text-shadow: var(--body-text-shadow);
+	box-shadow:
+		0.1em 0.1em black inset,
+		0.1em 0.1em black;
+
+	border: 0.2em outset;
+	border-radius: 0em;
+
+	outline: none;
+}
+
+button.clear-sentence:active {
+	border-style: inset;
+	text-shadow: none;
 	box-shadow: none;
 }
 
