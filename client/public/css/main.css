@@ -78,8 +78,10 @@ body {
 	}
 }
 
-@media only screen and (max-width: 500px) and (max-height: 1000px) {
+@media only screen and (max-width: 500px) and (max-height: 1000px),
+	screen and (max-width: 1000px) and (max-height: 500px) {
 	* {
+		/* Using bold on mobile screens gives MUCH less eye strain. */
 		font-weight: bold;
 	}
 }
