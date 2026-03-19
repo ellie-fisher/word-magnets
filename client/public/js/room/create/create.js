@@ -67,7 +67,7 @@ export const Create = createSingletonView(() => {
 	 */
 	const Drag = {
 		// Are we currently dragging a tile?
-		dragging: false,
+		dragging: createState(false),
 
 		// This is the element that actually gets moved when dragging a word tile. It just copies its contents from the
 		// selected tile.
@@ -82,47 +82,6 @@ export const Create = createSingletonView(() => {
 
 		// Since we're not actually dragging the wordbank/sentence tile itself, we have to maintain a reference to its data.
 		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 },
-
-		// Start dragging a tile.
-		start() {
-			Drag.tile.textContent = Drag.reference.tile.textContent;
-			Drag.tile.style.transition = "";
-			Drag.tile.classList.remove("hidden");
-
-			if (Drag.reference.sentenceIndex >= 0) {
-				removeWord(Drag.reference.sentenceIndex);
-			}
-
-			Drag.dragging = true;
-		},
-
-		// Stop dragging the tile.
-		stop() {
-			const sentenceIndex = Drag.sentenceIndex.get();
-			let fade = 0.0;
-
-			if (sentenceIndex < 0) {
-				// If we aren't inserting a tile, fade it quicker.
-				fade = 0.25;
-			} else {
-				const { bankIndex, wordIndex } = Drag.reference;
-
-				if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
-					/* We weren't able to add a tile, so fade it slower and shake the tiles. */
-					fade = 0.5;
-					Sentence.shakeTiles();
-				}
-			}
-
-			if (fade > 0.0) {
-				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
-			}
-
-			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 };
-			Drag.tile.classList.add("hidden");
-			Drag.sentenceIndex.reset();
-			Drag.dragging = false;
-		},
 
 		// Move the tile we're dragging.
 		move(x, y) {
@@ -172,6 +131,46 @@ export const Create = createSingletonView(() => {
 		},
 	};
 
+	Drag.dragging.addHook(dragging => {
+		if (dragging) {
+			/* Start dragging the tile. */
+
+			Drag.tile.textContent = Drag.reference.tile.textContent;
+			Drag.tile.style.transition = "";
+			Drag.tile.classList.remove("hidden");
+
+			if (Drag.reference.sentenceIndex >= 0) {
+				removeWord(Drag.reference.sentenceIndex);
+			}
+		} else {
+			/* Stop dragging the tile. */
+
+			const sentenceIndex = Drag.sentenceIndex.get();
+			let fade = 0.0;
+
+			if (sentenceIndex < 0) {
+				// If we aren't inserting a tile, fade it quicker.
+				fade = 0.25;
+			} else {
+				const { bankIndex, wordIndex } = Drag.reference;
+
+				if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
+					/* We weren't able to add a tile, so fade it slower and shake the tiles. */
+					fade = 0.5;
+					Sentence.shakeTiles();
+				}
+			}
+
+			if (fade > 0.0) {
+				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
+			}
+
+			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 };
+			Drag.tile.classList.add("hidden");
+			Drag.sentenceIndex.reset();
+		}
+	});
+
 	Drag.sentenceIndex.addHook(sentenceIndex => {
 		if (sentenceIndex < 0) {
 			Drag.spacer.reset();
@@ -191,10 +190,11 @@ export const Create = createSingletonView(() => {
 			// We do want *some* leeway with dragging tiles. We don't want the player to start dragging a tile if
 			// they're just trying to click on it.
 			const distance = Math.sqrt((offsetX - pressX) ** 2 + (offsetY - pressY) ** 2);
+			const dragging = Drag.dragging.get();
 
-			if (Drag.dragging || (!Drag.dragging && distance >= 10)) {
-				if (!Drag.dragging) {
-					Drag.start();
+			if (dragging || (!dragging && distance >= 10)) {
+				if (!dragging) {
+					Drag.dragging.set(true);
 				}
 
 				Drag.move(pageX, pageY, true);
@@ -203,13 +203,14 @@ export const Create = createSingletonView(() => {
 	});
 
 	document.addEventListener("pointerup", () => {
-		if (Drag.dragging) {
-			Drag.stop();
+		if (Drag.dragging.get()) {
+			Drag.dragging.set(false);
 		}
 	});
 
 	const cancelInput = () => {
-		Drag.stop();
+		Drag.dragging.set(false);
+
 		Sentence.ctrlKey = false;
 		Sentence.shiftKey = false;
 	};
@@ -221,7 +222,7 @@ export const Create = createSingletonView(() => {
 	document.addEventListener(
 		"touchmove",
 		event => {
-			if (Drag.dragging) {
+			if (Drag.dragging.get()) {
 				event.preventDefault();
 			}
 		},
@@ -270,7 +271,7 @@ export const Create = createSingletonView(() => {
 					}
 				}
 
-				Drag.stop();
+				Drag.dragging.set(false);
 			},
 
 			onpointerdown({ offsetX, offsetY, target }) {
@@ -307,7 +308,7 @@ export const Create = createSingletonView(() => {
 	});
 
 	RoomData.state.addHook(state => {
-		Drag.stop();
+		Drag.dragging.set(false);
 		$getAll("button.word-tile").forEach(tile => (tile.disabled = state === RoomStates.CreateSubmit));
 	});
 
