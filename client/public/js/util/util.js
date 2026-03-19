@@ -121,3 +121,15 @@ export const copyText = async text => {
 
 	return success;
 };
+
+/**
+ * Tests whether two boxes overlap.
+ *
+ * @param {{top: number, bottom: number, left: number, right: number}} boxA
+ * @param {{top: number, bottom: number, left: number, right: number}} boxB
+ *
+ * @returns {boolean} Whether `boxA` and `boxB` overlap.
+ */
+export const testBoxOverlap = (boxA, boxB) => {
+	return boxA.bottom >= boxB.top && boxA.top <= boxB.bottom && boxA.right >= boxB.left && boxA.left <= boxB.right;
+};

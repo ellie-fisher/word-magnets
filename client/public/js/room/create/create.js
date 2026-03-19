@@ -11,7 +11,7 @@ import { createSingletonView, $, $replace, $getAll, $center, createState } from 
 import { RoomStates, RoomData, RoomWords } from "../state.js";
 import { UserSentence, addWord, moveWord, removeWord } from "./state.js";
 import { Button, P, Section, Span, Strong } from "../../util/components.js";
-import { flagFixed } from "../../util/util.js";
+import { flagFixed, testBoxOverlap } from "../../util/util.js";
 import { MAX_LENGTH } from "./sentenceToString.js";
 
 /**
@@ -131,16 +131,10 @@ export const Create = createSingletonView(() => {
 			tile.style.left = `${x - reference.pressX}px`;
 			tile.style.top = `${y - reference.pressY}px`;
 
-			const { top, bottom, left, right } = tile.getBoundingClientRect();
+			const tileBounds = tile.getBoundingClientRect();
 			const center = $center(tile);
-			const bodyBounds = Sentence.body.getBoundingClientRect();
 
-			if (
-				bottom < bodyBounds.top ||
-				top > bodyBounds.bottom ||
-				right < bodyBounds.left ||
-				left > bodyBounds.right
-			) {
+			if (!testBoxOverlap(tileBounds, Sentence.body.getBoundingClientRect())) {
 				// Our tile is not within the bounds of the sentence box, so we're not adding a word to the sentence.
 				Drag.spacer.reset();
 			} else {
@@ -153,7 +147,7 @@ export const Create = createSingletonView(() => {
 					const testBounds = testTile.getBoundingClientRect();
 					const testCenter = $center(testTile);
 
-					if (bottom >= testBounds.top && top <= testBounds.bottom) {
+					if (tileBounds.bottom >= testBounds.top && tileBounds.top <= testBounds.bottom) {
 						if (testCenter.x >= center.x) {
 							/* The next tile is to the right of us, so we're dropping our tile to the left of it. */
 							sentenceIndex = i;
