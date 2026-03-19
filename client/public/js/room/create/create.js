@@ -27,6 +27,8 @@ export const Create = createSingletonView(() => {
 	const Sentence = {
 		// The main body of the sentence. It contains the tiles and the sentence preview.
 		body: Section({ className: "sentence" }),
+		// The sentence tile elements.
+		tiles: [],
 		// The sentence length element.
 		length: P(),
 
@@ -64,8 +66,6 @@ export const Create = createSingletonView(() => {
 	 * Everything related to dragging tiles.
 	 */
 	const Drag = {
-		// The actual sentence tile elements.
-		tiles: [],
 		// Are we currently dragging a tile?
 		dragging: false,
 
@@ -126,7 +126,8 @@ export const Create = createSingletonView(() => {
 
 		// Move the tile we're dragging.
 		move(x, y) {
-			const { tile, tiles, reference } = Drag;
+			const { tile, reference } = Drag;
+			const { tiles } = Sentence;
 
 			tile.style.left = `${x - reference.pressX}px`;
 			tile.style.top = `${y - reference.pressY}px`;
@@ -321,14 +322,14 @@ export const Create = createSingletonView(() => {
 		$replace(Sentence.length, Span(Strong("Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
-			Drag.tiles = [];
+			Sentence.tiles = [];
 			$replace(Sentence.body, Button("\u00A0", "word-tile hidden"), clearButton, preview);
 		} else {
-			Drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
+			Sentence.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 				return Tile(bankIndex, wordIndex, sentenceIndex);
 			});
 
-			const tiles = [...Drag.tiles];
+			const tiles = [...Sentence.tiles];
 			const dragSpacer = Drag.spacer.get();
 
 			// Insert spacer element if needed.
