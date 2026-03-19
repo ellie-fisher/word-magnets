@@ -8,7 +8,7 @@
  */
 
 import { createSingletonView, $, $replace, $getAll, $center, createState } from "../../framework.js";
-import { RoomStates, RoomData, RoomWords } from "../state.js";
+import { RoomStates, RoomData, RoomWords, getRoomWord } from "../state.js";
 import { UserSentence, addWord, moveWord, removeWord } from "./state.js";
 import { Button, P, Section, Span, Strong } from "../../util/components.js";
 import { flagFixed, testBoxOverlap } from "../../util/util.js";
@@ -239,13 +239,10 @@ export const Create = createSingletonView(() => {
 
 	// A tile in a wordbank or a sentence.
 	const Tile = (bankIndex, wordIndex, sentenceIndex = -1) => {
-		const bank = RoomWords.get()[bankIndex];
-		const word = bank.words[wordIndex];
+		const word = getRoomWord(bankIndex, wordIndex);
 
-		return Button(
-			word === " " ? "\u00A0" : word,
-			"word-tile",
-			() => {
+		return Button(word.trim() === "" ? "\u00A0" : word, "word-tile", {
+			onclick() {
 				if (sentenceIndex >= 0) {
 					/* We are a sentence tile. */
 
@@ -274,27 +271,25 @@ export const Create = createSingletonView(() => {
 
 				Drag.stop();
 			},
-			{
-				onpointerdown({ offsetX, offsetY, target }) {
-					Drag.reference = {
-						bankIndex,
-						wordIndex,
-						sentenceIndex,
-						tile: target,
-						pressX: offsetX,
-						pressY: offsetY,
-					};
-				},
+
+			onpointerdown({ offsetX, offsetY, target }) {
+				Drag.reference = {
+					bankIndex,
+					wordIndex,
+					sentenceIndex,
+					tile: target,
+					pressX: offsetX,
+					pressY: offsetY,
+				};
 			},
-		);
+		});
 	};
 
 	// The gap that appears between tiles when dragging a tile in(to) a sentence.
 	const Spacer = (bankIndex, wordIndex) => {
-		const bank = RoomWords.get()[bankIndex];
-		const word = bank.words[wordIndex];
+		const word = getRoomWord(bankIndex, wordIndex);
 
-		return Button(word === " " ? "\u00A0" : word, "word-tile hidden");
+		return Button(word.trim() === "" ? "\u00A0" : word, "word-tile hidden");
 	};
 
 	RoomWords.addHook(() => {

@@ -8,7 +8,7 @@
  */
 
 import { createState } from "../framework.js";
-import { deepFreeze, enumerate } from "../util/util.js";
+import { deepFreeze, enumerate, hasIndex } from "../util/util.js";
 
 export const RoomStates = enumerate([
 	"Lobby",
@@ -42,6 +42,29 @@ export const applyRoomData = (data = {}) => {
 
 export const RoomClients = createState([]);
 export const RoomWords = createState([]);
+
+/**
+ * Gets a word string from a bank index and word index. Returns an empty string if either indices are invalid.
+ *
+ * @param {number} bankIndex
+ * @param {number} wordIndex
+ *
+ * @returns {string}
+ */
+export const getRoomWord = (bankIndex, wordIndex) => {
+	let word = "";
+	const banks = RoomWords.get();
+
+	if (hasIndex(banks, bankIndex)) {
+		const { words } = banks[bankIndex];
+
+		if (hasIndex(words, wordIndex)) {
+			word = words[wordIndex];
+		}
+	}
+
+	return word;
+};
 
 export const RoomSentences = deepFreeze({
 	sentences: createState([]),
