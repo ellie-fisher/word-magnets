@@ -81,7 +81,7 @@ export const Create = createSingletonView(() => {
 		sentenceIndex: createState(-1),
 
 		// Since we're not actually dragging the wordbank/sentence tile itself, we have to maintain a reference to its data.
-		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 },
+		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, pressX: 0.0, pressY: 0.0 },
 
 		// Move the tile we're dragging.
 		move(x, y) {
@@ -135,7 +135,9 @@ export const Create = createSingletonView(() => {
 		if (dragging) {
 			/* Start dragging the tile. */
 
-			Drag.tile.textContent = Drag.reference.tile.textContent;
+			const word = getRoomWord(Drag.reference.bankIndex, Drag.reference.wordIndex);
+
+			Drag.tile.textContent = word.trim() === "" ? "\u00A0" : word;
 			Drag.tile.style.transition = "";
 			Drag.tile.classList.remove("hidden");
 
@@ -165,7 +167,7 @@ export const Create = createSingletonView(() => {
 				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
 			}
 
-			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 };
+			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, pressX: 0.0, pressY: 0.0 };
 			Drag.tile.classList.add("hidden");
 			Drag.sentenceIndex.reset();
 		}
@@ -184,9 +186,9 @@ export const Create = createSingletonView(() => {
 	});
 
 	document.addEventListener("pointermove", ({ buttons, offsetX, offsetY, pageX, pageY }) => {
-		const { tile, pressX, pressY } = Drag.reference;
+		const { bankIndex, wordIndex, pressX, pressY } = Drag.reference;
 
-		if (tile !== null && buttons & MOUSE_LEFT) {
+		if (bankIndex >= 0 && wordIndex >= 0 && buttons & MOUSE_LEFT) {
 			// We do want *some* leeway with dragging tiles. We don't want the player to start dragging a tile if
 			// they're just trying to click on it.
 			const distance = Math.sqrt((offsetX - pressX) ** 2 + (offsetY - pressY) ** 2);
@@ -274,15 +276,8 @@ export const Create = createSingletonView(() => {
 				Drag.dragging.set(false);
 			},
 
-			onpointerdown({ offsetX, offsetY, target }) {
-				Drag.reference = {
-					bankIndex,
-					wordIndex,
-					sentenceIndex,
-					tile: target,
-					pressX: offsetX,
-					pressY: offsetY,
-				};
+			onpointerdown({ offsetX, offsetY }) {
+				Drag.reference = { bankIndex, wordIndex, sentenceIndex, pressX: offsetX, pressY: offsetY };
 			},
 		});
 	};
