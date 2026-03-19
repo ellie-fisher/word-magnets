@@ -7,11 +7,12 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace, $getAll, $center, createState } from "../framework.js";
-import { RoomStates, RoomData, RoomWords, UserSentence, setSentence } from "./state.js";
-import { Button, P, Section, Span, Strong } from "../util/components.js";
-import { flagFixed, hasIndex } from "../util/util.js";
-import { MAX_LENGTH } from "./sentences.js";
+import { createSingletonView, $, $replace, $getAll, $center, createState } from "../../framework.js";
+import { RoomStates, RoomData, RoomWords } from "../state.js";
+import { UserSentence, addWord, moveWord, removeWord } from "./state.js";
+import { Button, P, Section, Span, Strong } from "../../util/components.js";
+import { flagFixed } from "../../util/util.js";
+import { MAX_LENGTH } from "./sentenceToString.js";
 
 /**
  * The "Create" phase of the game. This is the core gameplay mechanic where players create sentences using tiles.
@@ -38,53 +39,6 @@ export const Create = createSingletonView(() => {
 		/* Modifier keys for special functions. */
 		ctrlKey: false,
 		shiftKey: false,
-
-		// Adds a word to the sentence. Infinity for the index means "at the end of the sentence".
-		addWord(word, index = Infinity) {
-			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
-
-			if (index === Infinity) {
-				sentence.words.push(word);
-			} else if (hasIndex(sentence.words, index)) {
-				sentence.words.splice(index, 0, word);
-			}
-
-			return setSentence(sentence);
-		},
-
-		// Move a word in a sentence. Infinity for either index means "at the end of the sentence".
-		moveWord(fromIndex, toIndex) {
-			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
-
-			fromIndex = fromIndex === Infinity ? sentence.words.length - 1 : fromIndex;
-
-			if (!hasIndex(sentence.words, fromIndex) || (!hasIndex(sentence.words, toIndex) && toIndex !== Infinity)) {
-				return false;
-			}
-
-			if (fromIndex !== toIndex) {
-				if (toIndex === Infinity) {
-					sentence.words.push(sentence.words[fromIndex]);
-				} else {
-					sentence.words.splice(toIndex, 0, sentence.words[fromIndex]);
-				}
-
-				if (fromIndex > toIndex) {
-					fromIndex++;
-				}
-
-				sentence.words.splice(fromIndex, 1);
-			}
-
-			return setSentence(sentence);
-		},
-
-		// Removes a word from the sentence.
-		removeWord(index) {
-			const sentence = { ...UserSentence.get(), words: [...UserSentence.get().words] };
-			sentence.words.splice(index, 1);
-			return setSentence(sentence);
-		},
 
 		// Shake tiles when you cannot add a new word to the sentence. This is kinda hacky but oh well!
 		shakeTiles() {
@@ -137,7 +91,7 @@ export const Create = createSingletonView(() => {
 			Drag.dragging = true;
 
 			if (Drag.reference.sentenceIndex >= 0) {
-				Sentence.removeWord(Drag.reference.sentenceIndex);
+				removeWord(Drag.reference.sentenceIndex);
 			}
 		},
 
@@ -152,7 +106,7 @@ export const Create = createSingletonView(() => {
 			} else {
 				const { bankIndex, wordIndex } = Drag.reference;
 
-				if (!Sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
+				if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
 					/* We weren't able to add a tile, so fade it slower and shake the tiles. */
 					fade = 0.5;
 					Sentence.shakeTiles();
@@ -261,6 +215,17 @@ export const Create = createSingletonView(() => {
 	document.addEventListener("pointerleave", cancelInput);
 	document.addEventListener("pointercancel", cancelInput);
 
+	// Prevent scrolling while dragging a tile on mobile devices.
+	document.addEventListener(
+		"touchmove",
+		event => {
+			if (Drag.dragging) {
+				event.preventDefault();
+			}
+		},
+		{ passive: false },
+	);
+
 	document.addEventListener("keydown", event => {
 		Sentence.ctrlKey = event.ctrlKey;
 		Sentence.shiftKey = event.shiftKey;
@@ -285,13 +250,13 @@ export const Create = createSingletonView(() => {
 
 					if (Sentence.ctrlKey) {
 						// If a control key is being held, the word gets sent to the beginning of the sentence.
-						Sentence.moveWord(sentenceIndex, 0);
+						moveWord(sentenceIndex, 0);
 					} else if (Sentence.shiftKey) {
 						// If a shift key is being held, the word gets sent to the end of the sentence.
-						Sentence.moveWord(sentenceIndex, Infinity);
+						moveWord(sentenceIndex, Infinity);
 					} else {
 						// Otherwise, we're trying to remove the word from the sentence.
-						Sentence.removeWord(sentenceIndex);
+						removeWord(sentenceIndex);
 					}
 				} else {
 					/* We are a wordbank tile, so we're trying to be added to the sentence. */
@@ -300,7 +265,7 @@ export const Create = createSingletonView(() => {
 					// sentence instead of the end.
 					const sentenceIndex = Sentence.ctrlKey ? 0 : Infinity;
 
-					if (!Sentence.addWord({ bankIndex, wordIndex }, sentenceIndex)) {
+					if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
 						// We could not be added to the sentence, so play the shake animation.
 						Sentence.shakeTiles();
 					}
@@ -345,6 +310,7 @@ export const Create = createSingletonView(() => {
 	});
 
 	RoomData.state.addHook(state => {
+		Drag.stop();
 		$getAll("button.word-tile").forEach(tile => (tile.disabled = state === RoomStates.CreateSubmit));
 	});
 
