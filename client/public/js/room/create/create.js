@@ -29,9 +29,6 @@ export const Create = createSingletonView(() => {
 		body: Section({ className: "sentence" }),
 		// The sentence length element.
 		length: P(),
-		// The spacer is how we insert gaps in between sentence tiles when dragging a tile into it. It's actually a
-		// hidden tile that gets its contents set to whatever word we're currently dragging.
-		spacer: Button("\u00A0", "word-tile hidden"),
 
 		// The timeout ID of the tile shake animation that plays when failing to add a word to a sentence.
 		shakeTimeout: 0,
@@ -80,25 +77,29 @@ export const Create = createSingletonView(() => {
 
 		// The gap that appears between tiles when dragging a tile in(to) a sentence.
 		spacer: createState({ bankIndex: -1, wordIndex: -1, sentenceIndex: -1 }),
+		// The position in the sentence we're dragging the tile to.
+		sentenceIndex: createState(-1),
+
 		// Since we're not actually dragging the wordbank/sentence tile itself, we have to maintain a reference to its data.
-		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0, pressY: 0 },
+		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 },
 
 		// Start dragging a tile.
 		start() {
 			Drag.tile.textContent = Drag.reference.tile.textContent;
 			Drag.tile.style.transition = "";
 			Drag.tile.classList.remove("hidden");
-			Drag.dragging = true;
 
 			if (Drag.reference.sentenceIndex >= 0) {
 				removeWord(Drag.reference.sentenceIndex);
 			}
+
+			Drag.dragging = true;
 		},
 
 		// Stop dragging the tile.
 		stop() {
-			const { sentenceIndex } = Drag.spacer.get();
-			let fade = 0;
+			const sentenceIndex = Drag.sentenceIndex.get();
+			let fade = 0.0;
 
 			if (sentenceIndex < 0) {
 				// If we aren't inserting a tile, fade it quicker.
@@ -113,14 +114,14 @@ export const Create = createSingletonView(() => {
 				}
 			}
 
-			if (fade > 0) {
+			if (fade > 0.0) {
 				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
 			}
 
-			Drag.spacer.reset();
-			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0, pressY: 0 };
-			Drag.dragging = false;
+			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, tile: null, pressX: 0.0, pressY: 0.0 };
 			Drag.tile.classList.add("hidden");
+			Drag.sentenceIndex.reset();
+			Drag.dragging = false;
 		},
 
 		// Move the tile we're dragging.
@@ -143,12 +144,11 @@ export const Create = createSingletonView(() => {
 				// Our tile is not within the bounds of the sentence box, so we're not adding a word to the sentence.
 				Drag.spacer.reset();
 			} else {
-				let insertSpacer = tiles.length <= 0;
 				let sentenceIndex = Infinity;
 
 				// Test where we're dragging our tile in relation to the other tiles in the sentence, and then add the
 				// spacer accordingly.
-				for (let i = 0; i < tiles.length && !insertSpacer; i++) {
+				for (let i = 0; i < tiles.length && sentenceIndex === Infinity; i++) {
 					const testTile = tiles[i];
 					const testBounds = testTile.getBoundingClientRect();
 					const testCenter = $center(testTile);
@@ -157,11 +157,9 @@ export const Create = createSingletonView(() => {
 						if (testCenter.x >= center.x) {
 							/* The next tile is to the right of us, so we're dropping our tile to the left of it. */
 							sentenceIndex = i;
-							insertSpacer = true;
 						} else if (testCenter.x < center.x && i === tiles.length - 1) {
 							/* We're dropping our tile at the end of the sentence. */
 							sentenceIndex = Infinity;
-							insertSpacer = true;
 						} else if (i < tiles.length - 1) {
 							const nextBounds = tiles.at(i + 1).getBoundingClientRect();
 
@@ -169,18 +167,27 @@ export const Create = createSingletonView(() => {
 							// tile before it.
 							if (center.y < nextBounds.top && testBounds.top < nextBounds.top) {
 								sentenceIndex = i + 1;
-								insertSpacer = true;
 							}
 						}
 					}
 				}
 
-				if (insertSpacer) {
-					Drag.spacer.set({ bankIndex: reference.bankIndex, wordIndex: reference.wordIndex, sentenceIndex });
-				}
+				Drag.sentenceIndex.set(sentenceIndex);
 			}
 		},
 	};
+
+	Drag.sentenceIndex.addHook(sentenceIndex => {
+		if (sentenceIndex < 0) {
+			Drag.spacer.reset();
+		} else {
+			Drag.spacer.set({
+				bankIndex: Drag.reference.bankIndex,
+				wordIndex: Drag.reference.wordIndex,
+				sentenceIndex,
+			});
+		}
+	});
 
 	document.addEventListener("pointermove", ({ buttons, offsetX, offsetY, pageX, pageY }) => {
 		const { tile, pressX, pressY } = Drag.reference;
@@ -325,7 +332,8 @@ export const Create = createSingletonView(() => {
 		$replace(Sentence.length, Span(Strong("Length: "), `${length} / ${MAX_LENGTH}`));
 
 		if (words.length <= 0) {
-			$replace(Sentence.body, Sentence.spacer, clearButton, preview);
+			Drag.tiles = [];
+			$replace(Sentence.body, Button("\u00A0", "word-tile hidden"), clearButton, preview);
 		} else {
 			Drag.tiles = words.map(({ bankIndex, wordIndex }, sentenceIndex) => {
 				return Tile(bankIndex, wordIndex, sentenceIndex);
