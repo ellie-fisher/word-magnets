@@ -21,6 +21,17 @@ export const Create = createSingletonView(() => {
 	// Left mouse button flag for pointer events.
 	const MOUSE_LEFT = 1 << 0;
 
+	// We do want *some* leeway with dragging tiles. We don't want the player to start dragging a tile if they're just
+	// trying to click on it.
+	const MIN_DRAG_DIST = 10;
+
+	const DRAG_TILE_Z_INDEX = 10;
+
+	const SHAKE_TIME = 300;
+
+	const FADE_FAST = 0.25;
+	const FADE_SLOW = 0.5;
+
 	/**
 	 * Everything related to the player's sentence.
 	 */
@@ -42,12 +53,14 @@ export const Create = createSingletonView(() => {
 		// Shake tiles when you cannot add a new word to the sentence. This is kinda hacky but oh well!
 		shakeTiles() {
 			if (Sentence.shakeTimeout === 0) {
-				$getAll("button.word-tile").forEach(tile => (tile.style.animation = "brief-shake 0.3s linear 1"));
+				$getAll("button.word-tile").forEach(
+					tile => (tile.style.animation = `brief-shake ${SHAKE_TIME / 1000}s linear 1`),
+				);
 
 				Sentence.shakeTimeout = setTimeout(() => {
 					Sentence.shakeTimeout = 0;
 					$getAll("button.word-tile").forEach(tile => (tile.style.animation = ""));
-				}, 300);
+				}, SHAKE_TIME);
 			}
 		},
 	};
@@ -68,35 +81,31 @@ export const Create = createSingletonView(() => {
 	const Drag = {
 		// Are we currently dragging a tile?
 		dragging: createState(false),
+		// The data of the word we're dragging.
+		word: createState({ bankIndex: -1, wordIndex: -1, sentenceIndex: -1 }),
+		/* The coordinates of when we first pressed on the tile. We keep track of this so dragging tiles isn't too sensitive. */
+		firstPress: { x: 0.0, y: 0.0 },
 
 		// This is the element that actually gets moved when dragging a word tile. It just copies its contents from the
 		// selected tile.
 		tile: Button("", "word-tile hidden", {
-			style: { position: "absolute", "z-index": 10, left: "0px", top: "0px" },
+			style: { position: "absolute", "z-index": DRAG_TILE_Z_INDEX, left: "0px", top: "0px" },
 		}),
-
-		// The gap that appears between tiles when dragging a tile in(to) a sentence.
-		spacer: createState({ bankIndex: -1, wordIndex: -1, sentenceIndex: -1 }),
-		// The position in the sentence we're dragging the tile to.
-		sentenceIndex: createState(-1),
-
-		// Since we're not actually dragging the wordbank/sentence tile itself, we have to maintain a reference to its data.
-		reference: { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, pressX: 0.0, pressY: 0.0 },
 
 		// Move the tile we're dragging.
 		move(x, y) {
-			const { tile, reference } = Drag;
+			const { tile } = Drag;
 			const { tiles } = Sentence;
 
-			tile.style.left = `${x - reference.pressX}px`;
-			tile.style.top = `${y - reference.pressY}px`;
+			tile.style.left = `${x - Drag.firstPress.x}px`;
+			tile.style.top = `${y - Drag.firstPress.y}px`;
 
 			const tileBounds = tile.getBoundingClientRect();
 			const center = $center(tile);
 
 			if (!testBoxOverlap(tileBounds, Sentence.body.getBoundingClientRect())) {
 				// Our tile is not within the bounds of the sentence box, so we're not adding a word to the sentence.
-				Drag.spacer.reset();
+				Drag.word.set({ ...Drag.word.get(), sentenceIndex: -1 });
 			} else {
 				let sentenceIndex = Infinity;
 
@@ -126,7 +135,7 @@ export const Create = createSingletonView(() => {
 					}
 				}
 
-				Drag.sentenceIndex.set(sentenceIndex);
+				Drag.word.set({ ...Drag.word.get(), sentenceIndex });
 			}
 		},
 	};
@@ -135,30 +144,27 @@ export const Create = createSingletonView(() => {
 		if (dragging) {
 			/* Start dragging the tile. */
 
-			const word = getRoomWord(Drag.reference.bankIndex, Drag.reference.wordIndex);
+			const { bankIndex, wordIndex, sentenceIndex } = Drag.word.get();
+			const word = getRoomWord(bankIndex, wordIndex);
 
 			Drag.tile.textContent = word.trim() === "" ? "\u00A0" : word;
 			Drag.tile.style.transition = "";
 			Drag.tile.classList.remove("hidden");
 
-			if (Drag.reference.sentenceIndex >= 0) {
-				removeWord(Drag.reference.sentenceIndex);
+			if (sentenceIndex >= 0) {
+				removeWord(sentenceIndex);
 			}
 		} else {
 			/* Stop dragging the tile. */
 
-			const sentenceIndex = Drag.sentenceIndex.get();
+			const { bankIndex, wordIndex, sentenceIndex } = Drag.word.get();
 			let fade = 0.0;
 
 			if (sentenceIndex < 0) {
-				// If we aren't inserting a tile, fade it quicker.
-				fade = 0.25;
+				fade = FADE_FAST;
 			} else {
-				const { bankIndex, wordIndex } = Drag.reference;
-
 				if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
-					/* We weren't able to add a tile, so fade it slower and shake the tiles. */
-					fade = 0.5;
+					fade = FADE_SLOW;
 					Sentence.shakeTiles();
 				}
 			}
@@ -167,34 +173,21 @@ export const Create = createSingletonView(() => {
 				Drag.tile.style.transition = `visibility ${fade}s, opacity ${fade}s`;
 			}
 
-			Drag.reference = { bankIndex: -1, wordIndex: -1, sentenceIndex: -1, pressX: 0.0, pressY: 0.0 };
+			Drag.word.reset();
+			Drag.firstPress = { x: 0.0, y: 0.0 };
 			Drag.tile.classList.add("hidden");
-			Drag.sentenceIndex.reset();
 		}
 	});
 
-	Drag.sentenceIndex.addHook(sentenceIndex => {
-		if (sentenceIndex < 0) {
-			Drag.spacer.reset();
-		} else {
-			Drag.spacer.set({
-				bankIndex: Drag.reference.bankIndex,
-				wordIndex: Drag.reference.wordIndex,
-				sentenceIndex,
-			});
-		}
-	});
-
+	// Start drag logic
 	document.addEventListener("pointermove", ({ buttons, offsetX, offsetY, pageX, pageY }) => {
-		const { bankIndex, wordIndex, pressX, pressY } = Drag.reference;
+		const { bankIndex, wordIndex } = Drag.word.get();
 
 		if (bankIndex >= 0 && wordIndex >= 0 && buttons & MOUSE_LEFT) {
-			// We do want *some* leeway with dragging tiles. We don't want the player to start dragging a tile if
-			// they're just trying to click on it.
-			const distance = Math.sqrt((offsetX - pressX) ** 2 + (offsetY - pressY) ** 2);
+			const distance = Math.sqrt((offsetX - Drag.firstPress.x) ** 2 + (offsetY - Drag.firstPress.y) ** 2);
 			const dragging = Drag.dragging.get();
 
-			if (dragging || (!dragging && distance >= 10)) {
+			if (dragging || (!dragging && distance >= MIN_DRAG_DIST)) {
 				if (!dragging) {
 					Drag.dragging.set(true);
 				}
@@ -263,8 +256,8 @@ export const Create = createSingletonView(() => {
 				} else {
 					/* We are a wordbank tile, so we're trying to be added to the sentence. */
 
-					// If a control key is being held, the word gets added to the beginning of the
-					// sentence instead of the end.
+					// If a control key is being held, the word gets added to the beginning of the sentence instead of
+					// the end.
 					const sentenceIndex = Sentence.ctrlKey ? 0 : Infinity;
 
 					if (!addWord({ bankIndex, wordIndex }, sentenceIndex)) {
@@ -277,7 +270,8 @@ export const Create = createSingletonView(() => {
 			},
 
 			onpointerdown({ offsetX, offsetY }) {
-				Drag.reference = { bankIndex, wordIndex, sentenceIndex, pressX: offsetX, pressY: offsetY };
+				Drag.word.set({ bankIndex, wordIndex, sentenceIndex });
+				Drag.firstPress = { x: offsetX, y: offsetY };
 			},
 		});
 	};
@@ -326,19 +320,30 @@ export const Create = createSingletonView(() => {
 			});
 
 			const tiles = [...Sentence.tiles];
-			const dragSpacer = Drag.spacer.get();
+			const { bankIndex, wordIndex, sentenceIndex } = Drag.word.get();
 
 			// Insert spacer element if needed.
-			if (dragSpacer.sentenceIndex >= 0) {
-				tiles.splice(dragSpacer.sentenceIndex, 0, Spacer(dragSpacer.bankIndex, dragSpacer.wordIndex));
+			if (sentenceIndex >= 0 && Drag.dragging.get()) {
+				tiles.splice(sentenceIndex, 0, Spacer(bankIndex, wordIndex));
 			}
 
 			$replace(Sentence.body, clearButton, ...tiles, preview);
 		}
 	};
 
-	UserSentence.addHook(updateSentenceHook);
-	Drag.spacer.addHook(updateSentenceHook);
+	UserSentence.addHook((newSentence, _, oldSentence) => {
+		if (newSentence.words.length < oldSentence.words.length) {
+			Drag.word.set({ ...Drag.word.get(), sentenceIndex: -1 });
+		}
+
+		updateSentenceHook();
+	});
+
+	Drag.word.addHook(({ sentenceIndex: newIndex }, _, { sentenceIndex: oldIndex }) => {
+		if (newIndex !== oldIndex && (Drag.dragging.get() || newIndex === -1)) {
+			updateSentenceHook();
+		}
+	});
 
 	return Section(
 		Drag.tile,
