@@ -345,13 +345,5 @@ export const Create = createSingletonView(() => {
 		}
 	});
 
-	return Section(
-		Drag.tile,
-		Wordbanks.nonfixed,
-		// P("(Tip: You can type on your keyboard to quickly search for words.)"),
-		// TODO: ^^^ Implement this ^^^
-		Sentence.body,
-		Sentence.length,
-		Wordbanks.fixed,
-	);
+	return Section(Drag.tile, Wordbanks.nonfixed, Sentence.body, Sentence.length, Wordbanks.fixed);
 });

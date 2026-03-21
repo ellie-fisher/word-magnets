@@ -10,7 +10,7 @@
 import { createState, createSingletonView, $ } from "../framework.js";
 import { Button, Div, Section, Span, Strong } from "../util/components.js";
 import { copyText } from "../util/util.js";
-import { RoomStates, RoomData } from "./state.js";
+import { RoomStates, RoomData, ShowPopup } from "./state.js";
 
 export const Header = createSingletonView(() => {
 	const ShowRoomID = createState(false);
@@ -106,7 +106,7 @@ export const Header = createSingletonView(() => {
 	});
 
 	return Section(
-		Button("« Exit", "tab warning", () => alert("Not implemented yet!")),
+		Button("« Exit", "tab warning", () => ShowPopup.set(true)),
 		Section(
 			{ className: "container room-header" },
 			Section({ className: "room-data-fields" }, containers.time, containers.round, containers.id),

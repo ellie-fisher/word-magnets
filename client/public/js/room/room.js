@@ -7,21 +7,39 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
-import { RoomStates, RoomData, RoomSentences, clearRoomSentences } from "./state.js";
+import { createSingletonView, $replace } from "../framework.js";
+import { RoomStates, RoomData, RoomSentences, clearRoomSentences, ShowPopup } from "./state.js";
 import { UserSentence } from "./create/state.js";
-import { sendSubmitSentence, sendSubmitVote } from "../packets/send.js";
-import { Article, H2, Section } from "../util/components.js";
+import { sendLeaveRoom, sendSubmitSentence, sendSubmitVote } from "../packets/send.js";
+import { Article, H2, Section, P, Button, Span } from "../util/components.js";
 import { Header } from "./header.js";
 import { Lobby } from "./lobby.js";
 import { Create } from "./create/create.js";
 import { Vote } from "./vote.js";
 import { Results } from "./results.js";
 import { End } from "./end.js";
+import { AppView } from "../app/state.js";
 
 export const Room = createSingletonView(() => {
 	const body = Section();
 	const title = H2("Lobby");
+	const popup = Section(
+		{ className: "popup" },
+		Section(
+			{ className: "container" },
+			H2("Exit room?"),
+			P("Are you sure you want to exit the room?"),
+			Span(
+				{ className: "popup-buttons" },
+				Button("Yes", () => {
+					sendLeaveRoom();
+					AppView.set("title");
+					ShowPopup.set(false);
+				}),
+				Button("No", { className: "primary" }, () => ShowPopup.set(false)),
+			),
+		),
+	);
 
 	RoomData.state.addHook(state => {
 		let view = "Unknown room view! (Ask a nerd what this means.)";
@@ -98,5 +116,7 @@ export const Room = createSingletonView(() => {
 		title.textContent = titleText;
 	});
 
-	return Article(title, Header(), body);
+	ShowPopup.addHook(show => (popup.hidden = !show), true);
+
+	return Article(title, popup, Header(), body);
 });

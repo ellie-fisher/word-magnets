@@ -77,3 +77,5 @@ export const clearRoomSentences = () => {
 	RoomSentences.vote.reset();
 	RoomSentences.voteSubmitted.reset();
 };
+
+export const ShowPopup = createState(false);

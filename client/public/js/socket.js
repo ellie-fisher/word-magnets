@@ -21,7 +21,7 @@ import {
 	readRoomSentences,
 } from "./packets/receive.js";
 
-import { applyRoomData, RoomClients, RoomWords, RoomSentences } from "./room/state.js";
+import { applyRoomData, RoomClients, RoomWords, RoomSentences, RoomData } from "./room/state.js";
 
 const PROTOCOL_APP = "word-magnets";
 const PROTOCOL_BRANCH = "vanilla";
@@ -85,7 +85,12 @@ socket.onmessage = async event => {
 		}
 
 		case PacketTypes.RoomDestroyedPacket: {
-			AppView.set("error", { title: "Disconnected: ", message: readRoomDestroyed(reader) });
+			const ownerID = RoomData.ownerID.get();
+
+			if (ownerID !== ClientInfo.get().clientID && typeof ownerID === "string") {
+				AppView.set("error", { title: "Disconnected: ", message: readRoomDestroyed(reader) });
+			}
+
 			break;
 		}
 
