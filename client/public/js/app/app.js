@@ -10,47 +10,47 @@
 import { AppView } from "./state.js";
 import { Title } from "../title/title.js";
 import { Room } from "../room/room.js";
-import { createSingletonView, $, $get, $replace } from "../framework.js";
+import { $singleton, $get, $replace } from "../framework.js";
 import { Message, Error } from "../message.js";
-import { sendRequestServerInfo } from "../packets/send.js";
 import { Strong } from "../util/components.js";
 
-export const App = createSingletonView(() => {
-	const element = $get("main");
+export const App = $singleton({
+	$element() {
+		const element = $get("main");
 
-	let child = "";
+		let child = "";
 
-	AppView.addHook((value, payload = {}) => {
-		child = Error({ title: "Error: ", message: `Unknown view "${value}" (Ask a nerd what this means.)` });
+		AppView.addHook((value, payload = {}) => {
+			child = Error({ title: "Error: ", message: `Unknown view "${value}" (Ask a nerd what this means.)` });
 
-		switch (value) {
-			case "loading": {
-				child = Message(Strong("Word Magnets"), " is loading...");
-				break;
+			switch (value) {
+				case "loading": {
+					child = Message(Strong("Word Magnets"), " is loading...");
+					break;
+				}
+
+				case "error": {
+					child = Error(payload);
+					break;
+				}
+
+				case "title": {
+					child = Title(payload);
+					break;
+				}
+
+				case "room": {
+					child = Room(payload);
+					break;
+				}
+
+				default:
+					break;
 			}
 
-			case "error": {
-				child = Error(payload);
-				break;
-			}
+			$replace(element, child);
+		});
 
-			case "title": {
-				child = Title(payload);
-				sendRequestServerInfo();
-				break;
-			}
-
-			case "room": {
-				child = Room(payload);
-				break;
-			}
-
-			default:
-				break;
-		}
-
-		$replace(element, child);
-	});
-
-	return element;
+		return element;
+	},
 });

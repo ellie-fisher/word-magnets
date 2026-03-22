@@ -7,73 +7,75 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
+import { $singleton, $replace } from "../framework.js";
 import { RoomStates, RoomData, RoomClients } from "./state.js";
 import { sendStartGame, sendCancelStartGame } from "../packets/send.js";
 import { ClientInfo } from "../app/state.js";
 import { Table } from "./table.js";
 import { Button, P, Section, Strong } from "../util/components.js";
 
-export const Lobby = createSingletonView(() => {
-	const players = P();
+export const Lobby = $singleton({
+	$element() {
+		const players = P();
 
-	const hook = () => {
-		const limit = RoomData.clientLimit.get();
-		const ownerID = RoomData.ownerID.get();
-		const clients = RoomClients.get();
-		const { clientID } = ClientInfo.get();
-		const rows = [];
+		const hook = () => {
+			const limit = RoomData.clientLimit.get();
+			const ownerID = RoomData.ownerID.get();
+			const clients = RoomClients.get();
+			const { clientID } = ClientInfo.get();
+			const rows = [];
 
-		for (let i = 0; i < limit; i++) {
-			if (i >= clients.length) {
-				rows.push(["\u00A0", "\u00A0"]);
-			} else {
-				const { id, name } = clients[i];
-
-				if (id === ownerID) {
-					rows.push([{ className: "room-owner" }, [id === clientID ? "Owner (You)" : "Owner", name]]);
+			for (let i = 0; i < limit; i++) {
+				if (i >= clients.length) {
+					rows.push(["\u00A0", "\u00A0"]);
 				} else {
-					rows.push([id === clientID ? "You" : "\u00A0", name]);
+					const { id, name } = clients[i];
+
+					if (id === ownerID) {
+						rows.push([{ className: "room-owner" }, [id === clientID ? "Owner (You)" : "Owner", name]]);
+					} else {
+						rows.push([id === clientID ? "You" : "\u00A0", name]);
+					}
 				}
 			}
-		}
 
-		$replace(
-			players,
-			Table(
-				[
-					["Role", "15%"],
-					["Name", "85%"],
-				],
-				...rows,
-			),
-		);
-	};
+			$replace(
+				players,
+				Table(
+					[
+						["Role", "15%"],
+						["Name", "85%"],
+					],
+					...rows,
+				),
+			);
+		};
 
-	RoomData.clientLimit.addHook(hook);
-	RoomData.ownerID.addHook(hook);
-	RoomClients.addHook(hook);
+		RoomData.clientLimit.addHook(hook);
+		RoomData.ownerID.addHook(hook);
+		RoomClients.addHook(hook);
 
-	const button = Button("", "primary", () => {
-		if (RoomData.state.get() === RoomStates.Lobby) {
-			sendStartGame();
-		} else {
-			sendCancelStartGame();
-		}
+		const button = Button("", "primary", () => {
+			if (RoomData.state.get() === RoomStates.Lobby) {
+				sendStartGame();
+			} else {
+				sendCancelStartGame();
+			}
 
-		button.disabled = true;
-	});
+			button.disabled = true;
+		});
 
-	RoomData.state.addHook(state => {
-		button.textContent = state === RoomStates.Lobby ? "Start Game" : "Cancel";
-		button.disabled = false;
+		RoomData.state.addHook(state => {
+			button.textContent = state === RoomStates.Lobby ? "Start Game" : "Cancel";
+			button.disabled = false;
 
-		if (RoomData.ownerID.get() === ClientInfo.get().clientID) {
-			button.classList.remove("hidden");
-		} else {
-			button.classList.add("hidden");
-		}
-	});
+			if (RoomData.ownerID.get() === ClientInfo.get().clientID) {
+				button.classList.remove("hidden");
+			} else {
+				button.classList.add("hidden");
+			}
+		});
 
-	return Section(P(Strong("Players:"), players), P(button));
+		return Section(P(Strong("Players:"), players), P(button));
+	},
 });

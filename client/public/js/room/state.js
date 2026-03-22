@@ -34,9 +34,7 @@ export const RoomData = deepFreeze({
 
 export const applyRoomData = (data = {}) => {
 	Object.keys(data).forEach(key => {
-		if (Object.hasOwn(RoomData, key)) {
-			RoomData[key].set(data[key]);
-		}
+		RoomData[key].set?.(data[key]);
 	});
 };
 

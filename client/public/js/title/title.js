@@ -7,52 +7,67 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createState, createSingletonView, $ } from "../framework.js";
+import { createState, $singleton, $replace } from "../framework.js";
 import { Fields } from "../fields.js";
-import { sendCreateRoom, sendJoinRoom } from "../packets/send.js";
+import { sendCreateRoom, sendJoinRoom, sendRequestServerInfo } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
 import { ServerInfo } from "../app/state.js";
-import { Article, Button, H1, P, Section } from "../util/components.js";
+import { Article, Button, H1, P, Section, Span } from "../util/components.js";
 
-export const Title = createSingletonView(() => {
-	const tabCreate = Button("Create", "tab", () => TabState.set(true));
-	const tabJoin = Button("Join", "tab", () => TabState.set(false));
+const fieldsCreate = Span();
+const fieldsJoin = Span();
 
-	const fieldsCreate = RoomFields({
-		fields: structuredClone(Fields.createRoom),
-		title: "Create a Room",
-		buttonText: "Create Room",
-		onButtonClick: sendCreateRoom,
-	});
+export const Title = $singleton({
+	onMount() {
+		sendRequestServerInfo();
 
-	// TODO: Make room code private.
-	const fieldsJoin = RoomFields({
-		fields: structuredClone(Fields.joinRoom),
-		title: "Join a Room",
-		buttonText: "Join Room",
-		onButtonClick: sendJoinRoom,
-	});
+		$replace(
+			fieldsCreate,
+			RoomFields({
+				fields: structuredClone(Fields.createRoom),
+				title: "Create a Room",
+				buttonText: "Create Room",
+				onButtonClick: sendCreateRoom,
+			}),
+		);
 
-	const TabState = createState(true, value => {
-		tabCreate.disabled = value;
-		tabJoin.disabled = !value;
-		fieldsCreate.hidden = !value;
-		fieldsJoin.hidden = value;
-	});
+		// TODO: Make room code private.
+		$replace(
+			fieldsJoin,
+			RoomFields({
+				fields: structuredClone(Fields.joinRoom),
+				title: "Join a Room",
+				buttonText: "Join Room",
+				onButtonClick: sendJoinRoom,
+			}),
+		);
+	},
 
-	const stats = P();
+	$element() {
+		const tabCreate = Button("Create", "tab", () => TabState.set(true));
+		const tabJoin = Button("Join", "tab", () => TabState.set(false));
 
-	ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
-		let message = "There ";
+		const TabState = createState(true, value => {
+			tabCreate.disabled = value;
+			tabJoin.disabled = !value;
+			fieldsCreate.hidden = !value;
+			fieldsJoin.hidden = value;
+		});
 
-		if (clientCount === 1) {
-			message += `is 1 player`;
-		} else {
-			message += `are ${clientCount} players`;
-		}
+		const stats = P();
 
-		stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
-	});
+		ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
+			let message = "There ";
 
-	return Article(H1("Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, Section(stats));
+			if (clientCount === 1) {
+				message += `is 1 player`;
+			} else {
+				message += `are ${clientCount} players`;
+			}
+
+			stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
+		});
+
+		return Article(H1("Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, Section(stats));
+	},
 });

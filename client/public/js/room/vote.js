@@ -7,60 +7,68 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
+import { $singleton, $replace } from "../framework.js";
 import { sendSubmitVote } from "../packets/send.js";
 import { Button, Em, P, Section } from "../util/components.js";
 import { RoomData, RoomSentences, RoomStates } from "./state.js";
 import { Table } from "./table.js";
 
-export const Vote = createSingletonView(() => {
-	const container = P();
-	const submit = Button("Submit Vote", "primary", () => {
-		if (!RoomSentences.voteSubmitted.get()) {
+export const Vote = $singleton({
+	onMount() {
+		if (RoomData.state.get() === RoomStates.VoteSubmit && RoomSentences.vote.get() >= 0) {
 			sendSubmitVote(RoomSentences.vote.get());
-			RoomSentences.voteSubmitted.set(true);
 		}
-	});
+	},
 
-	RoomSentences.voteSubmitted.addHook(submitted => (submit.disabled = submitted));
+	$element() {
+		const container = P();
+		const submit = Button("Submit Vote", "primary", () => {
+			if (!RoomSentences.voteSubmitted.get()) {
+				sendSubmitVote(RoomSentences.vote.get());
+				RoomSentences.voteSubmitted.set(true);
+			}
+		});
 
-	const hook = () => {
-		const rows = [];
-		const vote = RoomSentences.vote.get();
-		const disabled = RoomData.state.get() === RoomStates.VoteSubmit;
-		const sentences = RoomSentences.sentences.get();
+		RoomSentences.voteSubmitted.addHook(submitted => (submit.disabled = submitted));
 
-		if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
-			submit.style.visibility = "hidden";
-			$replace(container, P(Em("No sentences to show!")));
-		} else {
-			submit.style.visibility = "visible";
-			sentences.forEach(({ value = "" }, index) => {
-				if (value !== "") {
-					const selected = vote === index;
-					const clickable = !selected && !disabled;
+		const hook = () => {
+			const rows = [];
+			const vote = RoomSentences.vote.get();
+			const disabled = RoomData.state.get() === RoomStates.VoteSubmit;
+			const sentences = RoomSentences.sentences.get();
 
-					rows.push([
-						{
-							className: `${clickable ? "clickable" : ""} ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`,
-							onclick() {
-								if (clickable && index >= 0) {
-									RoomSentences.vote.set(index);
-								}
+			if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
+				submit.style.visibility = "hidden";
+				$replace(container, P(Em("No sentences to show!")));
+			} else {
+				submit.style.visibility = "visible";
+				sentences.forEach(({ value = "" }, index) => {
+					if (value !== "") {
+						const selected = vote === index;
+						const clickable = !selected && !disabled;
+
+						rows.push([
+							{
+								className: `${clickable ? "clickable" : ""} ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`,
+								onclick() {
+									if (clickable && index >= 0) {
+										RoomSentences.vote.set(index);
+									}
+								},
 							},
-						},
-						[value],
-					]);
-				}
-			});
+							[value],
+						]);
+					}
+				});
 
-			$replace(container, Table([["Click on a sentence below:", "100%"]], ...rows));
-		}
-	};
+				$replace(container, Table([["Click on a sentence below:", "100%"]], ...rows));
+			}
+		};
 
-	RoomData.state.addHook(hook);
-	RoomSentences.sentences.addHook(hook);
-	RoomSentences.vote.addHook(hook);
+		RoomData.state.addHook(hook);
+		RoomSentences.sentences.addHook(hook);
+		RoomSentences.vote.addHook(hook);
 
-	return Section(container, submit);
+		return Section(container, submit);
+	},
 });

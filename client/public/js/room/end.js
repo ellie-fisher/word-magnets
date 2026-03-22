@@ -7,59 +7,64 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { createSingletonView, $, $replace } from "../framework.js";
-import { RoomData, RoomClients } from "./state.js";
+import { $singleton, $replace } from "../framework.js";
+import { RoomClients } from "./state.js";
 import { ClientInfo } from "../app/state.js";
 import { Table } from "./table.js";
 import { P, Section, Strong } from "../util/components.js";
 
-export const End = createSingletonView(() => {
-	const scores = P();
+const scores = P();
 
-	const hook = () => {
-		const clients = structuredClone(RoomClients.get());
-		let highestScore = 0;
+const hook = () => {
+	const clients = structuredClone(RoomClients.get());
+	let highestScore = 0;
 
-		clients.sort((client1, client2) => {
-			if (client1.score > highestScore) {
-				highestScore = client1.score;
-			}
+	clients.sort((client1, client2) => {
+		if (client1.score > highestScore) {
+			highestScore = client1.score;
+		}
 
-			if (client2.score > highestScore) {
-				highestScore = client2.score;
-			}
+		if (client2.score > highestScore) {
+			highestScore = client2.score;
+		}
 
-			return client2.score - client1.score;
-		});
+		return client2.score - client1.score;
+	});
 
-		const rows = clients.map(client => {
-			let className = "";
+	const rows = clients.map(client => {
+		let className = "";
 
-			if (client.id === ClientInfo.get().clientID) {
-				className += " selected";
-			}
+		if (client.id === ClientInfo.get().clientID) {
+			className += " selected";
+		}
 
-			if (client.score >= highestScore) {
-				className += " room-owner";
-			}
+		if (client.score >= highestScore) {
+			className += " room-owner";
+		}
 
-			return className === "" ? [client.score, client.name] : [{ className }, [client.score, client.name]];
-		});
+		return className === "" ? [client.score, client.name] : [{ className }, [client.score, client.name]];
+	});
 
-		$replace(
-			scores,
-			Table(
-				[
-					["Score", "5%"],
-					["Player", "95%"],
-				],
-				...rows,
-			),
-		);
-	};
+	$replace(
+		scores,
+		Table(
+			[
+				["Score", "5%"],
+				["Player", "95%"],
+			],
+			...rows,
+		),
+	);
+};
 
-	RoomData.state.addHook(hook);
-	RoomClients.addHook(hook);
+export const End = $singleton({
+	onMount() {
+		hook();
+	},
 
-	return Section(P(Strong("Final Scores:"), scores));
+	$element() {
+		RoomClients.addHook(hook);
+
+		return Section(P(Strong("Final Scores:"), scores));
+	},
 });

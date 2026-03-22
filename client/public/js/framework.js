@@ -54,16 +54,37 @@ export const createState = (initialValue = null, initialHook = null) => {
 	return state;
 };
 
-export const createSingletonView = initFunc => {
+export const $singleton = (logic = {}) => {
 	let view = null;
 
 	return function () {
 		if (view === null) {
-			view = initFunc();
+			view = logic.$element();
+			view.__$logic$__ = logic;
 		}
 
 		return view;
 	};
+};
+
+const onMount = element => {
+	if (element instanceof HTMLElement) {
+		for (const child of element.children) {
+			onMount(child);
+		}
+
+		element.__$logic$__?.onMount?.();
+	}
+};
+
+const onUnmount = element => {
+	if (element instanceof HTMLElement) {
+		for (const child of element.children) {
+			onUnmount(child);
+		}
+
+		element.__$logic$__?.onUnmount?.();
+	}
 };
 
 /**
@@ -76,7 +97,7 @@ export const createSingletonView = initFunc => {
  *                       the new element.
  *                       Everything else is treated as a child.
  *
- * @returns Node
+ * @returns {HTMLElement}
  */
 export const $ = (tag, ...args) => {
 	const element = document.createElement(tag);
@@ -108,8 +129,11 @@ export const $ = (tag, ...args) => {
 	}
 
 	// The rest of the arguments are children.
-	for (; i < args.length; i++) {
-		element.append(args[i]);
+	const children = args.slice(i);
+
+	for (const child of children) {
+		element.append(child);
+		onMount(child);
 	}
 
 	return element;
@@ -118,9 +142,18 @@ export const $ = (tag, ...args) => {
 /**
  * Replaces an element's children with new ones.
  */
-export const $replace = (node, ...children) => {
-	node.replaceChildren(...children);
-	return node;
+export const $replace = (element, ...children) => {
+	for (const child of element.children) {
+		onUnmount(child);
+	}
+
+	element.replaceChildren(...children);
+
+	for (const child of element.children) {
+		onMount(child);
+	}
+
+	return element;
 };
 
 /**
