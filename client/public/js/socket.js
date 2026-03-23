@@ -80,7 +80,11 @@ socket.onmessage = async event => {
 
 		case PacketTypes.RoomConnectErrorPacket: {
 			const { wasCreating, message } = readRoomConnectError(reader);
-			AppView.set("error", { title: wasCreating ? "Could not create room: " : "Could not join room: ", message });
+			AppView.set("error", {
+				title: wasCreating ? "Could not create room: " : "Could not join room: ",
+				showOK: true,
+				message,
+			});
 			break;
 		}
 
@@ -88,7 +92,7 @@ socket.onmessage = async event => {
 			const ownerID = RoomData.ownerID.get();
 
 			if (ownerID !== ClientInfo.get().clientID && typeof ownerID === "string") {
-				AppView.set("error", { title: "Disconnected: ", message: readRoomDestroyed(reader) });
+				AppView.set("error", { title: "Disconnected: ", message: readRoomDestroyed(reader), showOK: true });
 			}
 
 			break;

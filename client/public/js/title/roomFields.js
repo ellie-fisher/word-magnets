@@ -7,7 +7,6 @@
  * For full terms, see the LICENSE file or visit https://spdx.org/licenses/AGPL-3.0-or-later.html
  */
 
-import { $ } from "../framework.js";
 import { Button, Div, Field, H2, Section, Strong } from "../util/components.js";
 import { validateField } from "../util/util.js";
 

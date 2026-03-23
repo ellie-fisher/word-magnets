@@ -325,14 +325,14 @@ hr {
 }
 
 .center,
-.loading {
+.message {
 	display: grid;
 	align-content: center;
 	justify-content: center;
 	text-align: center;
 }
 
-.loading {
+.message {
 	height: 100vh;
 	font-size: 2em;
 }

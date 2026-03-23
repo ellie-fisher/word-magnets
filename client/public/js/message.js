@@ -8,14 +8,26 @@
  */
 
 import { $ } from "./framework.js";
-import { Div, Strong } from "./util/components.js";
+import { AppView } from "./app/state.js";
+import { Button, Div, P, Strong } from "./util/components.js";
 
 export const Message = (...children) => {
-	return Div({ className: "loading" }, Div(...children));
+	return Div({ className: "message" }, Div(...children));
 };
 
 export const Error = (data = {}, ...children) => {
-	const { title = "Error: ", message = "Unknown error" } = data;
+	const { title = "Error: ", message = "Unknown error", showOK = false } = data;
 
-	return Message(Strong({ className: "error" }, title), $("br"), message, ...children);
+	return Message(
+		Strong({ className: "error" }, title),
+		$("br"),
+		message,
+		...children,
+		showOK
+			? P(
+					{ className: "popup-buttons" },
+					Button("OK", { className: "primary" }, () => AppView.set("title")),
+				)
+			: "",
+	);
 };
