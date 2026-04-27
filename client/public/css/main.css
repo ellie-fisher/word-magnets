@@ -164,6 +164,17 @@ button.tab:active {
 	outline: none;
 }
 
+button.dark {
+	background-color: var(--tab-color);
+	color: var(--tab-text-color);
+}
+
+button.dark:disabled {
+	cursor: none;
+	background-color: var(--input-secondary-disabled);
+	color: var(--input-text-secondary);
+}
+
 button.word-tile {
 	border: 0.1em outset bisque;
 	border-radius: 0em;

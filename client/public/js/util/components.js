@@ -22,23 +22,84 @@ export const Em = (...args) => $("em", ...args);
 /**
  * Creates an element from field data.
  */
-export const Field = (field, onchange = () => {}) => {
+export const Field = (field, userData, userOnChange = () => {}) => {
 	switch (field.type) {
 		case "STRING":
 		case "string": {
+			let show = false;
+
+			const onchange = event => {
+				let { value } = event.target;
+
+				if (field.type === "STRING") {
+					value = value.toUpperCase();
+				}
+
+				if (field.type.toLowerCase() === "string") {
+					value = value.replaceAll(/\s+/g, " ");
+					value = value.replaceAll(field.password ? /[^ -~•]/g : /[^ -~]/g, "");
+				}
+
+				let userValue;
+
+				if (field.password) {
+					userValue = "";
+
+					for (let i = 0; i < value.length; i++) {
+						let ch = value[i];
+
+						if (ch !== "•") {
+							userValue += ch;
+						} else if (i < userData[field.id].length) {
+							userValue += userData[field.id][i];
+						}
+					}
+
+					if (!show) {
+						value = value.replaceAll(/./g, "•");
+					}
+				} else {
+					userValue = value;
+				}
+
+				userData[field.id] = userValue;
+				event.target.value = value;
+
+				userOnChange(event);
+			};
+
 			const textbox = $("input", {
 				type: "text",
 				minLength: field.min,
 				maxLength: field.max,
 				onchange,
 				oninput: onchange,
+				oncopy(event) {
+					event.clipboardData.setData("text/plain", userData[field.id]);
+					event.preventDefault();
+				},
 			});
 
 			if (field.type === "STRING") {
 				textbox.autocapitalize = "characters";
 			}
 
-			return textbox;
+			let element = textbox;
+
+			if (field.password) {
+				element = Span(
+					textbox,
+					Button("Show", {
+						className: "dark",
+						onclick() {
+							show = !show;
+							textbox.value = show ? userData[field.id] : userData[field.id].replaceAll(/./g, "•");
+						},
+					}),
+				);
+			}
+
+			return element;
 		}
 
 		case "int": {

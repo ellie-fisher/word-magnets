@@ -46,19 +46,7 @@ export const RoomFields = (data = {}) => {
 				{ className: "field-row" },
 				Div(Strong(`${field.label}`)),
 				" ",
-				Field(field, ({ target }) => {
-					if (field.type === "STRING") {
-						target.value = target.value.toUpperCase();
-					}
-
-					if (field.type.toLowerCase() === "string") {
-						target.value = target.value.replaceAll(/[\x09]/g, " ");
-						target.value = target.value.replaceAll(/[^ -)+-~]/g, "");
-					}
-
-					userData[field.id] = target.value;
-					updateButton();
-				}),
+				Field(field, userData, updateButton),
 			);
 		}),
 
