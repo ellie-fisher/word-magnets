@@ -15,10 +15,11 @@ import (
 )
 
 var nameValidator = util.FieldValidator{
-	Min:        1,
-	Max:        16,
-	SpaceError: "Name cannot have trailing whitespace",
-	CharError:  "Name contains one or more illegal character(s)",
+	Min:                   1,
+	Max:                   16,
+	TrailingSpaceError:    "Name cannot have trailing whitespace",
+	ConsecutiveSpaceError: "Name cannot have more than one space character in a row",
+	CharError:             "Name contains one or more illegal character(s)",
 }
 
 func init() {

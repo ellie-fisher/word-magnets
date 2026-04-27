@@ -15,12 +15,13 @@ import (
 )
 
 type FieldValidator struct {
-	Min        uint8
-	Max        uint8
-	MinError   string
-	MaxError   string
-	SpaceError string
-	CharError  string
+	Min                   uint8
+	Max                   uint8
+	MinError              string
+	MaxError              string
+	TrailingSpaceError    string
+	ConsecutiveSpaceError string
+	CharError             string
 }
 
 func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
@@ -38,7 +39,12 @@ func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
 func (validator *FieldValidator) ValidateString(value string) (bool, string) {
 	// This is the most we can do here. Trailing spaces should be trimmed by the client first.
 	if len(strings.TrimSpace(value)) != len(value) {
-		return false, validator.SpaceError
+		return false, validator.TrailingSpaceError
+	}
+
+	// This is the most we can do here. Consecutive spaces should be trimmed by the client first.
+	if matched, err := regexp.MatchString("\\s\\s", value); matched || err != nil {
+		return false, validator.ConsecutiveSpaceError
 	}
 
 	// Detect illegal characters.
