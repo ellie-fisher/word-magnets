@@ -19,6 +19,7 @@ var nameValidator = util.FieldValidator{
 	TrailingSpaceError:    "Name cannot have trailing whitespace",
 	ConsecutiveSpaceError: "Name cannot have more than one space character in a row",
 	CharError:             "Name contains one or more illegal character(s)",
+	FilterError:           "Name potentially contains one or more offensive word(s).",
 }
 
 func init() {

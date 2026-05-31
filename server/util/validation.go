@@ -21,6 +21,36 @@ type FieldValidator struct {
 	TrailingSpaceError    string
 	ConsecutiveSpaceError string
 	CharError             string
+	FilterError           string
+}
+
+// Regex filters for offensive words.
+var WordFilters []*regexp.Regexp
+
+func init() {
+	filterStrings := []string{
+		// N-Word filters:
+		"\bn+\\s*[i1]\\s*[g]\\s*(\b|[^h])",
+		"n\\s*[il1]\\s*[g6]+\\s*[e3a4]+\\s*r",
+
+		// R-Word filters:
+		"r\\s*[e3]+\\s*[t7]+\\s*[a4]+\\s*r+\\s*d",
+
+		// F-Slur filters:
+		"f\\s*[a4]+\\s*[g]",
+		"f\\s*[a4]+\\s*[g6]+\\s*[o0]+\\s*[t7]",
+
+		// T-Slur filters:
+		"[t7]+\\s*r+\\s*[a4]+\\s*n+\\s*y",
+	}
+
+	for _, str := range filterStrings {
+		if reg, err := regexp.Compile("(?i)" + str); err != nil {
+			panic(err)
+		} else {
+			WordFilters = append(WordFilters, reg)
+		}
+	}
 }
 
 func (validator *FieldValidator) ValidateU8(value uint8) (bool, string) {
@@ -46,9 +76,15 @@ func (validator *FieldValidator) ValidateString(value string) (bool, string) {
 		return false, validator.ConsecutiveSpaceError
 	}
 
-	// Detect illegal characters.
-	if matched, err := regexp.MatchString("[^ -~]", value); matched || err != nil {
+	// Detect illegal characters (ASCII characters 32 to 126 are allowed, except for asterisks).
+	if matched, err := regexp.MatchString("[^ -)+-~]", value); matched || err != nil {
 		return false, validator.CharError
+	}
+
+	for _, reg := range WordFilters {
+		if reg.MatchString(value) {
+			return false, validator.FilterError
+		}
 	}
 
 	return validator.ValidateU8(uint8(len(value)))

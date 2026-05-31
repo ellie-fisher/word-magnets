@@ -77,5 +77,9 @@ func NewSentence(authorID string, authorName string, words []WordEntry, wordbank
 		str = str[:maxLength]
 	}
 
+	for _, reg := range util.WordFilters {
+		str = reg.ReplaceAllString(str, "***")
+	}
+
 	return &Sentence{authorID, authorName, str, 0}
 }

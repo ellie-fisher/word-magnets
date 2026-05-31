@@ -36,7 +36,7 @@ export const Field = (field, userData, userOnChange = () => {}) => {
 
 				if (field.type.toLowerCase() === "string") {
 					value = value.replaceAll(/\s+/g, " ");
-					value = value.replaceAll(field.password ? /[^ -~•]/g : /[^ -~]/g, "");
+					value = value.replaceAll(field.password ? /[^ -)+-~•]/g : /[^ -)+-~]/g, "");
 				}
 
 				let userValue;
@@ -102,6 +102,11 @@ export const Field = (field, userData, userOnChange = () => {}) => {
 		}
 
 		case "int": {
+			const onchange = event => {
+				userData[field.id] = event.target.value;
+				userOnChange(event);
+			};
+
 			const increments = field.increments ?? 1;
 			const dropdown = $("select", { onchange });
 
