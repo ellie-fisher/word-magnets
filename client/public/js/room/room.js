@@ -19,93 +19,91 @@ import { Results } from "./results.js";
 import { End } from "./end.js";
 import { AppView } from "../app/state.js";
 
-export const Room = $singleton({
-	$element() {
-		const body = Section();
-		const title = H2("Lobby");
-		const popup = Section(
-			{ className: "popup" },
-			Section(
-				{ className: "container" },
-				H2("Exit room?"),
-				P("Are you sure you want to exit the room?"),
-				Span(
-					{ className: "popup-buttons" },
-					Button("Yes", () => {
-						sendLeaveRoom();
-						AppView.set("title");
-						ShowPopup.set(false);
-					}),
-					Button("No", { className: "primary" }, () => ShowPopup.set(false)),
-				),
+export const Room = $singleton(() => {
+	const body = Section();
+	const title = H2("Lobby");
+	const popup = Section(
+		{ className: "popup" },
+		Section(
+			{ className: "container" },
+			H2("Exit room?"),
+			P("Are you sure you want to exit the room?"),
+			Span(
+				{ className: "popup-buttons" },
+				Button("Yes", () => {
+					sendLeaveRoom();
+					AppView.set("title");
+					ShowPopup.set(false);
+				}),
+				Button("No", { className: "primary" }, () => ShowPopup.set(false)),
 			),
-		);
+		),
+	);
 
-		RoomData.state.addHook(state => {
-			let view = "Unknown room view! (Ask a nerd what this means.)";
-			let titleText = "";
+	RoomData.state.addHook(state => {
+		let view = "Unknown room view! (Ask a nerd what this means.)";
+		let titleText = "";
 
-			switch (state) {
-				case RoomStates.Lobby: {
-					view = Lobby();
-					titleText = "Lobby";
-					break;
-				}
-
-				case RoomStates.StartGame: {
-					view = Lobby();
-					titleText = "Starting Game...";
-					break;
-				}
-
-				case RoomStates.Create: {
-					view = Create();
-					titleText = "Create a sentence!";
-
-					break;
-				}
-
-				case RoomStates.CreateSubmit: {
-					view = Create();
-					titleText = "Please wait...";
-
-					break;
-				}
-
-				case RoomStates.Vote: {
-					view = Vote();
-					titleText = "Choose your favorite sentence!";
-					break;
-				}
-
-				case RoomStates.VoteSubmit: {
-					view = Vote();
-					titleText = "Please wait...";
-					break;
-				}
-
-				case RoomStates.Results: {
-					view = Results();
-					titleText = "Results";
-					break;
-				}
-
-				case RoomStates.End: {
-					view = End();
-					titleText = "Game is over!";
-					break;
-				}
-
-				default:
-					break;
+		switch (state) {
+			case RoomStates.Lobby: {
+				view = Lobby();
+				titleText = "Lobby";
+				break;
 			}
 
-			$replace(body, view);
-			title.textContent = titleText;
-		});
+			case RoomStates.StartGame: {
+				view = Lobby();
+				titleText = "Starting Game...";
+				break;
+			}
 
-		ShowPopup.addHook(show => (popup.hidden = !show), true);
+			case RoomStates.Create: {
+				view = Create();
+				titleText = "Create a sentence!";
 
-		return Article(title, popup, Header(), body);
-	},
+				break;
+			}
+
+			case RoomStates.CreateSubmit: {
+				view = Create();
+				titleText = "Please wait...";
+
+				break;
+			}
+
+			case RoomStates.Vote: {
+				view = Vote();
+				titleText = "Choose your favorite sentence!";
+				break;
+			}
+
+			case RoomStates.VoteSubmit: {
+				view = Vote();
+				titleText = "Please wait...";
+				break;
+			}
+
+			case RoomStates.Results: {
+				view = Results();
+				titleText = "Results";
+				break;
+			}
+
+			case RoomStates.End: {
+				view = End();
+				titleText = "Game is over!";
+				break;
+			}
+
+			default:
+				break;
+		}
+
+		$replace(body, view);
+		title.textContent = titleText;
+	});
+
+	ShowPopup.addHook(show => (popup.hidden = !show), true);
+
+	return Article(title, popup, Header(), body);
 });

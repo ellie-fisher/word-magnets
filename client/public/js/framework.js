@@ -53,37 +53,16 @@ export const createState = (initialValue = null, initialHook = null) => {
 	return state;
 };
 
-export const $singleton = (logic = {}) => {
+export const $singleton = element => {
 	let view = null;
 
 	return function () {
 		if (view === null) {
-			view = logic.$element();
-			view.__$logic$__ = logic;
+			view = element();
 		}
 
 		return view;
 	};
-};
-
-const onMount = element => {
-	if (element instanceof HTMLElement) {
-		for (const child of element.children) {
-			onMount(child);
-		}
-
-		element.__$logic$__?.onMount?.();
-	}
-};
-
-const onUnmount = element => {
-	if (element instanceof HTMLElement) {
-		for (const child of element.children) {
-			onUnmount(child);
-		}
-
-		element.__$logic$__?.onUnmount?.();
-	}
 };
 
 /**
@@ -128,11 +107,8 @@ export const $ = (tag, ...args) => {
 	}
 
 	// The rest of the arguments are children.
-	const children = args.slice(i);
-
-	for (const child of children) {
-		element.append(child);
-		onMount(child);
+	for (; i < args.length; i++) {
+		element.append(args[i]);
 	}
 
 	return element;
@@ -141,17 +117,8 @@ export const $ = (tag, ...args) => {
 /**
  * Replaces an element's children with new ones.
  */
-export const $replace = (element, ...children) => {
-	for (const child of element.children) {
-		onUnmount(child);
-	}
-
-	element.replaceChildren(...children);
-
-	for (const child of element.children) {
-		onMount(child);
-	}
-
+export const $replace = (element, ...newChildren) => {
+	element.replaceChildren(...newChildren);
 	return element;
 };
 

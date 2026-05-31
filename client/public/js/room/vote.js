@@ -12,62 +12,66 @@ import { Button, Em, P, Section } from "../util/components.js";
 import { RoomData, RoomSentences, RoomStates } from "./state.js";
 import { Table } from "./table.js";
 
-export const Vote = $singleton({
-	onMount() {
+export const Vote = $singleton(() => {
+	const container = P();
+	const submit = Button("Submit Vote", "primary", () => {
+		if (!RoomSentences.voteSubmitted.get()) {
+			sendSubmitVote(RoomSentences.vote.get());
+			RoomSentences.voteSubmitted.set(true);
+		}
+	});
+
+	const hook = () => {
+		const rows = [];
+		const vote = RoomSentences.vote.get();
+		const disabled = RoomData.state.get() === RoomStates.VoteSubmit;
+		const sentences = RoomSentences.sentences.get();
+
+		if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
+			submit.style.visibility = "hidden";
+			$replace(container, P(Em("No sentences to show!")));
+		} else {
+			submit.style.visibility = "visible";
+			sentences.forEach(({ value = "" }, index) => {
+				if (value !== "") {
+					const selected = vote === index;
+					const clickable = !selected && !disabled;
+
+					rows.push([
+						{
+							className: `${clickable ? "clickable" : ""} ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`,
+							onclick() {
+								if (clickable && index >= 0) {
+									RoomSentences.vote.set(index);
+								}
+							},
+						},
+						[value],
+					]);
+				}
+			});
+
+			$replace(container, Table([["Click on a sentence below:", "100%"]], ...rows));
+		}
+
 		if (RoomData.state.get() === RoomStates.VoteSubmit && RoomSentences.vote.get() >= 0) {
 			sendSubmitVote(RoomSentences.vote.get());
 		}
-	},
+	};
 
-	$element() {
-		const container = P();
-		const submit = Button("Submit Vote", "primary", () => {
-			if (!RoomSentences.voteSubmitted.get()) {
-				sendSubmitVote(RoomSentences.vote.get());
-				RoomSentences.voteSubmitted.set(true);
-			}
-		});
+	RoomData.state.addHook(() => {
+		RoomSentences.vote.reset();
+		hook();
+	});
 
-		RoomSentences.voteSubmitted.addHook(submitted => (submit.disabled = submitted));
+	RoomSentences.sentences.addHook(hook);
 
-		const hook = () => {
-			const rows = [];
-			const vote = RoomSentences.vote.get();
-			const disabled = RoomData.state.get() === RoomStates.VoteSubmit;
-			const sentences = RoomSentences.sentences.get();
+	RoomSentences.vote.addHook(() => {
+		submit.disabled = RoomSentences.vote.get() < 0;
+		hook();
+	});
 
-			if (sentences.length <= 0 || (sentences.length === 1 && sentences[0].value === "")) {
-				submit.style.visibility = "hidden";
-				$replace(container, P(Em("No sentences to show!")));
-			} else {
-				submit.style.visibility = "visible";
-				sentences.forEach(({ value = "" }, index) => {
-					if (value !== "") {
-						const selected = vote === index;
-						const clickable = !selected && !disabled;
+	RoomSentences.voteSubmitted.addHook(submitted => (submit.disabled = submitted));
 
-						rows.push([
-							{
-								className: `${clickable ? "clickable" : ""} ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`,
-								onclick() {
-									if (clickable && index >= 0) {
-										RoomSentences.vote.set(index);
-									}
-								},
-							},
-							[value],
-						]);
-					}
-				});
-
-				$replace(container, Table([["Click on a sentence below:", "100%"]], ...rows));
-			}
-		};
-
-		RoomData.state.addHook(hook);
-		RoomSentences.sentences.addHook(hook);
-		RoomSentences.vote.addHook(hook);
-
-		return Section(container, submit);
-	},
+	return Section(container, submit);
 });

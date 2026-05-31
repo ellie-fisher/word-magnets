@@ -10,63 +10,61 @@ import { createState, $singleton, $replace } from "../framework.js";
 import { Fields } from "../fields.js";
 import { sendCreateRoom, sendJoinRoom, sendRequestServerInfo } from "../packets/send.js";
 import { RoomFields } from "./roomFields.js";
-import { ServerInfo } from "../app/state.js";
+import { AppView, ServerInfo } from "../app/state.js";
 import { Article, Button, H1, P, Section, Span } from "../util/components.js";
 
-const fieldsCreate = Span();
-const fieldsJoin = Span();
+export const Title = $singleton(() => {
+	const tabCreate = Button("Create", "tab", () => TabState.set(true));
+	const tabJoin = Button("Join", "tab", () => TabState.set(false));
+	const fieldsCreate = Span();
+	const fieldsJoin = Span();
 
-export const Title = $singleton({
-	onMount() {
-		sendRequestServerInfo();
+	const TabState = createState(true, value => {
+		tabCreate.disabled = value;
+		tabJoin.disabled = !value;
+		fieldsCreate.hidden = !value;
+		fieldsJoin.hidden = value;
+	});
 
-		$replace(
-			fieldsCreate,
-			RoomFields({
-				fields: structuredClone(Fields.createRoom),
-				title: "Create a Room",
-				buttonText: "Create Room",
-				onButtonClick: sendCreateRoom,
-			}),
-		);
+	const stats = P();
 
-		// TODO: Make room code private.
-		$replace(
-			fieldsJoin,
-			RoomFields({
-				fields: structuredClone(Fields.joinRoom),
-				title: "Join a Room",
-				buttonText: "Join Room",
-				onButtonClick: sendJoinRoom,
-			}),
-		);
-	},
+	AppView.addHook((view, _, fromView) => {
+		if (view === "title" && fromView !== "title") {
+			$replace(
+				fieldsCreate,
+				RoomFields({
+					fields: structuredClone(Fields.createRoom),
+					title: "Create a Room",
+					buttonText: "Create Room",
+					onButtonClick: sendCreateRoom,
+				}),
+			);
 
-	$element() {
-		const tabCreate = Button("Create", "tab", () => TabState.set(true));
-		const tabJoin = Button("Join", "tab", () => TabState.set(false));
+			$replace(
+				fieldsJoin,
+				RoomFields({
+					fields: structuredClone(Fields.joinRoom),
+					title: "Join a Room",
+					buttonText: "Join Room",
+					onButtonClick: sendJoinRoom,
+				}),
+			);
 
-		const TabState = createState(true, value => {
-			tabCreate.disabled = value;
-			tabJoin.disabled = !value;
-			fieldsCreate.hidden = !value;
-			fieldsJoin.hidden = value;
-		});
+			sendRequestServerInfo();
+		}
+	});
 
-		const stats = P();
+	ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
+		let message = "There ";
 
-		ServerInfo.addHook(({ clientCount = 0, roomCount = 0 }) => {
-			let message = "There ";
+		if (clientCount === 1) {
+			message += `is 1 player`;
+		} else {
+			message += `are ${clientCount} players`;
+		}
 
-			if (clientCount === 1) {
-				message += `is 1 player`;
-			} else {
-				message += `are ${clientCount} players`;
-			}
+		stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
+	});
 
-			stats.textContent = `${message} and ${roomCount} room${roomCount != 1 ? "s" : ""}.`;
-		});
-
-		return Article(H1("Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, Section(stats));
-	},
+	return Article(H1("Word Magnets"), tabCreate, tabJoin, fieldsCreate, fieldsJoin, Section(stats));
 });
